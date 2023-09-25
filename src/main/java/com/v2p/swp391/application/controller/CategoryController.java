@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.v2p.swp391.application.mapper.UserHttpMapper.INSTANCE;
+
 @RestController
 @RequestMapping("${app.api.version.v1}/category")
 @RequiredArgsConstructor
@@ -21,13 +23,9 @@ public class CategoryController {
     @PostMapping("")
     public CoreApiResponse<Category> createCategory(
             @Valid @RequestBody CategoryRequest categoryRequest
-            ) throws Exception {
-        try {
-            Category category = categoryService.createCategory(categoryRequest);
-            return CoreApiResponse.success(category,"Insert category successfully");
-        } catch (AppException e) {
-            return CoreApiResponse.error(HttpStatus.BAD_REQUEST,e.getMessage());
-        }
+            ){
+            Category categoryResponse = categoryService.createCategory(INSTANCE.toModel(categoryRequest));
+            return CoreApiResponse.success(categoryResponse,"Insert category successfully");
     }
 
     @GetMapping("")
@@ -38,9 +36,9 @@ public class CategoryController {
     @PutMapping("/{id}")
     public CoreApiResponse<Category> updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody CategoryRequest categoryDTO
+            @Valid @RequestBody CategoryRequest categoryRequest
     ) {
-        Category category = categoryService.updateCategory(id, categoryDTO);
+        Category category = categoryService.updateCategory(id, (INSTANCE.toModel(categoryRequest)));
         return CoreApiResponse.success(category,"Update category successfully");
     }
     @DeleteMapping("/{id}")

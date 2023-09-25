@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 @Service
 @RequiredArgsConstructor
-public class CategoryServiceImpl implements CategoryService {
+public class CategoryServiceImpl implements CategoryService{
     private final CategoryRepository categoryRepository;
     @Override
-    public Category createCategory(CategoryRequest categoryRequest) {
+    public Category createCategory(Category categoryRequest) {
         if (categoryRepository.existsByName(categoryRequest.getName())) {
             throw new AppException(HttpStatus.BAD_REQUEST,"Category name already exists");
         }
@@ -39,9 +39,9 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public Category updateCategory(long categoryId, CategoryRequest categoryRequest) {
+    public Category updateCategory(long categoryId, Category category) {
         Category existingCategory = getCategoryById(categoryId);
-        existingCategory.setName(categoryRequest.getName());
+        existingCategory.setName(category.getName());
         categoryRepository.save(existingCategory);
         return existingCategory;
     }
