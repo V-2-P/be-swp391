@@ -34,6 +34,6 @@ build/
 .vscode/
 
 
-application.properties
-application-testing.properties
+application.yml
+application-testing.yml
 .DS_Store
