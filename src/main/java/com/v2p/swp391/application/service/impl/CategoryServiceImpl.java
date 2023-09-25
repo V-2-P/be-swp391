@@ -2,7 +2,6 @@ package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.model.Category;
 import com.v2p.swp391.application.repository.CategoryRepository;
-import com.v2p.swp391.application.request.CategoryRequest;
 import com.v2p.swp391.application.service.CategoryService;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;

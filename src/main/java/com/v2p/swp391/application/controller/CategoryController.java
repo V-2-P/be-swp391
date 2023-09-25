@@ -4,10 +4,8 @@ import com.v2p.swp391.application.model.Category;
 import com.v2p.swp391.application.request.CategoryRequest;
 import com.v2p.swp391.application.service.CategoryService;
 import com.v2p.swp391.common.api.CoreApiResponse;
-import com.v2p.swp391.exception.AppException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
