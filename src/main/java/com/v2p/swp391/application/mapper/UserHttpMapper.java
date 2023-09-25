@@ -12,6 +12,5 @@ import org.mapstruct.factory.Mappers;
 public interface UserHttpMapper {
     UserHttpMapper INSTANCE = Mappers.getMapper(UserHttpMapper.class);
     User toModel(UserRequest request);
-    Category toModel(CategoryRequest request);
     UserResponse toResponse(User user);
 }

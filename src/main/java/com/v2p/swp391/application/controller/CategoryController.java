@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.v2p.swp391.application.mapper.UserHttpMapper.INSTANCE;
+import static com.v2p.swp391.application.mapper.CategoryHttpMapper.INSTANCE;
 
 @RestController
 @RequestMapping("${app.api.version.v1}/category")
