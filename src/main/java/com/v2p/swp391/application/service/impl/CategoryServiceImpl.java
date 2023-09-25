@@ -4,11 +4,11 @@ import com.v2p.swp391.application.model.Category;
 import com.v2p.swp391.application.repository.CategoryRepository;
 import com.v2p.swp391.application.request.CategoryRequest;
 import com.v2p.swp391.application.service.CategoryService;
+import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.exception.data.ExistingNameException;
-import com.v2p.swp391.utils.LocalizationUtils;
-import com.v2p.swp391.utils.MessageKeys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,11 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository categoryRepository;
-    private final LocalizationUtils localizationUtils;
     @Override
-    public Category createCategory(CategoryRequest categoryRequest) throws Exception {
+    public Category createCategory(CategoryRequest categoryRequest) {
         if (categoryRepository.existsByName(categoryRequest.getName())) {
-            throw new ExistingNameException(localizationUtils.getLocalizedMessage(MessageKeys.CATEGORY_NAME_EXIST));
+            throw new AppException(HttpStatus.BAD_REQUEST,"Category name already exists");
         }
         Category newCategory = Category
                 .builder()
