@@ -7,6 +7,8 @@ import com.v2p.swp391.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import com.v2p.swp391.utils.StringUtlis;
 
 import java.util.List;
 @Service
@@ -15,6 +17,7 @@ public class BirdTypeServiceImpl implements BirdTypeService {
     private final BirdTypeRepository birdTypeRepository;
     @Override
     public BirdType createBirdType(BirdType birdType) {
+        birdType.setName(StringUtlis.NameStandardlizing(birdType.getName()));
         if(birdTypeRepository.existsByName(birdType.getName())){
             throw new AppException(HttpStatus.BAD_REQUEST, "Bird type name already exists");
         }
@@ -34,6 +37,7 @@ public class BirdTypeServiceImpl implements BirdTypeService {
 
     @Override
     public BirdType updateBirdType(Long birdTypeId, BirdType birdType) {
+        birdType.setName(StringUtlis.NameStandardlizing(birdType.getName()));
         if(birdTypeRepository.existsByName(birdType.getName())){
             throw new AppException(HttpStatus.BAD_REQUEST, "Bird type name already exists");
         }
