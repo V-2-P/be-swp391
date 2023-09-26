@@ -39,12 +39,19 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public Category updateCategory(long categoryId, Category category) {
+        if (categoryRepository.existsByName(category.getName())) {
+            throw new AppException(HttpStatus.BAD_REQUEST,"Category name already exists");
+        }
+
         Category existingCategory = getCategoryById(categoryId);
         existingCategory.setName(category.getName());
         categoryRepository.save(existingCategory);
         return existingCategory;
     }
+<<<<<<< HEAD
+=======
 
+>>>>>>> develop
     @Override
     public void deleteCategory(long id) {
         categoryRepository.deleteById(id);
