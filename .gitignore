@@ -13,7 +13,6 @@ target/
 .springBeans
 .sts4-cache
 
-
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -34,6 +33,6 @@ build/
 .vscode/
 
 
-application.yml
-application-testing.yml
-.DS_Store
+./src/main/resources/application.yml
+./src/main/resources/application-testing.yml
+**/.DS_Store
