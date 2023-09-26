@@ -18,10 +18,7 @@ public class BirdTypeServiceImpl implements BirdTypeService {
         if(birdTypeRepository.existsByName(birdType.getName())){
             throw new AppException(HttpStatus.BAD_REQUEST, "Bird type name already exists");
         }
-        BirdType newBirdType = BirdType.builder()
-                .name(birdType.getName())
-                .build();
-        return birdTypeRepository.save(newBirdType);
+        return birdTypeRepository.save(birdType);
     }
 
     @Override
@@ -41,20 +38,14 @@ public class BirdTypeServiceImpl implements BirdTypeService {
             throw new AppException(HttpStatus.BAD_REQUEST, "Bird type name already exists");
         }
         BirdType existingBirdType = getBirdTypeById(birdTypeId);
-        if(existingBirdType != null){
-            existingBirdType.setName(birdType.getName());
-            return birdTypeRepository.save(existingBirdType);
-        }
-        return null;
+        existingBirdType.setName(birdType.getName());
+        return birdTypeRepository.save(existingBirdType);
     }
 
     @Override
     public BirdType deleteBirdType(Long id) {
         BirdType existingBirdType = getBirdTypeById(id);
-        if(existingBirdType != null){
-            birdTypeRepository.deleteById(id);
-            return existingBirdType;
-        }
-        return null;
+        birdTypeRepository.deleteById(id);
+        return existingBirdType;
     }
 }

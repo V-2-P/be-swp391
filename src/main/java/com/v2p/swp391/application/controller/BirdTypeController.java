@@ -4,9 +4,9 @@ import com.v2p.swp391.application.model.BirdType;
 import com.v2p.swp391.application.request.BirdTypeRequest;
 import com.v2p.swp391.application.service.impl.BirdTypeServiceImpl;
 import com.v2p.swp391.common.api.CoreApiResponse;
+import com.v2p.swp391.utils.StringUtlis;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +22,7 @@ public class BirdTypeController {
     public CoreApiResponse<BirdType> createBirdType(
             @Valid @RequestBody BirdTypeRequest birdTypeRequest
     ){
+        birdTypeRequest.setName(StringUtlis.NameStandardlizing(birdTypeRequest.getName()));
         BirdType birdTypeResponse = birdTypeService.createBirdType(INSTANCE.toModel(birdTypeRequest));
         return CoreApiResponse.success(birdTypeResponse,"Insert bird type successfully");
     }
@@ -41,9 +42,10 @@ public class BirdTypeController {
     @PutMapping("/{id}")
     public CoreApiResponse<BirdType> updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody BirdType birdType
+            @Valid @RequestBody BirdTypeRequest birdTypeRequest
     ){
-        BirdType updateBirdType = birdTypeService.updateBirdType(id, birdType);
+        birdTypeRequest.setName(StringUtlis.NameStandardlizing(birdTypeRequest.getName()));
+        BirdType updateBirdType = birdTypeService.updateBirdType(id, INSTANCE.toModel(birdTypeRequest));
         return CoreApiResponse.success(updateBirdType, "Update bird type successfully");
     }
 
