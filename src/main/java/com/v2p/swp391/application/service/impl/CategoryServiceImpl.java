@@ -48,10 +48,10 @@ public class CategoryServiceImpl implements CategoryService{
         categoryRepository.save(existingCategory);
         return existingCategory;
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> develop
+//<<<<<<< HEAD
+//=======
+//
+//>>>>>>> develop
     @Override
     public void deleteCategory(long id) {
         categoryRepository.deleteById(id);
