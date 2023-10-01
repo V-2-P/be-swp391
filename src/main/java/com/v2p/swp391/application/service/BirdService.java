@@ -1,6 +1,7 @@
 package com.v2p.swp391.application.service;
 
 import com.v2p.swp391.application.model.Bird;
+import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -10,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface BirdService {
-    void createBird(Bird bird);
+    void createBird(Bird bird,  MultipartFile imageFile) throws IOException;
 
     List<Bird> getAllBirds();
 
@@ -23,7 +24,7 @@ public interface BirdService {
     Page<BirdResponse> getAllBirds(String keyword,
                                    Long categoryId, Long typeId, PageRequest pageRequest);
 
-    Bird updateBird(long id, Bird bird);
+    Bird updateBird(long id, BirdRequest bird);
 
     void deleteBird(long id);
 

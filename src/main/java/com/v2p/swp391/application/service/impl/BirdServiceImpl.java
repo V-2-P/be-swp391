@@ -1,32 +1,28 @@
 package com.v2p.swp391.application.service.impl;
 
+import com.v2p.swp391.application.mapper.BirdHttpMapper;
 import com.v2p.swp391.application.model.Bird;
 import com.v2p.swp391.application.model.BirdType;
 import com.v2p.swp391.application.model.Category;
 import com.v2p.swp391.application.repository.BirdRepository;
 import com.v2p.swp391.application.repository.BirdTypeRepository;
 import com.v2p.swp391.application.repository.CategoryRepository;
+import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
-import com.v2p.swp391.common.constant.Image;
-import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.utils.StringUtlis;
+import com.v2p.swp391.utils.UploadImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.List;
 
-import static com.v2p.swp391.application.mapper.BirdHttpMapper.INSTANCE;
 
 @Service
 @RequiredArgsConstructor
@@ -34,9 +30,11 @@ public class BirdServiceImpl implements BirdService {
     private final BirdRepository birdRepository;
     private final CategoryRepository categoryRepository;
     private final BirdTypeRepository birdTypeRepository;
+    private final BirdHttpMapper birdMapper;
+
 
     @Override
-    public void createBird(Bird bird) {
+    public void createBird(Bird bird, MultipartFile imageFile) throws IOException {
         Category existingCategory = categoryRepository
                 .findById(bird.getCategory().getId())
                 .orElseThrow(() ->
@@ -47,11 +45,8 @@ public class BirdServiceImpl implements BirdService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Bird type", "id", bird.getBirdType().getId()));
-
-
         bird.setName((StringUtlis.NameStandardlizing(bird.getName())));
         bird.setPrice(bird.getPrice());
-        bird.setThumbnail(bird.getThumbnail());
         bird.setDescription(bird.getDescription());
         bird.setCategory(existingCategory);
         bird.setBirdType(existingBirdType);
@@ -59,6 +54,11 @@ public class BirdServiceImpl implements BirdService {
         bird.setAge(bird.getAge());
         bird.setStatus(bird.isStatus());
         bird.setQuantity(bird.getQuantity());
+
+        if(imageFile != null && !imageFile.isEmpty()) {
+            String thumbnail = UploadImageUtils.storeFile(imageFile);
+            bird.setThumbnail(thumbnail);
+        }
         birdRepository.save(bird);
     }
 
@@ -85,7 +85,6 @@ public class BirdServiceImpl implements BirdService {
     }
 
 
-
     @Override
     public List<Bird> findByTypeId(long typeId) {
         BirdType existingBirdType = birdTypeRepository
@@ -100,36 +99,28 @@ public class BirdServiceImpl implements BirdService {
     public Page<BirdResponse> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest) {
         Page<Bird> productsPage;
         productsPage = birdRepository.searchBirds(categoryId, typeId, keyword, pageRequest);
-        return productsPage.map(INSTANCE::toResponse);
+        return productsPage.map(birdMapper::toResponse);
     }
 
     @Override
-    public Bird updateBird(long id, Bird bird) {
-        Category existingCategory = categoryRepository
-                .findById(bird.getCategory().getId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Category", "id", bird.getCategory().getId()));
-        BirdType existingBirdType = birdTypeRepository
-                .findById(bird.getBirdType().getId())
-                .orElseThrow(() ->
-                        new ResourceNotFoundException(
-                                "Bird type", "id", bird.getBirdType().getId()));
-
+    public Bird updateBird(long id, BirdRequest request) {
         Bird existingBird = getBirdById(id);
-        existingBird.setName(bird.getName());
-        existingBird.setPrice(bird.getPrice());
-        existingBird.setThumbnail(bird.getThumbnail());
-        existingBird.setDescription(bird.getDescription());
-        existingBird.setGender(bird.getGender());
-        existingBird.setPurebredLevel(bird.getPurebredLevel());
-        existingBird.setCompetitionAchievements(bird.getCompetitionAchievements());
-        existingBird.setAge(bird.getAge());
-        existingBird.setQuantity(bird.getQuantity());
-        existingBird.setColor(bird.getColor());
-        existingBird.setBirdType(existingBirdType);
-        existingBird.setCategory(existingCategory);
-        existingBird.setStatus(bird.isStatus());
+        birdMapper.updateBirdFromRequest(request, existingBird);
+
+        if (!existingBird.getBirdType().getId().equals(request.getTypeId())) {
+            BirdType existingBirdType = birdTypeRepository
+                    .findById(request.getTypeId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Bird type", "id", request.getTypeId()));
+        }
+        if (!existingBird.getCategory().getId().equals(request.getCategoryId())) {
+            Category existingCategory = categoryRepository
+                    .findById(request.getCategoryId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException(
+                                    "Category", "id", request.getCategoryId()));
+        }
 
         return birdRepository.save(existingBird);
     }
@@ -139,45 +130,12 @@ public class BirdServiceImpl implements BirdService {
         Bird existingBird = getBirdById(id);
         birdRepository.deleteById(id);
     }
+
     @Override
     public void uploadThumbnail(Long birdId, MultipartFile imageFile) throws IOException {
         Bird existingBird = getBirdById(birdId);
-        String oldThumbnail = existingBird.getThumbnail();
-
-        if (oldThumbnail != null) {
-            deleteThumbnail(oldThumbnail);
-        }
-        if(imageFile.getSize() == 0) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Please upload file image ");
-        }
-        if (!isImageFile(imageFile) || imageFile.getOriginalFilename() == null) {
-            throw new AppException (HttpStatus.UNSUPPORTED_MEDIA_TYPE,"Invalid image format") ;
-        }
-        String originalFileName = imageFile.getOriginalFilename();
-        String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
-        java.nio.file.Path uploadDir = Paths.get(Image.BIRD_IMAGE_PATH);
-
-        if (!Files.exists(uploadDir)) {
-            Files.createDirectories(uploadDir);
-        }
-
-        java.nio.file.Path destination = Paths.get(uploadDir.toString(),uniqueFileName);
-        Files.copy(imageFile.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-
-        existingBird.setThumbnail(uniqueFileName);
+        existingBird.setThumbnail(UploadImageUtils.storeFile(imageFile));
         birdRepository.save(existingBird);
-    }
-    private void deleteThumbnail(String thumbnailFileName) throws IOException {
-        java.nio.file.Path uploadDir = Paths.get(Image.BIRD_IMAGE_PATH);
-        java.nio.file.Path thumbnailPath = uploadDir.resolve(thumbnailFileName);
-
-        if (Files.exists(thumbnailPath)) {
-            Files.delete(thumbnailPath);
-        }
-    }
-    private boolean isImageFile(MultipartFile file) {
-        String contentType = file.getContentType();
-        return contentType != null && contentType.startsWith("image/");
     }
 
 }

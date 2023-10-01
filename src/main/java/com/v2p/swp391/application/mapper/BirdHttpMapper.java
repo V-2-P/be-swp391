@@ -1,16 +1,15 @@
 package com.v2p.swp391.application.mapper;
 
 import com.v2p.swp391.application.model.Bird;
-import com.v2p.swp391.application.request.BirdRequest;
 
+import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
-@Mapper
+@Mapper(componentModel = "spring")
 
 public interface BirdHttpMapper {
     BirdHttpMapper INSTANCE = Mappers.getMapper(BirdHttpMapper.class);
@@ -24,7 +23,8 @@ public interface BirdHttpMapper {
 
     List<BirdResponse> toListResponses(List<Bird> birds);
 
-
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    void updateBirdFromRequest(BirdRequest request, @MappingTarget Bird bird);
 
 
 }
