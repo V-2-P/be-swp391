@@ -8,15 +8,12 @@ import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.utils.UploadImageUtils;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.UrlResource;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -68,7 +65,4 @@ public class BirdImageServiceImpl implements com.v2p.swp391.application.service.
         return birdImageRepository.findById(imageId)
                 .orElseThrow(() -> new ResourceNotFoundException("Image", "id", imageId));
     }
-
-
-
 }

@@ -23,8 +23,7 @@ public interface BirdService {
 
     List<Bird> findByTypeId(long typeId);
 
-    Page<BirdResponse> getAllBirds(String keyword,
-                                   Long categoryId, Long typeId, PageRequest pageRequest);
+    Page<BirdResponse> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest);
 
     Bird updateBird(long id, BirdRequest bird);
 

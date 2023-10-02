@@ -11,9 +11,7 @@ import java.net.MalformedURLException;
 import java.util.List;
 
 public interface BirdImageService {
-    void createBirdImage(
-            Long productId,
-            List<MultipartFile> file) throws IOException;
+    void createBirdImage(Long productId, List<MultipartFile> file) throws IOException;
 
     void deleteImage(long imageId);
 

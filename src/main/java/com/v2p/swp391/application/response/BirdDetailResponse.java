@@ -2,7 +2,6 @@ package com.v2p.swp391.application.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.v2p.swp391.application.model.BirdImage;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
