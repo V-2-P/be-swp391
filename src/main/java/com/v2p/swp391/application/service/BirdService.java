@@ -11,7 +11,7 @@ import java.io.IOException;
 import java.util.List;
 
 public interface BirdService {
-    void createBird(Bird bird, MultipartFile imageFile, List<MultipartFile> images) throws IOException;
+    Bird createBird(Bird bird) ;
 
     List<Bird> getAllBirds();
 

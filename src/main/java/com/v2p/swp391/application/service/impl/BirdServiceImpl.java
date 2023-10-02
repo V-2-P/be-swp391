@@ -40,7 +40,7 @@ public class BirdServiceImpl implements BirdService {
 
 
     @Override
-    public void createBird(Bird bird, MultipartFile imageFile, List<MultipartFile> images) throws IOException {
+    public Bird createBird(Bird bird)  {
         Category existingCategory = categoryRepository
                 .findById(bird.getCategory().getId())
                 .orElseThrow(() ->
@@ -60,25 +60,9 @@ public class BirdServiceImpl implements BirdService {
         bird.setAge(bird.getAge());
         bird.setStatus(bird.isStatus());
         bird.setQuantity(bird.getQuantity());
-
-        if (imageFile != null && !imageFile.isEmpty()) {
-            String thumbnail = UploadImageUtils.storeFile(imageFile);
-            bird.setThumbnail(thumbnail);
-        }
-        if (images != null && images.size() > BirdImage.MAXIMUM_IMAGES_PER_BIRD) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Maximum image is" + BirdImage.MAXIMUM_IMAGES_PER_BIRD);
-        }
-        birdRepository.save(bird);
-        if (images != null && !images.isEmpty()) {
-            for (MultipartFile image : images) {
-                if (!image.isEmpty()) {
-                    BirdImage birdImage = new BirdImage();
-                    birdImage.setBird(bird);
-                    birdImage.setImageUrl(UploadImageUtils.storeFile(image));
-                    birdImageRepository.save(birdImage);
-                }
-            }
-        }
+        bird.setBirdImages(bird.getBirdImages());
+        bird.setThumbnail(bird.getThumbnail());
+        return birdRepository.save(bird);
 
     }
 

@@ -2,12 +2,15 @@ package com.v2p.swp391.application.controller;
 
 import com.v2p.swp391.application.model.Bird;
 
+import com.v2p.swp391.application.model.BirdImage;
 import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdDetailResponse;
 import com.v2p.swp391.application.response.BirdSearchResponse;
 import com.v2p.swp391.application.response.BirdResponse;
+import com.v2p.swp391.application.service.BirdImageService;
 import com.v2p.swp391.application.service.BirdService;
 import com.v2p.swp391.common.api.CoreApiResponse;
+import com.v2p.swp391.utils.UploadImageUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.v2p.swp391.application.mapper.BirdHttpMapper.INSTANCE;
@@ -27,15 +31,30 @@ import static com.v2p.swp391.application.mapper.BirdHttpMapper.INSTANCE;
 @RequiredArgsConstructor
 public class BirdController {
     private final BirdService birdService;
+    private final BirdImageService birdImageService;
 
     @PostMapping("")
-    public CoreApiResponse<BirdResponse> createBird(@Valid @ModelAttribute BirdRequest request,
+    public CoreApiResponse<Bird> createBird(@Valid @ModelAttribute BirdRequest request,
                                                     @RequestParam(name = "imageThumbnail", required = false) MultipartFile imageFile,
                                                     @RequestParam(name = "imagesFile", required = false) List<MultipartFile> images) throws IOException {
         Bird bird = INSTANCE.toModel(request);
-        birdService.createBird(bird, imageFile, images);
-        return CoreApiResponse.success(INSTANCE.toResponse(bird), "Create bird successfully");
+        if (imageFile != null && !imageFile.isEmpty()) {
+            bird.setThumbnail(UploadImageUtils.storeFile(imageFile));
+        }
 
+        if (images != null && !images.isEmpty()) {
+            List<BirdImage> birdImagesList = new ArrayList<>();
+            for (MultipartFile image : images) {
+                if (!image.isEmpty()) {
+                    BirdImage birdImage = new BirdImage();
+                    birdImage.setImageUrl(UploadImageUtils.storeFile(image));
+                    birdImagesList.add(birdImage);
+                }
+            }
+            bird.setBirdImages(birdImagesList);
+        }
+        birdService.createBird(bird);
+        return CoreApiResponse.success(bird, "Create bird successfully");
     }
 
     @GetMapping("/{id}")
