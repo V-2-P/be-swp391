@@ -56,4 +56,7 @@ public class Bird extends BaseEntity {
 
     @Column(name = "quantity")
     private int quantity;
+
+    @OneToMany(mappedBy = "bird", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BirdImage> birdImages;
 }

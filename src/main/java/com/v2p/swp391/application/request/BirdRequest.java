@@ -1,11 +1,7 @@
 package com.v2p.swp391.application.request;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Data
 @Getter
@@ -23,8 +19,10 @@ public class BirdRequest {
 
     private String description;
 
+    @Min(value = 1, message = "Category id must be greater than or equal to 1")
     private Long categoryId;
 
+    @Min(value = 1, message = "BirdType id must be greater than or equal to 1")
     private Long typeId;
 
     private boolean status;
@@ -40,10 +38,11 @@ public class BirdRequest {
 
     private String age;
 
+    @Min(value = 1, message = "Quantity must be greater than or equal to 1")
     private int quantity;
 
+    @Pattern(regexp = "female|male", message = "Gender must be female or male")
     private String gender;
-
 
     private String color;
 

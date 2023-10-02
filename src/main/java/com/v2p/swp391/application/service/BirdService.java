@@ -11,11 +11,13 @@ import java.io.IOException;
 import java.util.List;
 
 public interface BirdService {
-    void createBird(Bird bird,  MultipartFile imageFile) throws IOException;
+    void createBird(Bird bird, MultipartFile imageFile, List<MultipartFile> images) throws IOException;
 
     List<Bird> getAllBirds();
 
     Bird getBirdById(long id);
+
+    Bird getDetailBirdById(long id);
 
     List<Bird> findByCategoryId(Long categoryId);
 

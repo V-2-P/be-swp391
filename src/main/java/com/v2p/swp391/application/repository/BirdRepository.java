@@ -27,7 +27,7 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
             (@Param("categoryId") Long categoryId,
              @Param("typeId") Long typeId,
              @Param("keyword") String keyword, Pageable pageable);
-//    @Query("SELECT p FROM Bird p LEFT JOIN FETCH p.birdImages WHERE p.id = :birdId")
-//    Optional<Bird> getDetailBird(@Param("birdId") Long birdId);
+    @Query("SELECT p FROM Bird p LEFT JOIN FETCH p.birdImages WHERE p.id = :birdId")
+    Optional<Bird> getDetailBird(@Param("birdId") Long birdId);
 
 }
