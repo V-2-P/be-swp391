@@ -21,6 +21,10 @@ public class BookingDetail {
     private Booking booking;
 
     @ManyToOne
+    @JoinColumn(name = "bird_type_id")
+    private BirdType birdType;
+
+    @ManyToOne
     @JoinColumn(name = "father_bird_id")
     private Bird fatherBird;
 
