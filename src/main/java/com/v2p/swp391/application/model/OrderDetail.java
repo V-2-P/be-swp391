@@ -12,8 +12,12 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 public class OrderDetail {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @JoinColumn(name = "order_id")
-    @JsonBackReference
+    @ManyToOne
     private Order order;
 
     @ManyToOne
