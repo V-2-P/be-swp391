@@ -4,7 +4,7 @@ USE birdfarmshop;
 
 CREATE TABLE roles(
     id INT PRIMARY KEY AUTO_INCREMENT ,
-    name VARCHAR(20) NOT NULL 
+    name VARCHAR(20) NOT NULL
 );
 
 CREATE TABLE users(
@@ -71,8 +71,8 @@ CREATE TABLE bird_images(
     id INT PRIMARY KEY AUTO_INCREMENT,
     bird_id INT,
     FOREIGN KEY (bird_id) REFERENCES birds (id),
-    CONSTRAINT fk_product_images_bird_id 
-        FOREIGN KEY (bird_id) 
+    CONSTRAINT fk_product_images_bird_id
+        FOREIGN KEY (bird_id)
         REFERENCES birds (id) ON DELETE CASCADE,
     image_url VARCHAR(300)
 );
@@ -115,7 +115,7 @@ CREATE TABLE booking_detail(
 
 CREATE TABLE bird_pairing(
     new_bird_id INT,
-    booking_detail_id INT, 
+    booking_detail_id INT,
     status ENUM ('received','not_received'),
     created_at DATETIME,
     updated_at DATETIME,
@@ -168,7 +168,7 @@ CREATE TABLE order_details(
     FOREIGN KEY (bird_id) REFERENCES birds (id),
     number_of_products INT CHECK(number_of_products > 0)
 
-   
+
 );
 CREATE TABLE feedback(
     id INT PRIMARY KEY AUTO_INCREMENT,

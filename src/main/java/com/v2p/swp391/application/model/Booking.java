@@ -5,7 +5,10 @@ import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+<<<<<<< HEAD
 import java.util.Date;
+=======
+>>>>>>> origin/feature/model-02
 
 @Entity
 @Data
@@ -29,9 +32,9 @@ public class Booking extends BaseEntity{
 
     @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "booking_time")
-    private Date bookingTime;
+    private LocalDateTime bookingTime;
 
-    @Column(name = "phone_number",nullable = false, length = 100)
+    @Column(name = "phone_number",nullable = false, length = 10)
     private String phoneNumber;
 
     @Column(name = "shipping_address", length = 100)
