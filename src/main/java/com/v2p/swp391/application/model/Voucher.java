@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -27,8 +28,10 @@ public class Voucher extends BaseEntity{
     @Column(name = "description", length = 200)
     private String description;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
+
 
     private boolean status;
 }
