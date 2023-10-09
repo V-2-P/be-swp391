@@ -12,9 +12,8 @@ import java.time.LocalDate;
 @NoArgsConstructor
 public class VoucherRequest {
     @NotNull(message = "Discount cannot be empty")
-    @Min(value = 5, message = "Discount must be at least 5")
-    @Max(value = 50, message = "Discount must be at most 50")
-    private int discount;
+    @Min(value = 1000, message = "Discount must be at least 1000")
+    private float discount;
 
     @NotEmpty(message = "Voucher name cannot be empty")
     @Size(min = 5, max = 50, message = "Name must be between 10 and 50 characters")
@@ -25,6 +24,9 @@ public class VoucherRequest {
     @JsonProperty("expiration_date")
     private LocalDate expirationDate;
 
-    private boolean status;
+    private int amount;
+
+
 
 }
+

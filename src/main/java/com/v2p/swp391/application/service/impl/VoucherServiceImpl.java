@@ -21,7 +21,7 @@ public class VoucherServiceImpl implements VoucherService {
         if(voucherRepository.existsByName(voucher.getName())){
             throw new AppException(HttpStatus.BAD_REQUEST, "Voucher name already exists");
         }
-        voucher.setStatus(true);
+
         return voucherRepository.save(voucher);
     }
 
@@ -40,10 +40,6 @@ public class VoucherServiceImpl implements VoucherService {
     public Voucher updateVoucher(Long id, VoucherRequest voucher) {
         Voucher existingVoucher = getVoucherById(id);
         voucherMapper.updateVoucherFromRequest(voucher, existingVoucher);
-//        if(voucherRepository.existsByName(voucher.getName())){
-//            throw new AppException(HttpStatus.BAD_REQUEST, "Voucher name already exists");
-//        }
-
         return voucherRepository.save(existingVoucher);
     }
 

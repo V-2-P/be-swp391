@@ -2,6 +2,7 @@ package com.v2p.swp391.application.controller;
 
 
 import com.v2p.swp391.application.model.Voucher;
+
 import com.v2p.swp391.application.request.VoucherRequest;
 import com.v2p.swp391.application.service.VoucherService;
 import com.v2p.swp391.common.api.CoreApiResponse;
@@ -40,19 +41,19 @@ public class VoucherController {
     }
 
     @PutMapping("/{id}")
-    public CoreApiResponse<Voucher> updateCategory(
+    public CoreApiResponse<Voucher> updateVoucher(
             @PathVariable Long id,
             @RequestBody VoucherRequest request
     ){
         Voucher updateVoucher= voucherService.updateVoucher(id, request);
-        return CoreApiResponse.success(updateVoucher, "Update bird type successfully");
+        return CoreApiResponse.success(updateVoucher, "Update voucher successfully");
     }
 
     @DeleteMapping("/{id}")
-    public CoreApiResponse<?> deleteCategory(
+    public CoreApiResponse<?> deleteVoucher(
             @PathVariable Long id
     ){
         voucherService.deleteVoucher(id);
-        return CoreApiResponse.success("Delete category with id: " + id + " successfully");
+        return CoreApiResponse.success("Delete voucher with id: " + id + " successfully");
     }
 }

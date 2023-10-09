@@ -18,7 +18,7 @@ public class Voucher extends BaseEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int discount;
+    private float discount;
 
     @Column(name = "name", length = 100)
     private String name;
@@ -33,5 +33,5 @@ public class Voucher extends BaseEntity{
     private LocalDate expirationDate;
 
 
-    private boolean status;
+
 }
