@@ -25,13 +25,16 @@ public class Voucher extends BaseEntity{
 
     private int amount;
 
+    @JoinColumn(name = "min_value")
+    private float minValue;
+
+    @Column(name = "code", length = 50)
+    private String code;
+
     @Column(name = "description", length = 200)
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
-
-
-
 }

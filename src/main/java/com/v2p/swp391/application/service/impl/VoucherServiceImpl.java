@@ -18,10 +18,9 @@ public class VoucherServiceImpl implements VoucherService {
     private final VoucherHttpMapper voucherMapper;
     @Override
     public Voucher createVoucher(Voucher voucher) {
-        if(voucherRepository.existsByName(voucher.getName())){
-            throw new AppException(HttpStatus.BAD_REQUEST, "Voucher name already exists");
+        if(voucherRepository.existsByCode(voucher.getCode())){
+            throw new AppException(HttpStatus.BAD_REQUEST, "Voucher code already exists");
         }
-
         return voucherRepository.save(voucher);
     }
 
