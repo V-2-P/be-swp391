@@ -1,7 +1,9 @@
 package com.v2p.swp391.application.controller;
 
+import com.v2p.swp391.application.mapper.BookingDetailHttpMapper;
 import com.v2p.swp391.application.mapper.BookingHttpMapper;
 import com.v2p.swp391.application.model.Booking;
+import com.v2p.swp391.application.request.BookingDetailRequest;
 import com.v2p.swp391.application.request.BookingRequest;
 import com.v2p.swp391.application.service.impl.BookingServiceImpl;
 import com.v2p.swp391.common.api.CoreApiResponse;
@@ -23,11 +25,13 @@ public class BookingController {
     private final BookingServiceImpl bookingService;
 
     @PostMapping("")
-    public CoreApiResponse<?> createBooking(
-            @Valid @RequestBody BookingRequest bookingRequest,
-            BindingResult result
+    public CoreApiResponse<Booking> createBooking(
+            @Valid @RequestBody BookingRequest bookingRequest
     ){
-        Booking bookingRespone = bookingService.createBooking(INSTANCE.toModel(bookingRequest));
+        Booking bookingRespone = bookingService
+                .createBooking
+                        (BookingHttpMapper.INSTANCE.toModel(bookingRequest),
+                        BookingDetailHttpMapper.INSTANCE.toModel(bookingRequest.getBookingDetailRequest()));
         return CoreApiResponse.success(bookingRespone, "Insert booking sucessfully!");
     }
 
@@ -45,12 +49,30 @@ public class BookingController {
         return CoreApiResponse.success(booking);
     }
 
-    @PutMapping("/{id}")
-    public CoreApiResponse<Booking> updateBooking(
+    @PutMapping("/{id}/status")
+    public CoreApiResponse<Booking> updateStatusBooking(
             @Valid @PathVariable Long id,
-            @Valid @RequestBody BookingRequest bookingRequest
+            @Valid @RequestBody String status
     ){
-        Booking updatedBooking = bookingService.updateBooking(id, bookingRequest);
+        Booking updatedBooking = bookingService.updateStatusBooking(id, status);
+        return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
+    }
+
+    @PutMapping("/{id}/total")
+    public CoreApiResponse<Booking> updateTotalPaymentBooking(
+            @Valid @PathVariable Long id,
+            @Valid @RequestBody Float totalPayment
+    ){
+        Booking updatedBooking = bookingService.updateTotalPaymentBooking(id, totalPayment);
+        return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
+    }
+
+    @PutMapping("{id}/bookingtime")
+    public CoreApiResponse<Booking> updateBookingTime(
+        @Valid @PathVariable Long id,
+        @Valid @RequestParam String newTimescamp
+    ){
+        Booking updatedBooking = bookingService.updateTimeBooking(id, newTimescamp);
         return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
     }
 

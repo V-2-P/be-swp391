@@ -1,5 +1,7 @@
 package com.v2p.swp391.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -14,5 +16,14 @@ public class DateUtils {
         Duration nights = Duration.between(ldTarget.atStartOfDay(), ldSource.atStartOfDay());
 
         return nights.toDays();
+    }
+
+    public static Date parseTimestamp(String timestamp) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try {
+            return dateFormat.parse(timestamp);
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

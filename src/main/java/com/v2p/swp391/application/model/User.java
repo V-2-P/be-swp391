@@ -43,7 +43,4 @@ public class User  {
     private AuthProvider provider;
 
     private String providerId;
-
-    @NotNull
-    private int roleId;
 }

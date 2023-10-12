@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,13 +12,14 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Table(name = "booking_detail")
-public class BookingDetail {
+public class BookingDetail extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @OneToOne
     @JoinColumn(name = "booking_id")
+    @JsonBackReference
     private Booking booking;
 
     @ManyToOne

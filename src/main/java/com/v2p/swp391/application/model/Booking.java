@@ -1,14 +1,15 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
-<<<<<<< HEAD
 import java.util.Date;
-=======
->>>>>>> origin/feature/model-02
+import java.util.List;
 
 @Entity
 @Data
@@ -30,9 +31,10 @@ public class Booking extends BaseEntity{
     @Column(name = "fullname", length = 100)
     private String fullName;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "booking_time")
-    private LocalDateTime bookingTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date bookingTime;
 
     @Column(name = "phone_number",nullable = false, length = 10)
     private String phoneNumber;
@@ -56,4 +58,7 @@ public class Booking extends BaseEntity{
 
     @Column(name = "total_payment")
     private Float totalPayment;
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private BookingDetail bookingDetail;
 }
