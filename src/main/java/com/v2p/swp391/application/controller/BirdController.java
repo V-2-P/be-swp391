@@ -111,9 +111,9 @@ public class BirdController {
     }
 
     @DeleteMapping("/{id}")
-    public CoreApiResponse<?> deleteCategory(@PathVariable Long id) {
+    public CoreApiResponse<?> deleteBird(@PathVariable Long id) {
         birdService.deleteBird(id);
-        return CoreApiResponse.success("Delete category with id: " + id + " successfully");
+        return CoreApiResponse.success("Delete bird with id: " + id + " successfully");
     }
 
     @PostMapping("/uploadThumbnail/{birdId}")

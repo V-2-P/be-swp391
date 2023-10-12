@@ -18,6 +18,7 @@ public class OrderDetail {
 
     @JoinColumn(name = "order_id")
     @ManyToOne
+    @JsonBackReference
     private Order order;
 
     @ManyToOne
@@ -27,5 +28,7 @@ public class OrderDetail {
     @Column(name = "number_of_products", nullable = false)
     private int numberOfProducts;
 
+    @Column(name = "price", nullable = false)
+    private Float price;
 
 }
