@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -91,7 +92,7 @@ public class    BookingServiceImpl implements BookingService {
     @Override
     public Booking updateTimeBooking(Long bookingId, String dateString) {
         Booking existingBooking = getBookingById(bookingId);
-        Date parsedTimestamp = DateUtils.parseTimestamp(dateString);
+        LocalDateTime parsedTimestamp = DateUtils.parseTimestamp(dateString);
         existingBooking.setBookingTime(parsedTimestamp);
         return bookingRepository.save(existingBooking);
     }

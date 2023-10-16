@@ -1,15 +1,11 @@
 package com.v2p.swp391.application.controller;
 
-import com.v2p.swp391.application.model.Booking;
 import com.v2p.swp391.application.model.BookingDetail;
 import com.v2p.swp391.application.model.BookingDetailStatus;
-import com.v2p.swp391.application.request.BookingDetailRequest;
-import com.v2p.swp391.application.request.BookingRequest;
 import com.v2p.swp391.application.service.BookingDetailService;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
