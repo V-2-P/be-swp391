@@ -20,16 +20,4 @@ public class BirdType {
 
     @Column(name = "name", nullable = false)
     private String name;
-
-    @Override
-    public boolean equals(Object o) {
-        BirdType tmp = (BirdType) o;
-        if(this.getName().equals(tmp.getName())) return true;
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName());
-    }
 }

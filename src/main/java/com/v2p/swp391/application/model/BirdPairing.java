@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class BirdPairing extends BaseEntity{
 
     @ManyToOne
     @JoinColumn(name = "booking_detail_id")
+    @JsonBackReference
     private BookingDetail bookingDetail;
 
     @Column(name = "status")
