@@ -51,7 +51,7 @@ public class Booking extends BaseEntity{
     private User manager;
 
     @Column(name = "status")
-    private String status;
+    private BookingStatus status;
 
     @Column(name = "payment_deposit")
     private Float paymentDeposit;

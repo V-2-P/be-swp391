@@ -3,7 +3,6 @@ package com.v2p.swp391.application.service.impl;
 import com.v2p.swp391.application.model.*;
 import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.service.BookingDetailService;
-import com.v2p.swp391.common.constant.BookingDetailStatus;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class BookingDetailServiceImpl implements BookingDetailService {
@@ -22,11 +23,6 @@ public class BookingDetailServiceImpl implements BookingDetailService {
 
     @Override
     public BookingDetail createBookingDetail(Booking booking, BookingDetail bookingDetail) {
-//        Booking booking = bookingRepository
-//                        .findById(bookingDetail.getBooking().getId())
-//                        .orElseThrow(()
-//                                -> new ResourceNotFoundException("Booking", "id", bookingDetail.getBooking().getId())) ;
-
         BirdType birdType = birdTypeRepository
                         .findById(bookingDetail.getBirdType().getId())
                         .orElseThrow(()
@@ -41,7 +37,7 @@ public class BookingDetailServiceImpl implements BookingDetailService {
                         -> new ResourceNotFoundException("Bird", "id", bookingDetail.getMotherBird().getId()));
 
         bookingDetail.setBooking(booking);
-        bookingDetail.setStatus(BookingDetailStatus.WAITING);
+        bookingDetail.setStatus(BookingDetailStatus.Waiting);
         return bookingDetailRepository.save(bookingDetail);
     }
 
@@ -54,28 +50,20 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         return bookingDetail;
     }
 
-    @Override
-    public List<BookingDetail> getBookingDetailByBookingId(Long id) {
-        Booking booking = bookingRepository
-                .findById(id)
-                .orElseThrow(()
-                        -> new ResourceNotFoundException("Booking", "id", id));
-        return bookingDetailRepository.findByBookingId(id);
-    }
 
-    private boolean checkValidateStatus(BookingDetail bookingDetail, String status){
-        List<String> statuses = new ArrayList<String>();
-        statuses.add(BookingDetailStatus.WAITING);
-        statuses.add(BookingDetailStatus.IN_BREEDING_PROGRESS);
-        statuses.add(BookingDetailStatus.BROODING);
-        statuses.add(BookingDetailStatus.FLEDGLING);
-        statuses.add(BookingDetailStatus.FAILED);
+    private boolean checkValidateStatus(BookingDetail bookingDetail, BookingDetailStatus status){
+        List<Object> statuses = new ArrayList<Object>();
+        statuses.add(BookingDetailStatus.Waiting);
+        statuses.add(BookingDetailStatus.In_Breeding_Progress);
+        statuses.add(BookingDetailStatus.Brooding);
+        statuses.add(BookingDetailStatus.Fledgling);
+        statuses.add(BookingDetailStatus.Failed);
 
         int bookingDetailStatusIndex = -1;
         int statusIndex = -1;
         for (int i = 0; i < statuses.size(); i++){
-            if(statuses.get(i).equalsIgnoreCase(status)) statusIndex = i;
-            if(statuses.get(i).equalsIgnoreCase(bookingDetail.getStatus())) bookingDetailStatusIndex = i;
+            if(statuses.get(i).equals(status)) statusIndex = i;
+            if(statuses.get(i).equals(bookingDetail.getStatus())) bookingDetailStatusIndex = i;
         }
 
         if(statusIndex == -1 || statusIndex < bookingDetailStatusIndex)
@@ -84,7 +72,7 @@ public class BookingDetailServiceImpl implements BookingDetailService {
     }
 
     @Override
-    public BookingDetail updateBookingDetailStatus(Long id, String status) {
+    public BookingDetail updateBookingDetailStatus(Long id, BookingDetailStatus status) {
         BookingDetail existingBookingDetail = this.getBookingDetailById(id);
         if(!checkValidateStatus(existingBookingDetail, status))
             throw new AppException(HttpStatus.BAD_REQUEST, "Status is wrong format");
@@ -96,6 +84,7 @@ public class BookingDetailServiceImpl implements BookingDetailService {
     @Override
     public BookingDetail deleteBookingDetail(Long id) {
         BookingDetail bookingDetail = this.getBookingDetailById(id);
+        bookingDetail.getBooking().setStatus(BookingStatus.Cancelled);
         bookingDetailRepository.deleteById(id);
         return bookingDetail;
     }

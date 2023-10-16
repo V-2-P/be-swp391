@@ -35,5 +35,8 @@ public class BookingDetail extends BaseEntity{
     private Bird motherBird;
 
     @Column(name = "status")
-    private String status;
+    private BookingDetailStatus status;
+
+    @OneToOne(mappedBy = "bookingDetail", cascade = CascadeType.ALL)
+    private BirdPairing birdPairing;
 }
