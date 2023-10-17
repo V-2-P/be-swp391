@@ -4,7 +4,6 @@ import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
@@ -37,16 +36,14 @@ public class OpenAPIConfig {
         Contact contact = new Contact();
         contact.setEmail("vuthase172485@fpt.edu.vn");
         contact.setName("Truong Hoang Anh Vu");
-        contact.setUrl("https://www.pasanabeysekara.com");
+        contact.setUrl("https://birdfarmshop.techx.id.vn");
 
-        License mitLicense = new License().name("MIT License").url("https://choosealicense.com/licenses/mit/");
 
         Info info = new Info()
                 .title("Demo BE-391 BirdFarmShop API")
                 .version("1.0.0")
                 .contact(contact)
-                .description("This API exposes endpoints to manage demo.").termsOfService("https://www.pasanabeysekara.com")
-                .license(mitLicense);
+                .description("This API exposes endpoints to manage demo.");
 
         return new OpenAPI().info(info).servers(List.of(devServer, prodServer))
                 .addSecurityItem(new SecurityRequirement().
