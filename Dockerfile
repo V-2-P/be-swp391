@@ -1,15 +1,24 @@
-# syntax=docker/dockerfile:1
-
-#Which "official Java image" ?
-FROM openjdk:17-oracle
-#working directory
+#Stage 1
+# initialize build and set base image for first stage
+FROM maven:3.8.3-openjdk-17 as stage1
+# speed up Maven JVM a bit
+ENV MAVEN_OPTS="-XX:+TieredCompilation -XX:TieredStopAtLevel=1"
+# set working directory
 WORKDIR /app
-#copy from your Host(PC, laptop) to container
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-#Run this inside the image
-RUN chmod +x ./mvnw
-RUN ./mvnw dependency:go-offline
-COPY src ./src
-#run inside container
-CMD ["./mvnw", "spring-boot:run"]
+# copy just pom.xml
+COPY pom.xml .
+# go-offline using the pom.xml
+RUN mvn dependency:go-offline
+# copy your other files
+COPY ./src ./src
+# compile the source code and package it in a jar file
+RUN mvn clean install -Dmaven.test.skip=true
+#Stage 2
+# set base image for second stage
+FROM openjdk:17-alpine
+# set deployment directory
+WORKDIR /app
+# copy over the built artifact from the maven image
+COPY --from=stage1 /app/target/*.jar /app
+
+ENTRYPOINT ["java", "-jar", "swp391-0.0.1-SNAPSHOT.jar"]
