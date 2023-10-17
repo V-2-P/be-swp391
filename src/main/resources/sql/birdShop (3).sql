@@ -4,14 +4,14 @@ USE birdfarmshop;
 
 CREATE TABLE roles(
     id INT PRIMARY KEY AUTO_INCREMENT ,
-    name VARCHAR(20) NOT NULL
+    name VARCHAR(20) NOT NULL 
 );
 
 CREATE TABLE users(
     id INT PRIMARY KEY AUTO_INCREMENT,
     fullname VARCHAR(100) DEFAULT '',
-    phone_number VARCHAR(10) NOT NULL ,
-    email VARCHAR(150) ,
+    phone_number VARCHAR(10) ,
+    email VARCHAR(150) NOT NULL ,
     address VARCHAR(200) DEFAULT '',
     password VARCHAR(100) DEFAULT '',
     image_url VARCHAR(200),
@@ -71,8 +71,8 @@ CREATE TABLE bird_images(
     id INT PRIMARY KEY AUTO_INCREMENT,
     bird_id INT,
     FOREIGN KEY (bird_id) REFERENCES birds (id),
-    CONSTRAINT fk_product_images_bird_id
-        FOREIGN KEY (bird_id)
+    CONSTRAINT fk_product_images_bird_id 
+        FOREIGN KEY (bird_id) 
         REFERENCES birds (id) ON DELETE CASCADE,
     image_url VARCHAR(300)
 );
@@ -86,6 +86,7 @@ CREATE TABLE booking(
     shipping_address VARCHAR(200),
     shipping_method VARCHAR(100),
     payment_method VARCHAR(100),
+    booking_time DATETIME,
     manager_id INT NOT NULL,
     status ENUM ('pending', 'confirmed', 'completed', 'cancelled'),
     payment_deposit FLOAT CHECK (payment_deposit >= 0),
@@ -114,8 +115,9 @@ CREATE TABLE booking_detail(
 );
 
 CREATE TABLE bird_pairing(
+    id  INT AUTO_INCREMENT,
     new_bird_id INT,
-    booking_detail_id INT,
+    booking_detail_id INT, 
     status ENUM ('received','not_received'),
     created_at DATETIME,
     updated_at DATETIME,
@@ -128,7 +130,7 @@ CREATE TABLE bird_pairing(
 
  CREATE TABLE vouchers(
     id INT PRIMARY KEY AUTO_INCREMENT,
-    discount INT,
+    discount FLOAT(discount >= 0),
     name VARCHAR(100),
     amount INT,
     description VARCHAR (200),
@@ -151,6 +153,7 @@ CREATE TABLE orders (
     shipping_date DATE,
     tracking_number VARCHAR(100),
     payment_method VARCHAR(100),
+    received_date DATETIME;
     voucher_id INT,
     created_at DATETIME,
     updated_at DATETIME,
@@ -168,18 +171,35 @@ CREATE TABLE order_details(
     FOREIGN KEY (bird_id) REFERENCES birds (id),
     number_of_products INT CHECK(number_of_products > 0)
 
-
+   
 );
-CREATE TABLE feedback(
+-- CREATE TABLE feedback(
+--     id INT PRIMARY KEY AUTO_INCREMENT,
+--     comment VARCHAR(350),
+--     rating INT,
+--     order_id INT,
+--     created_at DATETIME,
+--     updated_at DATETIME,
+--     FOREIGN KEY (order_id) REFERENCES orders (id)
+-- );
+CREATE TABLE feedbacks (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    comment VARCHAR(350),
-    rating INT,
     order_id INT,
+    FOREIGN KEY (order_id) REFERENCES orders(id)
+);
+
+CREATE TABLE feedback_birds (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    rating INT,
+    comment VARCHAR(350),
+    bird_id INT,
+    feedback_id INT,
     created_at DATETIME,
     updated_at DATETIME,
-    FOREIGN KEY (order_id) REFERENCES orders (id)
+    FOREIGN KEY (bird_id) REFERENCES birds(id),
+    FOREIGN KEY (feedback_id) REFERENCES feedback(id)
 );
 
-ALTER TABLE booking
-ADD booking_time DATETIME;
+ALTER TABLE booking_detail
+MODIFY COLUMN status ENUM('Waiting', 'In_Breeding_Progress', 'Brooding', 'Fledgling', 'Failed');
 

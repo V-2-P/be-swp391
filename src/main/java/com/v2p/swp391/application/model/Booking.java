@@ -1,10 +1,11 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Data
@@ -26,8 +27,9 @@ public class Booking extends BaseEntity{
     @Column(name = "fullname", length = 100)
     private String fullName;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Column(name = "booking_time")
+    @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime bookingTime;
 
     @Column(name = "phone_number",nullable = false, length = 10)
@@ -45,11 +47,14 @@ public class Booking extends BaseEntity{
     private User manager;
 
     @Column(name = "status")
-    private String status;
+    private BookingStatus status;
 
     @Column(name = "payment_deposit")
     private Float paymentDeposit;
 
     @Column(name = "total_payment")
     private Float totalPayment;
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    private BookingDetail bookingDetail;
 }

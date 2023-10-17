@@ -3,6 +3,8 @@ package com.v2p.swp391.application.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Entity
 @Data
 @Getter

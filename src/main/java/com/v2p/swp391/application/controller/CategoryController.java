@@ -21,7 +21,7 @@ public class CategoryController {
     @PostMapping("")
     public CoreApiResponse<Category> createCategory(
             @Valid @RequestBody CategoryRequest categoryRequest
-            ){
+    ){
             Category categoryResponse = categoryService.createCategory(INSTANCE.toModel(categoryRequest));
             return CoreApiResponse.success(categoryResponse,"Insert category successfully");
     }
