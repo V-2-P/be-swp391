@@ -41,6 +41,9 @@ public class Order extends BaseEntity {
     @Column(name = "total_money")
     private Float totalMoney;
 
+    @Column(name = "total_payment")
+    private Float totalPayment;
+
     @Column(name = "shipping_method")
     private String shippingMethod;
 
@@ -56,13 +59,18 @@ public class Order extends BaseEntity {
     @Column(name = "payment_method")
     private String paymentMethod;
 
-    @ManyToOne
+    @Column(name = "received_date")
+    private LocalDate receivedDate;
+
+    @Column(name = "active")
+    private Boolean active;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "voucher_id")
-    private Voucher voucherId;
+    private Voucher voucher;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private List<OrderDetail> orderDetails;
-
 
 }
