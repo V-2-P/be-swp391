@@ -4,6 +4,7 @@ package com.v2p.swp391.application.controller;
 import com.v2p.swp391.application.model.Order;
 
 
+import com.v2p.swp391.application.model.OrderStatus;
 import com.v2p.swp391.application.request.OrderRequest;
 import com.v2p.swp391.application.request.ShippingOrderRequest;
 import com.v2p.swp391.application.response.OrderPageResponse;
@@ -47,9 +48,9 @@ public class OrderController {
 
     @GetMapping("")
     public CoreApiResponse<OrderPageResponse> getListOrders(
-            @RequestParam(defaultValue = "") String status,
+            @RequestParam(defaultValue = "") OrderStatus status,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10")int limit){
+            @RequestParam(defaultValue = "10") int limit){
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
                 Sort.by("createdAt").ascending()

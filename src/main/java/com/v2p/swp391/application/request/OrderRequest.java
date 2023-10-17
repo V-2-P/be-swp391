@@ -15,31 +15,31 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequest {
-    @JsonProperty("user_id")
+    @JsonProperty("userId")
     @Min(value = 1, message = "User's ID must be > 0")
     private Long userId;
 
-    @JsonProperty("fullname")
+    @JsonProperty("fullName")
     private String fullName;
 
-    @JsonProperty("phone_number")
+    @JsonProperty("phoneNumber")
     @NotBlank(message = "Phone number is required")
     @Size(min = 10, message = "Phone number must be 10 characters")
     private String phoneNumber;
 
     private String note;
 
-    @JsonProperty("shipping_address")
+    @JsonProperty("shippingAddress")
     private String shippingAddress;
 
-    @JsonProperty("payment_method")
+    @JsonProperty("paymentMethod")
     private String paymentMethod;
 
-//    @Min(value = 1, message = "Voucher ID must be > 0")
+    @Min(value = 1, message = "Voucher ID must be > 0")
     @JsonProperty("voucher")
     private String voucherId;
 
-    @JsonProperty("cart_items")
+    @JsonProperty("cartItems")
     private List<CartItemRequest> cartItems;
 
 }

@@ -13,11 +13,11 @@ import lombok.*;
 public class ShippingOrderRequest {
 
     @NotBlank(message = "Shipping method is required")
-    @JsonProperty("shipping_method")
+    @JsonProperty("shippingMethod")
     private String shippingMethod;
 
 
-    @JsonProperty("tracking_number")
+    @JsonProperty("trackingNumber")
     private String trackingNumber;
 
 

@@ -1,6 +1,7 @@
 package com.v2p.swp391.application.response;
 
 
+import com.v2p.swp391.application.model.OrderStatus;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -35,7 +36,7 @@ public class OrderResponse {
 
     private LocalDate orderDate;
 
-    private String status;
+    private OrderStatus status;
 
     private String paymentMethod;
 
