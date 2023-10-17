@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CartItemRequest {
-    @JsonProperty("bird_id")
+    @JsonProperty("birdId")
     private Long productId;
 
     @JsonProperty("quantity")
