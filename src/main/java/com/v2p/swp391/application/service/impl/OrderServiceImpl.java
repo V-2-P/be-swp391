@@ -11,8 +11,10 @@ import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -73,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
 
         order.setTotalPayment(totalPayment);
         order.setOrderDate(LocalDate.now());
-        order.setStatus(OrderStatus.PENDING);
+        order.setStatus(OrderStatus.pending);
         order.setOrderDetails(orderDetails);
         orderRepository.save(order);
         useVoucher.setOrder(order);
@@ -96,9 +98,9 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Page<OrderResponse> getListOrder(String status, PageRequest pageRequest) {
-        Page<Order> orderPage;
-        orderPage = orderRepository.searchOrders(status, pageRequest);
+    public Page<OrderResponse> getListOrder(OrderStatus status, PageRequest pageRequest) {
+        List<Order> orders=orderRepository.findByStatus(status);
+        Page<Order> orderPage= new PageImpl<>(orders,pageRequest,orders.size());
         return orderPage.map(orderMapper::toResponse);
     }
 
@@ -108,21 +110,21 @@ public class OrderServiceImpl implements OrderService {
         existingOrder.setShippingMethod(order.getShippingMethod());
         existingOrder.setTrackingNumber(order.getTrackingNumber());
         existingOrder.setShippingDate(LocalDate.now());
-        existingOrder.setStatus(OrderStatus.SHIPPING);
+        existingOrder.setStatus(OrderStatus.shipping);
         return orderRepository.save(existingOrder);
     }
 
     @Override
     public Order confirmOrder(Long id) {
         Order existingOrder = getOrder(id);
-        existingOrder.setStatus(OrderStatus.PROCESSING);
+        existingOrder.setStatus(OrderStatus.processing);
         return orderRepository.save(existingOrder);
     }
 
     @Override
     public Order deliveredOrder(Long id) {
         Order existingOrder = getOrder(id);
-        existingOrder.setStatus(OrderStatus.DELIVERED);
+        existingOrder.setStatus(OrderStatus.delivered);
         existingOrder.setActive(false);
         existingOrder.setReceivedDate(LocalDate.now());
         return orderRepository.save(existingOrder);
@@ -132,14 +134,14 @@ public class OrderServiceImpl implements OrderService {
     public void deleteOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
-        if (OrderStatus.SHIPPING.equals(order.getStatus())) {
+        if (OrderStatus.shipping.equals(order.getStatus())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Cannot cancel order with status SHIPPING");
         }
-        if (OrderStatus.CANCELLED.equals(order.getStatus())) {
+        if (OrderStatus.cancelled.equals(order.getStatus())) {
             throw new AppException(HttpStatus.BAD_REQUEST, "Order has been cancelled");
         }
         order.setActive(false);
-        order.setStatus(OrderStatus.CANCELLED);
+        order.setStatus(OrderStatus.cancelled);
         orderRepository.save(order);
         List<OrderDetail> orderDetails = order.getOrderDetails();
         for (OrderDetail orderDetail : orderDetails) {
