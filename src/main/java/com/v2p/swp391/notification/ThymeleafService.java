@@ -1,5 +1,7 @@
 package com.v2p.swp391.notification;
 
+import com.v2p.swp391.application.model.User;
+
 public interface ThymeleafService {
-    String getContent();
+    String getVerifyContent(User user, String url);
 }

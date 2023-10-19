@@ -225,4 +225,6 @@ CREATE TABLE used_vouchers(
 
 );
 
+ALTER TABLE booking
+ADD booking_time DATETIME;
 

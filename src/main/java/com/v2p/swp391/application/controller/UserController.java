@@ -6,6 +6,7 @@ import com.v2p.swp391.common.api.CoreApiResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import static com.v2p.swp391.application.mapper.UserHttpMapper.INSTANCE;
@@ -17,9 +18,21 @@ import static com.v2p.swp391.application.mapper.UserHttpMapper.INSTANCE;
 public class UserController {
 
     private final UserService userService;
+
     @PostMapping("")
     public CoreApiResponse<?> createUser(@Valid @RequestBody UserRequest request){
         userService.create(INSTANCE.toModel(request));
         return CoreApiResponse.success("User was created");
+    }
+
+    @GetMapping("/admin")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('STAFF')")
+    public String userAccess() {
+        return "User Content.";
+    }
+    @GetMapping("/customer")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public String customerAccess() {
+        return "Customer Content.";
     }
 }

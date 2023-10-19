@@ -10,4 +10,6 @@ import java.util.List;
 public interface AuthService {
     AuthResponse signIn(LoginRequest request);
     void signUp(SignUpRequest request);
+    void verify(Long userId,String token);
+    String refresh(String accessToken);
 }
