@@ -26,5 +26,6 @@ public class BirdPairing extends BaseEntity{
     private BookingDetail bookingDetail;
 
     @Column(name = "status")
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private BirdPairingStatus status;
 }

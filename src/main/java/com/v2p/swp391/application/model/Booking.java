@@ -47,6 +47,7 @@ public class Booking extends BaseEntity{
     private User manager;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
     @Column(name = "payment_deposit")
