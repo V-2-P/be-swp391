@@ -2,6 +2,7 @@ package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.BookingHttpMapper;
 import com.v2p.swp391.application.model.*;
+import com.v2p.swp391.application.repository.BookingDetailRepository;
 import com.v2p.swp391.application.repository.BookingRepository;
 import com.v2p.swp391.application.repository.UserRepository;
 import com.v2p.swp391.application.service.BookingDetailService;
@@ -25,6 +26,7 @@ public class    BookingServiceImpl implements BookingService {
     private final BookingRepository bookingRepository;
     private final UserRepository userRepository;
     private final BookingDetailService bookingDetailService;
+    private final BookingDetailRepository bookingDetailRepository;
     private final BookingHttpMapper bookingMapper;
 
     @Override
@@ -54,7 +56,9 @@ public class    BookingServiceImpl implements BookingService {
         List<Object> statuses = new ArrayList<Object>();
         statuses.add(BookingStatus.Pending);
         statuses.add(BookingStatus.Confirmed);
-        statuses.add(BookingStatus.Completed);
+        statuses.add(BookingStatus.Preparing);
+        statuses.add(BookingStatus.Shipping);
+        statuses.add(BookingStatus.Delivered);
         statuses.add(BookingStatus.Cancelled);
 
         int bookingStatusIndex = -1;
@@ -75,8 +79,12 @@ public class    BookingServiceImpl implements BookingService {
         Booking existingBooking = getBookingById(bookingId);
         if(!checkFormatStatus(existingBooking, status))
             throw new AppException(HttpStatus.BAD_REQUEST, "Status is wrong format");
-        if(status.equals(BookingStatus.Confirmed))
+
+        if(status.equals(BookingStatus.Confirmed)){
             existingBooking.getBookingDetail().setStatus(BookingDetailStatus.In_Breeding_Progress);
+            bookingDetailRepository.save(existingBooking.getBookingDetail());
+        }
+
         existingBooking.setStatus(status);
         return bookingRepository.save(existingBooking);
     }

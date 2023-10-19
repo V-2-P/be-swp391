@@ -19,6 +19,9 @@ public class BookingDetailServiceImpl implements BookingDetailService {
     private final BookingRepository bookingRepository;
     private final BirdTypeRepository birdTypeRepository;
     private final BirdRepository birdRepository;
+    private final CategoryRepository categoryRepository;
+    private final BirdPairingRepository birdPairingRepository;
+    private final BirdParingServiceImpl birdParingService;
 
     @Override
     public BookingDetail createBookingDetail(Booking booking, BookingDetail bookingDetail) {
@@ -55,7 +58,7 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         statuses.add(BookingDetailStatus.Waiting);
         statuses.add(BookingDetailStatus.In_Breeding_Progress);
         statuses.add(BookingDetailStatus.Brooding);
-        statuses.add(BookingDetailStatus.Fledgling);
+        statuses.add(BookingDetailStatus.Fledgling_All);
         statuses.add(BookingDetailStatus.Failed);
 
         int bookingDetailStatusIndex = -1;
@@ -75,8 +78,13 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         BookingDetail existingBookingDetail = this.getBookingDetailById(id);
         if(!checkValidateStatus(existingBookingDetail, status))
             throw new AppException(HttpStatus.BAD_REQUEST, "Status is wrong format");
-        
-        existingBookingDetail.setStatus(status);
+        if(status.equals(BookingDetailStatus.Brooding)){
+            BirdPairing newBirdPairing = new BirdPairing();
+            newBirdPairing.setBookingDetail(existingBookingDetail);
+            existingBookingDetail.setStatus(status);
+
+            birdParingService.createBirdPairing(newBirdPairing);
+        }
         return bookingDetailRepository.save(existingBookingDetail);
     }
 

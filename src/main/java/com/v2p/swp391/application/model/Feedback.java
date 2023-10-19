@@ -3,25 +3,24 @@ package com.v2p.swp391.application.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
-@Data
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "feedback")
-public class Feedback extends BaseEntity{
+@Table(name = "feedbacks")
+public class Feedback {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "comment", length = 350)
-    private String comment;
-
-    private int rating;
-
-    @ManyToOne
+    @OneToOne
     @JoinColumn(name = "order_id")
     private Order order;
+
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FeedbackBird> feedbackBirds;
 }

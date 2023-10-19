@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Data
 @Getter
@@ -35,8 +37,9 @@ public class BookingDetail extends BaseEntity{
     private Bird motherBird;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private BookingDetailStatus status;
 
-    @OneToOne(mappedBy = "bookingDetail", cascade = CascadeType.ALL)
-    private BirdPairing birdPairing;
+    @OneToMany(mappedBy = "bookingDetail", cascade = CascadeType.ALL)
+    private List<BirdPairing> birdPairing;
 }

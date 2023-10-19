@@ -10,22 +10,23 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "bird_pairing")
-public class BirdPairing extends BaseEntity{
+@Table(name = "feedback_birds")
+public class FeedbackBird extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "new_bird_id")
-    private Bird newBird;
+    @JoinColumn(name = "bird_id")
+    private Bird bird;
+
+    @Column(name = "comment", length = 350)
+    private String comment;
+
+    private int rating;
 
     @ManyToOne
-    @JoinColumn(name = "booking_detail_id")
+    @JoinColumn(name = "feedback_id")
     @JsonBackReference
-    private BookingDetail bookingDetail;
-
-    @Column(name = "status")
-    @Enumerated(EnumType.STRING)
-    private BirdPairingStatus status;
+    private Feedback feedback;
 }
