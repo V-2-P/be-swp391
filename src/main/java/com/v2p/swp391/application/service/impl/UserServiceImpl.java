@@ -28,7 +28,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void create(User user) {
         user.setEmailVerified(true);
-        user.setProvider(Image.DEFAULT_AUTH_PROVIDER);
+//        user.setProvider(Image.DEFAULT_AUTH_PROVIDER);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setImageUrl(Image.USER_IMAGE_PATH+Image.DEFAULT_AVATAR);
 
