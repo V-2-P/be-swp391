@@ -4,6 +4,6 @@ public enum BookingDetailStatus {
     Waiting,
     In_Breeding_Progress,
     Brooding,
-    Fledgling,
+    Fledgling_All,
     Failed
 }
