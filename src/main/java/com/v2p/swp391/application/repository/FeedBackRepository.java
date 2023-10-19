@@ -10,4 +10,7 @@ import java.util.List;
 
 public interface FeedBackRepository extends JpaRepository<Feedback, Long> {
     List<Feedback> findByOrderId(Long orderId);
+    boolean existsByOrderId(Long orderId);
+
+
 }
