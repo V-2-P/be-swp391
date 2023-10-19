@@ -10,6 +10,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -37,6 +38,14 @@ public class GlobalExceptionHandler {
     public CoreApiResponse<?> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
         String errorMessage = "Invalid request format";
         return CoreApiResponse.error(HttpStatus.BAD_REQUEST,errorMessage);
+    }
+
+
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    public CoreApiResponse<?> handleMissingRequestParam(MissingServletRequestParameterException e) {
+        String paramName = e.getParameterName();
+        String errorMessage = "Missing or invalid request parameter: " + paramName;
+        return CoreApiResponse.error(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler({Exception.class,AppException.class, ResourceNotFoundException.class,AccessDeniedException.class, AuthenticationException.class})
