@@ -101,6 +101,10 @@ public class AuthServiceImpl implements AuthService {
         user.setImageUrl(Image.USER_IMAGE_PATH+Image.DEFAULT_AVATAR);
         user.setEmailVerified(false);
         user.setRoleEntity(RoleEntity.builder().id(Long.valueOf(Role.CUSTOMER)).build());
+        user.setAddress(request.getAddress());
+        user.setDob(request.getDob());
+        user.setPhoneNumber(request.getPhone());
+
         userRepository.save(user);
 
         sendVerifyMail(user);

@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
@@ -48,11 +49,14 @@ public class GlobalExceptionHandler {
         return CoreApiResponse.error(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
-    @ExceptionHandler({Exception.class,AppException.class, ResourceNotFoundException.class,AccessDeniedException.class, AuthenticationException.class})
+    @ExceptionHandler({Exception.class,AppException.class, BadCredentialsException.class, ResourceNotFoundException.class,AccessDeniedException.class, AuthenticationException.class})
     public CoreApiResponse<?> handleCoreException(Exception error) {
         if(error instanceof AppException){
             AppException appException =(AppException) error;
             return CoreApiResponse.error(HttpStatus.valueOf(appException.getCode()), appException.getMessage(),appException.getData());
+        }else if(error instanceof BadCredentialsException){
+            BadCredentialsException badCredentialsException = (BadCredentialsException) error;
+            return CoreApiResponse.error(HttpStatus.BAD_REQUEST,"Email hoặc password không chính xác");
         }else if(error instanceof ResourceNotFoundException){
             ResourceNotFoundException resourceException = (ResourceNotFoundException) error;
             return CoreApiResponse.error(HttpStatus.NOT_FOUND, resourceException.getMessage());
@@ -60,7 +64,8 @@ public class GlobalExceptionHandler {
             AccessDeniedException accessDeniedException = (AccessDeniedException) error;
             return CoreApiResponse.error(HttpStatus.FORBIDDEN, accessDeniedException.getMessage());
         }else if(error instanceof AuthenticationException){
-            return CoreApiResponse.error(HttpStatus.UNAUTHORIZED, "JWT token is required.");
+            AuthenticationException authenticationException = (AuthenticationException) error;
+            return CoreApiResponse.error(HttpStatus.UNAUTHORIZED, authenticationException.getMessage());
         }
         log.error("An error occurred: " + error.getMessage(), error);
         return CoreApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,"Unknown error");

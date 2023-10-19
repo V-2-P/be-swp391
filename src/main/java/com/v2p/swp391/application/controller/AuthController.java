@@ -59,6 +59,7 @@ public class AuthController {
         // expires in 15 minutes
         cookie.setMaxAge(appProperties.getAuth().getAccessTokenExpirationMsec());
         cookie.setHttpOnly(true);
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         return CoreApiResponse.success(res);

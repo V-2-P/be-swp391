@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -46,6 +46,6 @@ public class User  {
     private Boolean emailVerified = false;
 
     @Column(name = "date_of_birth")
-    private LocalDateTime dob;
+    private LocalDate dob;
 
 }
