@@ -53,7 +53,7 @@ public class OrderController {
             @RequestParam(defaultValue = "10") int limit){
         PageRequest pageRequest = PageRequest.of(
                 page, limit,
-                Sort.by("createdAt").ascending()
+                Sort.by("createdAt").descending()
         );
         Page<OrderResponse> orderPage = orderService.getListOrder(status,pageRequest);
         int totalPages= orderPage.getTotalPages();

@@ -6,6 +6,7 @@ import com.v2p.swp391.application.model.OrderDetail;
 import com.v2p.swp391.application.request.OrderRequest;
 import com.v2p.swp391.application.request.ShippingOrderRequest;
 
+import com.v2p.swp391.application.response.OrderDashBoardResponse;
 import com.v2p.swp391.application.response.OrderDetailResponse;
 import com.v2p.swp391.application.response.OrderResponse;
 import org.mapstruct.*;
@@ -28,6 +29,10 @@ public interface OrderHttpMapper {
     @Mapping(source = "voucher.discount", target = "discount")
     OrderResponse toResponse(Order order);
 
+    @Mapping(source = "fullName", target = "userName")
+    @Mapping(source = "totalPayment", target = "amount")
+    @Mapping(source = "order.id", target = "invoive")
+    OrderDashBoardResponse toResponseDashboard(Order order);
 
     @Mapping(source = "bird.id", target = "bird")
     @Mapping(source = "orderDetails", target = "orderDetails")

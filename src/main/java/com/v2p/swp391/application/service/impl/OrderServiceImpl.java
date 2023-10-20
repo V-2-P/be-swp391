@@ -99,8 +99,8 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Page<OrderResponse> getListOrder(OrderStatus status, PageRequest pageRequest) {
-        List<Order> orders=orderRepository.findByStatus(status);
-        Page<Order> orderPage= new PageImpl<>(orders,pageRequest,orders.size());
+        Page<Order> orderPage;
+        orderPage = orderRepository.findByStatus(status, pageRequest);
         return orderPage.map(orderMapper::toResponse);
     }
 
@@ -192,5 +192,9 @@ public class OrderServiceImpl implements OrderService {
 
         return discount;
     }
+
+
+
+
 
 }
