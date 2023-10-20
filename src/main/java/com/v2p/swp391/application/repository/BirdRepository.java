@@ -30,4 +30,13 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
     @Query("SELECT p FROM Bird p LEFT JOIN FETCH p.birdImages WHERE p.id = :birdId")
     Optional<Bird> getDetailBird(@Param("birdId") Long birdId);
 
+    @Query("SELECT od.bird FROM OrderDetail od " +
+            "GROUP BY od.bird " +
+            "ORDER BY SUM(od.numberOfProducts) DESC " +
+            "LIMIT 4")
+    List<Bird> findBestSeller();
+
+    @Query("SELECT b FROM Bird b ORDER BY b.createdAt DESC LIMIT 20")
+    List<Bird> findTop20();
+
 }

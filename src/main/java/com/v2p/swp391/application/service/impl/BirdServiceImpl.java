@@ -8,6 +8,7 @@ import com.v2p.swp391.application.repository.BirdRepository;
 import com.v2p.swp391.application.repository.BirdTypeRepository;
 import com.v2p.swp391.application.repository.CategoryRepository;
 import com.v2p.swp391.application.request.BirdRequest;
+import com.v2p.swp391.application.response.BirdRecommendResponse;
 import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
 import com.v2p.swp391.exception.ResourceNotFoundException;
@@ -21,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -138,5 +141,12 @@ public class BirdServiceImpl implements BirdService {
         existingBird.setThumbnail(UploadImageUtils.storeFile(imageFile));
         birdRepository.save(existingBird);
     }
+    public BirdRecommendResponse getRecommendBird() {
+        List<Bird> bestSellers = birdRepository.findBestSeller();
+        List<Bird> top20 = birdRepository.findTop20();
+        return new BirdRecommendResponse(birdMapper.toListResponses(bestSellers)
+                                        , birdMapper.toListResponses(top20));
+    }
+
 
 }

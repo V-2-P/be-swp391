@@ -5,6 +5,7 @@ import com.v2p.swp391.application.model.Bird;
 import com.v2p.swp391.application.model.BirdImage;
 import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdDetailResponse;
+import com.v2p.swp391.application.response.BirdRecommendResponse;
 import com.v2p.swp391.application.response.BirdSearchResponse;
 import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
@@ -123,6 +124,12 @@ public class BirdController {
         birdService.uploadThumbnail(birdId, imageFile);
         return CoreApiResponse.success("Thumbnail uploaded successfully.");
 
+    }
+
+    @GetMapping("/recommendation")
+    public CoreApiResponse<BirdRecommendResponse> getRecommendBird() {
+        BirdRecommendResponse recommendation = birdService.getRecommendBird();
+        return CoreApiResponse.success(recommendation);
     }
 
 
