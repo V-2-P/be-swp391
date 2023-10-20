@@ -16,6 +16,7 @@ import com.v2p.swp391.application.response.AuthResponse;
 import com.v2p.swp391.security.TokenProvider;
 import com.v2p.swp391.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -51,6 +52,8 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Value("${app.fe.verify_url}")
+    private String verifyUrl;
 
     @Override
     public AuthResponse signIn(LoginRequest request) {
@@ -147,7 +150,7 @@ public class AuthServiceImpl implements AuthService {
 
     private void sendVerifyMail(User user) {
         String token = tokenProvider.createToken(user.getId(), 300000); // 5 minutes
-        String urlPattern = "http://localhost:8080/api/v1/auth/verify?userId={0}&token={1}";
+        String urlPattern = verifyUrl + "?userId={0}&token={1}";
         String url = MessageFormat.format(urlPattern, user.getId(), token);
         applicationEventPublisher.publishEvent(new MailEvent(this, user, url));
     }
