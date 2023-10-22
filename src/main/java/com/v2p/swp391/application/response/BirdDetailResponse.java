@@ -40,4 +40,8 @@ public class BirdDetailResponse {
     private List<BirdImage> birdImages = new ArrayList<>();
 
     private double totalRating;
+
+    private int countRating;
+
+    private int sold;
 }
