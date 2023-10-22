@@ -40,6 +40,7 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
                     .orElseThrow(() -> new ResourceNotFoundException("Bird", "id", birdId));
             feedBackRepository.save(feedback);
             feedbackBird.setBird(bird);
+            feedbackBird.setActive(true);
             feedbackBird.setFeedback(feedback);
             feedbackBirdRepository.save(feedbackBird);
         }
@@ -48,8 +49,20 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
     }
 
     @Override
+    public FeedbackBird getFeedbackBirdById(Long id) {
+        return feedbackBirdRepository.findById(id)
+                .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Cannot find feedback bird with id: " + id));
+    }
+
+
+    @Override
     public List<Feedback> getFeedbackByOrderID(Long id) {
         return feedBackRepository.findByOrderId(id);
+    }
+
+    @Override
+    public List<FeedbackBird> getAll() {
+        return feedbackBirdRepository.findAll();
     }
 
     @Override
@@ -61,5 +74,11 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
     @Override
     public List<FeedbackBird> getFeedbackBirdsByBirdType(Long birdType) {
         return feedbackBirdRepository.findByBirdTypeId(birdType);
+    }
+
+    @Override
+    public void deleteFeedback(Long id) {
+       FeedbackBird existingFeedbackBird = getFeedbackBirdById(id);
+       existingFeedbackBird.setActive(false);
     }
 }

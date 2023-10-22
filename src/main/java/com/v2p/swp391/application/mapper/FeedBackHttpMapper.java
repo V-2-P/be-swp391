@@ -4,6 +4,7 @@ import com.v2p.swp391.application.model.Feedback;
 import com.v2p.swp391.application.model.FeedbackBird;
 import com.v2p.swp391.application.request.FeedbackBirdRequest;
 import com.v2p.swp391.application.request.FeedbackRequest;
+import com.v2p.swp391.application.response.FeedBackBirdResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.factory.Mappers;
@@ -34,7 +35,21 @@ public interface FeedBackHttpMapper {
 
     List<FeedbackBirdRequest> toListFeedbackBirdRequest(List<FeedbackBird> request);
 
-
-
+    @Mapping(source = "bird.id", target = "birdId")
+    @Mapping(source = "bird.name", target = "birdName")
+    @Mapping(source = "feedback.order.id", target = "orderId")
+    @Mapping(source = "bird.birdType.name", target = "birdType")
+    @Mapping(source = "feedback.order.user.fullName", target = "fullName")
+    @Mapping(source = "feedback.order.user.address", target = "address")
+    @Mapping(source = "feedback.order.user.phoneNumber", target = "phoneNumber")
+    FeedBackBirdResponse toResponse(FeedbackBird feedbackBird);
+    @Mapping(source = "bird.id", target = "birdId")
+    @Mapping(source = "feedback.order.id", target = "orderId")
+    @Mapping(source = "bird.name", target = "birdName")
+    @Mapping(source = "feedback.order.user.fullName", target = "fullName")
+    @Mapping(source = "feedback.order.user.address", target = "address")
+    @Mapping(source = "feedback.order.user.phoneNumber", target = "phoneNumber")
+    @Mapping(source = "bird.birdType.name", target = "birdType")
+    List<FeedBackBirdResponse> toListResponse(List<FeedbackBird> feedbackBird);
 
 }
