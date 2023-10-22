@@ -99,10 +99,7 @@ public class BirdController {
 
     @GetMapping("/detail/{id}")
     public CoreApiResponse<BirdDetailResponse> getBirdDetailById(@PathVariable("id") Long birdId) {
-        Bird bird = birdService.getDetailBirdById(birdId);
-        double totalRating = birdService.totalRatingByBirdId(birdId);
-        BirdDetailResponse response = INSTANCE.toDetail(bird);
-        response.setTotalRating(totalRating);
+        BirdDetailResponse response = birdService.getBirdDetail(birdId);
         return CoreApiResponse.success(response);
     }
 

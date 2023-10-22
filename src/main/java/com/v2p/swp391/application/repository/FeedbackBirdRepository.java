@@ -18,6 +18,10 @@ public interface FeedbackBirdRepository extends JpaRepository<FeedbackBird, Long
             "INNER JOIN fb.bird b " +
             "WHERE b.birdType.id = :birdTypeId")
     List<FeedbackBird> findByBirdTypeId(@Param("birdTypeId") Long birdTypeId);
+
+    @Query("SELECT COUNT(fb) FROM FeedbackBird fb WHERE fb.bird.id = :birdId")
+    int countByBirdId(@Param("birdId") Long birdId);
+
 }
 
 

@@ -5,11 +5,9 @@ import com.v2p.swp391.application.model.Bird;
 import com.v2p.swp391.application.model.BirdType;
 import com.v2p.swp391.application.model.Category;
 import com.v2p.swp391.application.model.FeedbackBird;
-import com.v2p.swp391.application.repository.BirdRepository;
-import com.v2p.swp391.application.repository.BirdTypeRepository;
-import com.v2p.swp391.application.repository.CategoryRepository;
-import com.v2p.swp391.application.repository.FeedbackBirdRepository;
+import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.request.BirdRequest;
+import com.v2p.swp391.application.response.BirdDetailResponse;
 import com.v2p.swp391.application.response.BirdRecommendResponse;
 import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
@@ -37,6 +35,7 @@ public class BirdServiceImpl implements BirdService {
     private final CategoryRepository categoryRepository;
     private final BirdTypeRepository birdTypeRepository;
     private final FeedbackBirdRepository feedbackBirdRepository;
+    private final OrderDetailRepository orderDetailRepository;
     private final BirdHttpMapper birdMapper;
 
 
@@ -71,10 +70,18 @@ public class BirdServiceImpl implements BirdService {
                 .orElseThrow(() -> new ResourceNotFoundException("Bird", "id", id));
     }
 
-    @Override
     public Bird getDetailBirdById(long id) {
         return birdRepository.getDetailBird(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Bird", "id", id));
+    }
+    @Override
+    public BirdDetailResponse getBirdDetail(Long birdId) {
+        Bird bird = getDetailBirdById(birdId);
+        BirdDetailResponse response = birdMapper.toDetail(bird);
+        response.setTotalRating(totalRatingByBirdId(birdId));
+        response.setCountRating(countFeedback(birdId));
+        response.setSold(totalSoldOut(birdId));
+        return response;
     }
 
 
@@ -152,7 +159,6 @@ public class BirdServiceImpl implements BirdService {
                                         , birdMapper.toListResponses(top20));
     }
 
-    @Override
     public double totalRatingByBirdId(Long birdId) {
         List<FeedbackBird> feedbackBirds = feedbackBirdRepository.findByBirdId(birdId);
         double totalRating = 0.0;
@@ -166,6 +172,26 @@ public class BirdServiceImpl implements BirdService {
             return averageRating;
         } else {
             return 0.0;
+        }
+    }
+
+    public int countFeedback(Long birdId) {
+        Integer feedbackCount = feedbackBirdRepository.countByBirdId(birdId);
+
+        if (feedbackCount != null) {
+            return feedbackCount.intValue();
+        } else {
+            return 0;
+        }
+    }
+
+    public int totalSoldOut(Long birdId) {
+        Integer soldBirds = orderDetailRepository.countSoldBirds(birdId);
+
+        if (soldBirds != null) {
+            return soldBirds.intValue();
+        } else {
+            return 0;
         }
     }
 }

@@ -2,6 +2,7 @@ package com.v2p.swp391.application.service;
 
 import com.v2p.swp391.application.model.Bird;
 import com.v2p.swp391.application.request.BirdRequest;
+import com.v2p.swp391.application.response.BirdDetailResponse;
 import com.v2p.swp391.application.response.BirdRecommendResponse;
 import com.v2p.swp391.application.response.BirdResponse;
 import org.springframework.data.domain.Page;
@@ -19,7 +20,7 @@ public interface BirdService {
 
     Bird getBirdById(long id);
 
-    Bird getDetailBirdById(long id);
+    BirdDetailResponse getBirdDetail(Long birdId);
 
     List<Bird> findByCategoryId(Long categoryId);
 
@@ -36,7 +37,8 @@ public interface BirdService {
 
     BirdRecommendResponse getRecommendBird();
 
-    double totalRatingByBirdId(Long birdId);
+
+
 
 
 }
