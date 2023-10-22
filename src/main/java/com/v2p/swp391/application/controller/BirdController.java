@@ -26,7 +26,7 @@ import java.util.List;
 import static com.v2p.swp391.application.mapper.BirdHttpMapper.INSTANCE;
 
 @RestController
-@RequestMapping("${app.api.version.v1}/bird")
+@RequestMapping("${app.api.version.v1}/birds")
 @RequiredArgsConstructor
 public class BirdController {
     private final BirdService birdService;
@@ -57,9 +57,9 @@ public class BirdController {
 
 
     @GetMapping("/all")
-    public CoreApiResponse<List<BirdResponse>> getAllBird() {
+    public CoreApiResponse<List<Bird>> getAllBird() {
         List<Bird> birds = birdService.getAllBirds();
-        return CoreApiResponse.success(INSTANCE.toListResponses(birds));
+        return CoreApiResponse.success(birds);
     }
 
     @GetMapping("")
@@ -74,9 +74,9 @@ public class BirdController {
                 Sort.by("createdAt").descending()
         );
 
-        Page<BirdResponse> productPage = birdService.getAllBirds(keyword, categoryId, typeId, pageRequest);
+        Page<Bird> productPage = birdService.getAllBirds(keyword, categoryId, typeId, pageRequest);
         int totalPages = productPage.getTotalPages();
-        List<BirdResponse> birds = productPage.getContent();
+        List<Bird> birds = productPage.getContent();
         BirdSearchResponse birdSearchResponse = new BirdSearchResponse();
         birdSearchResponse.setBirds(birds);
         birdSearchResponse.setTotalPages(totalPages);
@@ -100,7 +100,10 @@ public class BirdController {
     @GetMapping("/detail/{id}")
     public CoreApiResponse<BirdDetailResponse> getBirdDetailById(@PathVariable("id") Long birdId) {
         Bird bird = birdService.getDetailBirdById(birdId);
-        return CoreApiResponse.success(INSTANCE.toDetail(bird));
+        double totalRating = birdService.totalRatingByBirdId(birdId);
+        BirdDetailResponse response = INSTANCE.toDetail(bird);
+        response.setTotalRating(totalRating);
+        return CoreApiResponse.success(response);
     }
 
     @PutMapping("/{id}")

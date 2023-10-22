@@ -4,9 +4,11 @@ import com.v2p.swp391.application.mapper.BirdHttpMapper;
 import com.v2p.swp391.application.model.Bird;
 import com.v2p.swp391.application.model.BirdType;
 import com.v2p.swp391.application.model.Category;
+import com.v2p.swp391.application.model.FeedbackBird;
 import com.v2p.swp391.application.repository.BirdRepository;
 import com.v2p.swp391.application.repository.BirdTypeRepository;
 import com.v2p.swp391.application.repository.CategoryRepository;
+import com.v2p.swp391.application.repository.FeedbackBirdRepository;
 import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdRecommendResponse;
 import com.v2p.swp391.application.response.BirdResponse;
@@ -34,7 +36,9 @@ public class BirdServiceImpl implements BirdService {
     private final BirdRepository birdRepository;
     private final CategoryRepository categoryRepository;
     private final BirdTypeRepository birdTypeRepository;
+    private final FeedbackBirdRepository feedbackBirdRepository;
     private final BirdHttpMapper birdMapper;
+
 
 
     @Override
@@ -97,10 +101,10 @@ public class BirdServiceImpl implements BirdService {
     }
 
     @Override
-    public Page<BirdResponse> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest) {
+    public Page<Bird> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest) {
         Page<Bird> productsPage;
         productsPage = birdRepository.searchBirds(categoryId, typeId, keyword, pageRequest);
-        return productsPage.map(birdMapper::toResponse);
+        return productsPage;
     }
 
     @Override
@@ -148,5 +152,20 @@ public class BirdServiceImpl implements BirdService {
                                         , birdMapper.toListResponses(top20));
     }
 
+    @Override
+    public double totalRatingByBirdId(Long birdId) {
+        List<FeedbackBird> feedbackBirds = feedbackBirdRepository.findByBirdId(birdId);
+        double totalRating = 0.0;
+        int numberOfRatings = feedbackBirds.size();
 
+        if (numberOfRatings > 0) {
+            for (FeedbackBird feedbackBird : feedbackBirds) {
+                totalRating += feedbackBird.getRating();
+            }
+            double averageRating = totalRating / numberOfRatings;
+            return averageRating;
+        } else {
+            return 0.0;
+        }
+    }
 }
