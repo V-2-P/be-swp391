@@ -12,9 +12,15 @@ public interface FeedbackOrderService {
 
     List<Feedback> getFeedbackByOrderID(Long id);
 
+    List<FeedbackBird> getAll();
+
+    FeedbackBird getFeedbackBirdById(Long id);
+
     List<FeedbackBird> getFeedbackByBirdId(Long id);
 
     List<FeedbackBird> getFeedbackBirdsByBirdType(Long birdType);
+
+    void deleteFeedback(Long id);
 
 
 }

@@ -25,7 +25,10 @@ public class FeedbackBird extends BaseEntity{
 
     private int rating;
 
-    @ManyToOne
+    @Column(name = "active")
+    private Boolean active;
+
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "feedback_id")
     @JsonBackReference
     private Feedback feedback;
