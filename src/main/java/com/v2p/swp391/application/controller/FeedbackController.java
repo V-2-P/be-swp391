@@ -47,7 +47,7 @@ public class FeedbackController {
     }
 
     @GetMapping("/{id}")
-    public CoreApiResponse<FeedBackBirdResponse> getBirdTypeById(@Valid @PathVariable Long id){
+    public CoreApiResponse<FeedBackBirdResponse> getFeedbackBirdById(@Valid @PathVariable Long id){
         FeedbackBird feedbackBird = feedbackService.getFeedbackBirdById(id);
         return CoreApiResponse.success(INSTANCE.toResponse(feedbackBird));
     }
