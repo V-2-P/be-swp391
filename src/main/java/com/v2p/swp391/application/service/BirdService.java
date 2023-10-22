@@ -25,7 +25,7 @@ public interface BirdService {
 
     List<Bird> findByTypeId(long typeId);
 
-    Page<BirdResponse> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest);
+    Page<Bird> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest);
 
     Bird updateBird(long id, BirdRequest bird);
 
@@ -35,6 +35,10 @@ public interface BirdService {
 
 
     BirdRecommendResponse getRecommendBird();
+
+    double totalRatingByBirdId(Long birdId);
+
+
 }
 
 

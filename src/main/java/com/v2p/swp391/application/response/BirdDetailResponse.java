@@ -37,5 +37,7 @@ public class BirdDetailResponse {
     private String description;
 
     @JsonProperty("bird_images")
-    private List<BirdImage> birdImages = new ArrayList<>();;
+    private List<BirdImage> birdImages = new ArrayList<>();
+
+    private double totalRating;
 }
