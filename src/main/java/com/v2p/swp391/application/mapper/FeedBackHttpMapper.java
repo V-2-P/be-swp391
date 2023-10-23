@@ -40,6 +40,7 @@ public interface FeedBackHttpMapper {
     @Mapping(source = "feedback.order.id", target = "orderId")
     @Mapping(source = "bird.birdType.name", target = "birdType")
     @Mapping(source = "feedback.order.user.fullName", target = "fullName")
+    @Mapping(source = "feedback.order.user.imageUrl", target = "userImage")
     @Mapping(source = "feedback.order.user.address", target = "address")
     @Mapping(source = "feedback.order.user.phoneNumber", target = "phoneNumber")
     FeedBackBirdResponse toResponse(FeedbackBird feedbackBird);
