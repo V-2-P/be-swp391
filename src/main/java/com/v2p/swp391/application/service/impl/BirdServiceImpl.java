@@ -126,6 +126,7 @@ public class BirdServiceImpl implements BirdService {
                     .orElseThrow(() ->
                             new ResourceNotFoundException(
                                     "Bird type", "id", request.getTypeId()));
+            existingBird.setBirdType(existingBirdType);
         }
 
 
@@ -135,8 +136,10 @@ public class BirdServiceImpl implements BirdService {
                     .orElseThrow(() ->
                             new ResourceNotFoundException(
                                     "Category", "id", request.getCategoryId()));
-
+            existingBird.setCategory(existingCategory);
         }
+
+
         return birdRepository.save(existingBird);
     }
 
