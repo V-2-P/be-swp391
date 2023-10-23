@@ -45,6 +45,7 @@ public class BirdController {
             for (MultipartFile image : images) {
                 if (!image.isEmpty()) {
                     BirdImage birdImage = new BirdImage();
+                    birdImage.setBird(bird);
                     birdImage.setImageUrl(UploadImageUtils.storeFile(image));
                     birdImagesList.add(birdImage);
                 }

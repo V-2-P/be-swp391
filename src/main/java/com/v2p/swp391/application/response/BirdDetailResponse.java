@@ -24,6 +24,8 @@ public class BirdDetailResponse {
 
     private String gender;
 
+    private String color;
+
     private Float price;
 
     private int quantity;
