@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+
 @Getter
 @Setter
 @AllArgsConstructor
@@ -13,6 +15,8 @@ public class FeedBackBirdResponse {
     private Long id;
 
     private Long birdId;
+
+    private String userImage;
 
     private String birdName;
 
@@ -31,5 +35,7 @@ public class FeedBackBirdResponse {
     private String phoneNumber;
 
     private boolean status;
+
+    private LocalDate createdAt;
 
 }
