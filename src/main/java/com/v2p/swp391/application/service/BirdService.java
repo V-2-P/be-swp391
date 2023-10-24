@@ -37,6 +37,8 @@ public interface BirdService {
 
     BirdRecommendResponse getRecommendBird();
 
+    List<Bird> findBirdsByIds(List<Long> birdIds);
+
 
 
 

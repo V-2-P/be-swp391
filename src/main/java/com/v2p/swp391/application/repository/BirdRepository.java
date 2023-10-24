@@ -39,4 +39,7 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
     @Query("SELECT b FROM Bird b ORDER BY b.createdAt DESC LIMIT 20")
     List<Bird> findTop20();
 
+    @Query("SELECT p FROM Bird p WHERE p.id IN :birdIds")
+    List<Bird> findBirdsByIds(@Param("birdIds") List<Long> birdIds);
+
 }
