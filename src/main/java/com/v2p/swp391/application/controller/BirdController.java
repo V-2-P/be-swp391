@@ -16,12 +16,15 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.v2p.swp391.application.mapper.BirdHttpMapper.INSTANCE;
 
@@ -33,8 +36,8 @@ public class BirdController {
 
     @PostMapping("")
     public CoreApiResponse<Bird> createBird(@Valid @ModelAttribute BirdRequest request,
-            @RequestParam(name = "imageThumbnail", required = false) MultipartFile imageFile,
-            @RequestParam(name = "imagesFile", required = false) List<MultipartFile> images) throws IOException {
+                                            @RequestParam(name = "imageThumbnail", required = false) MultipartFile imageFile,
+                                            @RequestParam(name = "imagesFile", required = false) List<MultipartFile> images) throws IOException {
         Bird bird = INSTANCE.toModel(request);
         if (imageFile != null && !imageFile.isEmpty()) {
             bird.setThumbnail(UploadImageUtils.storeFile(imageFile));
@@ -133,5 +136,12 @@ public class BirdController {
         return CoreApiResponse.success(recommendation);
     }
 
-
+    @GetMapping("/by-ids")
+    public CoreApiResponse<?> getProductsByIds(@RequestParam("ids") String ids) {
+        List<Long> birdIds = Arrays.stream(ids.split(","))
+                .map(Long::parseLong)
+                .collect(Collectors.toList());
+        List<Bird> birds = birdService.findBirdsByIds(birdIds);
+        return CoreApiResponse.success(birds);
+    }
 }

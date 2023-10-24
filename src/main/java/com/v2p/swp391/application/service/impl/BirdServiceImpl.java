@@ -162,6 +162,11 @@ public class BirdServiceImpl implements BirdService {
                                         , birdMapper.toListResponses(top20));
     }
 
+    @Override
+    public List<Bird> findBirdsByIds(List<Long> birdIds) {
+        return birdRepository.findBirdsByIds(birdIds);
+    }
+
     public double totalRatingByBirdId(Long birdId) {
         List<FeedbackBird> feedbackBirds = feedbackBirdRepository.findByBirdId(birdId);
         double totalRating = 0.0;
