@@ -5,6 +5,7 @@ import com.v2p.swp391.application.response.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface DashBoardService {
@@ -12,9 +13,22 @@ public interface DashBoardService {
 
     Page<OrderDashBoardResponse> getLastOrder(PageRequest pageRequest);
 
-    List<RevenueMonthlyResponse> calculateRevenueByMonth(String month);
+    List<RevenueMonthlyResponse> calculateYearlyRevenue(int year);
 
-    List<RevenueDailyResponse> calculateRevenueByDay(String day);
+    List<RevenueDayResponse> calculateWeeklyRevenue();
 
-    TotalDashboardResponse getDashboardTotals();
+    long countBookingsInCurrentMonth();
+
+    long countBookingsForCurrentDate();
+
+    long countOrdersInCurrentMonth();
+
+    long countOrdersForCurrentDate();
+
+    long totalUser();
+
+    float calculateMonthlyRevenue(int year, int month);
+
+    double calculateTotalPaymentForDate(LocalDate date);
+
     }

@@ -3,12 +3,15 @@ package com.v2p.swp391.application.controller;
 import com.v2p.swp391.application.response.*;
 import com.v2p.swp391.application.service.DashBoardService;
 import com.v2p.swp391.common.api.CoreApiResponse;
+import com.v2p.swp391.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 @RestController
 @RequestMapping("${app.api.version.v1}/dashboards")
@@ -40,23 +43,32 @@ public class DashboardController {
         return CoreApiResponse.success(bestSellers);
     }
 
-    @GetMapping("/revenue/monthly")
-    public CoreApiResponse<List<RevenueMonthlyResponse>> calculateRevenueByMonth(@RequestParam("month") String month) {
-        List<RevenueMonthlyResponse> revenueByMonth = dashBoardService.calculateRevenueByMonth(month);
-        return CoreApiResponse.success(revenueByMonth);
+    @GetMapping("/revenue")
+    public CoreApiResponse <?> getRevenue(@RequestParam("search") String search) {
+        LocalDate currentDate = LocalDate.now();
+        if (search.equals("daily")) {
+            List<RevenueDayResponse> weeklyRevenue = dashBoardService.calculateWeeklyRevenue();
+            DailyDashboardResponse dailyDashboard = new DailyDashboardResponse();
+            dailyDashboard.setWeeklyRevenue(weeklyRevenue);
+            dailyDashboard.setTotalBookings(dashBoardService.countBookingsForCurrentDate());
+            dailyDashboard.setTotalCustomerUsers(dashBoardService.totalUser());
+            dailyDashboard.setTotalOrders(dashBoardService.countOrdersForCurrentDate());
+            dailyDashboard.setTotalRevenue(dashBoardService.calculateTotalPaymentForDate(LocalDate.now()));
+            return CoreApiResponse.success(dailyDashboard);
+        } else if (search.equals("month")) {
+            int year = currentDate.getYear();
+            int month = currentDate.getMonthValue();
+            List<RevenueMonthlyResponse> yearlyRevenue = dashBoardService.calculateYearlyRevenue(year);
+            MonthlyDashboardResponse monthlyDashboardResponse = new MonthlyDashboardResponse();
+            monthlyDashboardResponse.setWeeklyRevenue(yearlyRevenue);
+            monthlyDashboardResponse.setTotalBookings(dashBoardService.countBookingsInCurrentMonth());
+            monthlyDashboardResponse.setTotalCustomerUsers(dashBoardService.totalUser());
+            monthlyDashboardResponse.setTotalOrders(dashBoardService.countOrdersInCurrentMonth());
+            monthlyDashboardResponse.setTotalRevenue(dashBoardService.calculateMonthlyRevenue(year, month));
+            return CoreApiResponse.success(monthlyDashboardResponse);
+
+        }else{
+            throw new AppException(HttpStatus.BAD_REQUEST,"Search must be 'daily' or 'month'");
+        }
     }
-
-    @GetMapping("/revenue/daily")
-    public CoreApiResponse<List<RevenueDailyResponse>> calculateRevenueByDay(@RequestParam("day") String day) {
-        List<RevenueDailyResponse> revenueByDay = dashBoardService.calculateRevenueByDay(day);
-        return CoreApiResponse.success(revenueByDay);
-    }
-
-    @GetMapping("/totals")
-    public CoreApiResponse<TotalDashboardResponse> getTotals() {
-        TotalDashboardResponse response = dashBoardService.getDashboardTotals();
-        return CoreApiResponse.success(response);
-    }
-
-
 }

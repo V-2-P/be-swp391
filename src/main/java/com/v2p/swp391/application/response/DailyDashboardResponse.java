@@ -2,17 +2,22 @@ package com.v2p.swp391.application.response;
 
 import lombok.*;
 
+import java.util.List;
+@AllArgsConstructor
+@Data
+@Builder
+@NoArgsConstructor
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder
-public class TotalDashboardResponse {
+public class DailyDashboardResponse {
+    private List<RevenueDayResponse> weeklyRevenue;
+
     private long totalOrders;
 
     private long totalBookings;
 
     private long totalCustomerUsers;
 
-    private long totalOrderProcessing;
+    private double totalRevenue;
+
 }
