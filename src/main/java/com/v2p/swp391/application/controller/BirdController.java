@@ -108,11 +108,11 @@ public class BirdController {
     }
 
     @PutMapping("/{id}")
-    public CoreApiResponse<Bird> updateBird(
+    public CoreApiResponse<BirdDetailResponse> updateBird(
             @PathVariable long id,
             @RequestBody BirdRequest birdRequest) {
         Bird updatedBird = birdService.updateBird(id, birdRequest);
-        return CoreApiResponse.success(updatedBird, "Update bird successfully");
+        return CoreApiResponse.success(INSTANCE.toDetail(updatedBird), "Update bird successfully");
     }
 
     @DeleteMapping("/{id}")
