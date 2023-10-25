@@ -46,4 +46,9 @@ public class BirdDetailResponse {
     private int countRating;
 
     private int sold;
+
+    private boolean status;
+
+
+
 }
