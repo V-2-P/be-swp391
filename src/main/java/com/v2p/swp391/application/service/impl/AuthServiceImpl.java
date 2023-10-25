@@ -152,6 +152,6 @@ public class AuthServiceImpl implements AuthService {
         String token = tokenProvider.createToken(user.getId(), 300000); // 5 minutes
         String urlPattern = verifyUrl + "?userId={0}&token={1}";
         String url = MessageFormat.format(urlPattern, user.getId(), token);
-        applicationEventPublisher.publishEvent(new MailEvent(this, user, url));
+            applicationEventPublisher.publishEvent(new MailEvent(this, user, url));
     }
 }
