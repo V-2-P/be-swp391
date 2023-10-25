@@ -27,6 +27,10 @@ public interface BirdHttpMapper {
 
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(source = "quantity", target = "quantity")
+    @Mapping(source = "competitionAchievements", target = "competitionAchievements")
+
+
     void updateBirdFromRequest(BirdRequest request, @MappingTarget Bird bird);
 
     @Mapping(source = "category.name", target = "categoryName")

@@ -27,19 +27,17 @@ public class BirdRequest {
 
     private boolean status;
 
-    public boolean isStatus() {
-        return true;
-    }
+
     private String thumbnail;
 
     private String purebredLevel;
 
-    private int competitionAchievements;
+    private String competitionAchievements;
 
     private String age;
 
-    @Min(value = 1, message = "Quantity must be greater than or equal to 1")
-    private int quantity;
+    @Min(value = 0, message = "Quantity must be greater than or equal to 1")
+    private String quantity;
 
     @Pattern(regexp = "female|male", message = "Gender must be female or male")
     private String gender;
