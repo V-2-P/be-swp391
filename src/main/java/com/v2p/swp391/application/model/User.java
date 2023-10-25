@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Table(name = "users", uniqueConstraints = {
         @UniqueConstraint(columnNames = "email")
 })
-public class User  {
+public class User  extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -48,4 +48,5 @@ public class User  {
     @Column(name = "date_of_birth")
     private LocalDate dob;
 
+    private int isActive;
 }
