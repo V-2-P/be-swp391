@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,9 +30,8 @@ public class Token {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonBackReference
     private User user;
-
-
 }
 
 
