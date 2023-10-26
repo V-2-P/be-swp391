@@ -31,6 +31,11 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<Voucher> searchByCodeOrName(String searchText) {
+        return voucherRepository.searchByCodeOrName(searchText);
+    }
+
+    @Override
     public List<Voucher> getAllVoucher() {
         return voucherRepository.findAll();
     }

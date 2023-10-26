@@ -178,8 +178,12 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", order.getVoucher().getId()));
         float minValue = voucher.getMinValue();
 
+
         if (totalMoney >= minValue) {
             LocalDate currentDate = LocalDate.now();
+            if (voucher.getStartDate()!= null && voucher.getStartDate().isAfter(currentDate)) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher is not yet valid");
+            }
             if (voucher.getExpirationDate() != null && voucher.getExpirationDate().isBefore(currentDate)) {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Voucher has expired.");
             }
@@ -197,9 +201,4 @@ public class OrderServiceImpl implements OrderService {
 
         return discount;
     }
-
-
-
-
-
 }

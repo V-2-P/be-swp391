@@ -21,13 +21,16 @@ public class VoucherRequest {
 
     private String description;
 
-    @JsonProperty("expiration_date")
+    @JsonProperty("expirationDate")
     private LocalDate expirationDate;
+
+    @JsonProperty("startDate")
+    private LocalDate startDate;
 
     @Min(value = 1, message = "Amount must be at least 1")
     private int amount;
 
-    @JsonProperty("min_value")
+    @JsonProperty("minValue")
     @NotNull(message = "minValue cannot be empty")
     private float minValue;
 

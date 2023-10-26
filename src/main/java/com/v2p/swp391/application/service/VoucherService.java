@@ -10,6 +10,7 @@ import java.util.List;
 public interface VoucherService {
     Voucher createVoucher(Voucher voucher);
     Voucher getVoucherById(Long id);
+    List<Voucher> searchByCodeOrName(String searchText);
     List<Voucher> getAllVoucher();
     Voucher updateVoucher(Long id, VoucherRequest voucher);
     void deleteVoucher(Long id);

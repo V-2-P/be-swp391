@@ -33,6 +33,11 @@ public class VoucherController {
         return CoreApiResponse.success(voucher);
     }
 
+    @GetMapping("/search")
+    public CoreApiResponse<List<Voucher>> searchVouchers(@RequestParam("search") String search) {
+        List<Voucher> vouchers = voucherService.searchByCodeOrName(search);
+        return CoreApiResponse.success(vouchers);
+    }
 
     @GetMapping("")
     public CoreApiResponse<List<Voucher>> getAllVouchers(){

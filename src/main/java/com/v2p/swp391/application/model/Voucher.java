@@ -35,6 +35,10 @@ public class Voucher extends BaseEntity{
     private String description;
 
     @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "start_date")
+    private LocalDate startDate;
+
+    @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 }
