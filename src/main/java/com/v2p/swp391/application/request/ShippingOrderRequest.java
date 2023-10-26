@@ -12,11 +12,7 @@ import lombok.*;
 @NoArgsConstructor
 public class ShippingOrderRequest {
 
-    @NotBlank(message = "Shipping method is required")
-    @JsonProperty("shippingMethod")
-    private String shippingMethod;
-
-
+    @NotBlank(message = "Tracking  is required")
     @JsonProperty("trackingNumber")
     private String trackingNumber;
 

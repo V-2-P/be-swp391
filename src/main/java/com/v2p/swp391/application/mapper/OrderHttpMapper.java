@@ -21,12 +21,15 @@ public interface OrderHttpMapper {
     OrderHttpMapper INSTANCE = Mappers.getMapper(OrderHttpMapper.class);
     @Mapping(source = "voucherId", target = "voucher.id")
     @Mapping(source = "userId", target = "user.id")
+    @Mapping(source = "shippingMethod", target = "shippingMethod.id")
     Order toModel(OrderRequest request);
 
     Order toModelUpdate(ShippingOrderRequest order);
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "voucher.discount", target = "discount")
+    @Mapping(source = "shippingMethod.name", target = "shippingMethod")
+    @Mapping(source = "shippingMethod.shippingMoney", target = "shippingMoney")
     OrderResponse toResponse(Order order);
 
     @Mapping(source = "fullName", target = "userName")
