@@ -2,6 +2,7 @@ package com.v2p.swp391.application.response;
 
 
 import com.v2p.swp391.application.model.OrderStatus;
+import com.v2p.swp391.application.model.ShippingMethod;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -41,6 +42,8 @@ public class OrderResponse {
     private String paymentMethod;
 
     private String shippingMethod;
+
+    private Float shippingMoney;
 
     private LocalDate shippingDate;
 

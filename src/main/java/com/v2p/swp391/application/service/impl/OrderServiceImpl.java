@@ -11,10 +11,8 @@ import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -31,6 +29,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderDetailRepository orderDetailRepository;
     private final OrderHttpMapper orderMapper;
     private final UseVoucherRepository useVoucherRepository;
+    private final ShippingMethodRepository shippingMethodRepository;
 
     @Override
     public Order createOrder(Order order, List<CartItemRequest> cartItems) {
@@ -73,6 +72,13 @@ public class OrderServiceImpl implements OrderService {
             totalPayment -= discount;
         }
 
+        ShippingMethod shippingMethod= shippingMethodRepository
+                .findById(order.getShippingMethod().getId())
+                .orElseThrow(() -> new ResourceNotFoundException
+                        ("Shipping method", "id", order.getShippingMethod().getId()));
+        float shippingMoney= shippingMethod.getShippingMoney();
+        totalPayment+=shippingMoney;
+        order.setShippingMethod(shippingMethod);
         order.setTotalPayment(totalPayment);
         order.setOrderDate(LocalDate.now());
         order.setStatus(OrderStatus.pending);
@@ -107,7 +113,6 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order shippingOrder(Long id, Order order) {
         Order existingOrder = getOrder(id);
-        existingOrder.setShippingMethod(order.getShippingMethod());
         existingOrder.setTrackingNumber(order.getTrackingNumber());
         existingOrder.setShippingDate(LocalDate.now());
         existingOrder.setStatus(OrderStatus.shipping);

@@ -45,8 +45,9 @@ public class Order extends BaseEntity {
     @Column(name = "total_payment")
     private Float totalPayment;
 
-    @Column(name = "shipping_method")
-    private String shippingMethod;
+    @ManyToOne
+    @JoinColumn(name = "shipping_id")
+    private ShippingMethod shippingMethod;
 
     @Column(name = "shipping_address")
     private String shippingAddress;
