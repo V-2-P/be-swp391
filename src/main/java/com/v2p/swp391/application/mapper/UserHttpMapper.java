@@ -12,10 +12,11 @@ import org.mapstruct.factory.Mappers;
 @Mapper
 public interface UserHttpMapper {
     UserHttpMapper INSTANCE = Mappers.getMapper(UserHttpMapper.class);
+    @Mapping(source = "roleId", target = "roleEntity.id")
     User toModel(UserRequest request);
     UserResponse toResponse(User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(source = "fullname", target = "fullName")
+    @Mapping(source = "isActive", target = "isActive")
     public void updateUserFromRequest(UserUpdateRequest updateRequest, @MappingTarget User user);
 }

@@ -20,14 +20,22 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserUpdateRequest {
-    private String fullname;
+    private String fullName;
 
     @Email(message = "Invalid email format")
     private String email;
+
+    private String password;
+
+    private String roleId;
+
+    private String phoneNumber;
 
     private String address;
 
     @Temporal(TemporalType.TIMESTAMP)
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
+
+    private String isActive;
 }

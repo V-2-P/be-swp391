@@ -3,15 +3,16 @@ package com.v2p.swp391.application.controller;
 import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.request.UserRequest;
 import com.v2p.swp391.application.request.UserUpdateRequest;
+import com.v2p.swp391.application.response.UserPageRespone;
 import com.v2p.swp391.application.service.UserService;
 import com.v2p.swp391.common.api.CoreApiResponse;
-import com.v2p.swp391.security.UserPrincipal;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,6 +35,14 @@ public class UserController {
         return CoreApiResponse.success("User was created");
     }
 
+    @GetMapping("/{userId}")
+    public CoreApiResponse<User> getUserById(
+            @PathVariable Long userId
+    ){
+        User user = userService.getUserById(userId);
+        return CoreApiResponse.success(user);
+    }
+
     @GetMapping("/admin")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MANAGER') or hasRole('STAFF')")
     public String userAccess() {
@@ -44,14 +53,6 @@ public class UserController {
     public String customerAccess() {
 
         return "Customer Content.";
-    }
-
-    @GetMapping("/role/{roleid}")
-    public CoreApiResponse<List<User>> getUserByRoleID(
-            @Valid @PathVariable Long roleid
-    ){
-        List<User> users = userService.getUserByRoleID(roleid);
-        return CoreApiResponse.success(users, "Successfully!");
     }
 
     @PutMapping("/{id}")
@@ -72,17 +73,35 @@ public class UserController {
         return CoreApiResponse.success("Thumbnail uploaded successfully.");
     }
 
+    @GetMapping("")
+    public CoreApiResponse<UserPageRespone> getUsers(
+            @RequestParam(defaultValue = "0", name = "roleId") Long roleId,
+            @RequestParam(defaultValue = "", name = "email") String email,
+            @RequestParam(defaultValue = "", name = "phoneNumber") String phoneNumber,
+            @RequestParam(defaultValue = "", name = "fullName") String fullName,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int limit
+    ){
+        PageRequest pageRequest = PageRequest.of(
+                page, limit,
+                Sort.by("createdAt").descending()
+        );
+
+        Page<User> userPage = userService.getAllUser(roleId, fullName, phoneNumber, email, pageRequest);
+        int totalPages = userPage.getTotalPages();
+        List<User> users = userPage.getContent();
+        UserPageRespone userPageRespone = new UserPageRespone();
+        userPageRespone.setUsers(users);
+        userPageRespone.setTotalPages(totalPages);
+        return CoreApiResponse.success(userPageRespone);
+    }
+
     @DeleteMapping("/{userId}")
     public CoreApiResponse<?> deleteUser(
             @PathVariable Long userId)
     {
-        User deletedUser = userService.reverseStatusUser(userId);
+        User deletedUser = userService.deleteUser(userId);
         return CoreApiResponse.success(deletedUser, "Avatar uploaded successfully.");
     }
 
-    @GetMapping("/me")
-    public CoreApiResponse<User> getPersonalInfor(){
-        User user = userService.loadPersonalInformation();
-        return CoreApiResponse.success(user);
-    }
 }
