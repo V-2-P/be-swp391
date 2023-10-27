@@ -1,6 +1,7 @@
 package com.v2p.swp391.application.service;
 
 import com.v2p.swp391.application.model.Bird;
+import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdDetailResponse;
 import com.v2p.swp391.application.response.BirdRecommendResponse;
@@ -39,9 +40,7 @@ public interface BirdService {
 
     List<Bird> findBirdsByIds(List<Long> birdIds);
 
-
-
-
+    List<Bird> recommend(User user, Bird recentViewed, int K);
 
 }
 

@@ -1,10 +1,7 @@
 package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.BirdHttpMapper;
-import com.v2p.swp391.application.model.Bird;
-import com.v2p.swp391.application.model.BirdType;
-import com.v2p.swp391.application.model.Category;
-import com.v2p.swp391.application.model.FeedbackBird;
+import com.v2p.swp391.application.model.*;
 import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdDetailResponse;
@@ -23,10 +20,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -37,6 +32,7 @@ public class BirdServiceImpl implements BirdService {
     private final BirdTypeRepository birdTypeRepository;
     private final FeedbackBirdRepository feedbackBirdRepository;
     private final OrderDetailRepository orderDetailRepository;
+    private final OrderRepository orderRepository;
     private final BirdHttpMapper birdMapper;
 
 
@@ -202,5 +198,50 @@ public class BirdServiceImpl implements BirdService {
         } else {
             return 0;
         }
+    }
+
+    public List<Bird> recommend(User user, Bird recentViewed, int K) {
+        List<Order> userOrders = orderRepository.findByUserId(user.getId());
+        BirdType recentViewedBirdType = recentViewed.getBirdType();
+        Category recentViewedCategory = recentViewed.getCategory();
+
+        Map<Bird, Integer> freqMap = new HashMap<>();
+
+        for (Order order : userOrders) {
+            for (OrderDetail detail : order.getOrderDetails()) {
+                Bird bird = detail.getBird();
+                BirdType birdType = bird.getBirdType();
+                Category category = bird.getCategory();
+
+                if (birdType.getId().equals(recentViewedBirdType.getId()) || category.getId().equals(recentViewedCategory.getId())) {
+                    freqMap.put(bird, freqMap.getOrDefault(bird, 0) + 1);
+                }
+            }
+        }
+
+        List<Bird> contentBasedRecommendations = birdRepository.findByBirdTypeIdOrCategoryId(recentViewedBirdType.getId(), recentViewedCategory.getId());
+
+        List<Bird> recommendations = freqMap.entrySet()
+                .stream()
+                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+                .limit(K)
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+        Set<Bird> hybridSet = new HashSet<>();
+        hybridSet.addAll(recommendations);
+        hybridSet.addAll(contentBasedRecommendations);
+
+        List<Bird> result = new ArrayList<>(hybridSet);
+        result.sort((b1, b2) -> {
+            int ur1 = recommendations.indexOf(b1);
+            int cr1 = contentBasedRecommendations.indexOf(b1);
+            int ur2 = recommendations.indexOf(b2);
+            int cr2 = contentBasedRecommendations.indexOf(b2);
+
+            return (ur1 + cr1) - (ur2 + cr2);
+        });
+
+        return result.subList(0, K);
     }
 }

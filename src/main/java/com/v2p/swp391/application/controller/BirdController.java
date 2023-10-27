@@ -3,6 +3,7 @@ package com.v2p.swp391.application.controller;
 import com.v2p.swp391.application.model.Bird;
 
 import com.v2p.swp391.application.model.BirdImage;
+import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.request.BirdRequest;
 import com.v2p.swp391.application.response.BirdDetailResponse;
 import com.v2p.swp391.application.response.BirdRecommendResponse;
@@ -11,6 +12,7 @@ import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import com.v2p.swp391.common.constant.Image;
+import com.v2p.swp391.security.UserPrincipal;
 import com.v2p.swp391.utils.UploadImageUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -144,5 +148,17 @@ public class BirdController {
                 .collect(Collectors.toList());
         List<Bird> birds = birdService.findBirdsByIds(birdIds);
         return CoreApiResponse.success(birds);
+    }
+
+    @GetMapping("/recommendlist")
+    public CoreApiResponse<List<Bird>> recommendList(
+            @RequestParam Long birdId,
+            @RequestParam int K) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        Bird recentViewed = birdService.getBirdById(birdId);
+        List<Bird> recommendedBirds = birdService.recommend(user, recentViewed, K);
+        return CoreApiResponse.success(recommendedBirds);
     }
 }
