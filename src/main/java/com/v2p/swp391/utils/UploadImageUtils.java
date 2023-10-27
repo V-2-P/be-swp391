@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class UploadImageUtils {
-    public static String storeFile(MultipartFile imageFile) throws IOException {
+    public static String storeFile(MultipartFile imageFile, String path) throws IOException {
         if(imageFile.getSize() == 0) {
             throw new AppException(HttpStatus.BAD_REQUEST,"Please select images to upload");
         }
@@ -35,7 +35,7 @@ public class UploadImageUtils {
 
         String originalFileName = imageFile.getOriginalFilename();
         String uniqueFileName = System.currentTimeMillis() + "_" + originalFileName;
-        java.nio.file.Path uploadDir = Paths.get(Image.BIRD_IMAGE_PATH);
+        java.nio.file.Path uploadDir = Paths.get(path);
 
         if (!Files.exists(uploadDir)) {
             Files.createDirectories(uploadDir);

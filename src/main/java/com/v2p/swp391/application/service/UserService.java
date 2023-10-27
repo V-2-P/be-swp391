@@ -15,7 +15,6 @@ public interface UserService {
     void create(User user);
     User getUserById(Long id);
     User updateUser(Long id, UserUpdateRequest update);
-    User uploadAvatar(Long id, MultipartFile imageFile) throws IOException;
     Page<User> getAllUser(Long roleId, String fullName, String phoneNumber, String email, PageRequest pageRequest);
     User deleteUser(Long id);
 }

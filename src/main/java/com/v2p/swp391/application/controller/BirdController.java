@@ -10,6 +10,7 @@ import com.v2p.swp391.application.response.BirdSearchResponse;
 import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
 import com.v2p.swp391.common.api.CoreApiResponse;
+import com.v2p.swp391.common.constant.Image;
 import com.v2p.swp391.utils.UploadImageUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +41,7 @@ public class BirdController {
                                             @RequestParam(name = "imagesFile", required = false) List<MultipartFile> images) throws IOException {
         Bird bird = INSTANCE.toModel(request);
         if (imageFile != null && !imageFile.isEmpty()) {
-            bird.setThumbnail(UploadImageUtils.storeFile(imageFile));
+            bird.setThumbnail(UploadImageUtils.storeFile(imageFile, Image.BIRD_IMAGE_PATH));
         }
 
         if (images != null && !images.isEmpty()) {
@@ -49,7 +50,7 @@ public class BirdController {
                 if (!image.isEmpty()) {
                     BirdImage birdImage = new BirdImage();
                     birdImage.setBird(bird);
-                    birdImage.setImageUrl(UploadImageUtils.storeFile(image));
+                    birdImage.setImageUrl(UploadImageUtils.storeFile(image, Image.BIRD_IMAGE_PATH));
                     birdImagesList.add(birdImage);
                 }
             }
