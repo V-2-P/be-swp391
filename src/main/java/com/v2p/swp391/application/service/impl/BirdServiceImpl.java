@@ -11,6 +11,7 @@ import com.v2p.swp391.application.response.BirdDetailResponse;
 import com.v2p.swp391.application.response.BirdRecommendResponse;
 import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
+import com.v2p.swp391.common.constant.Image;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.utils.StringUtlis;
 import com.v2p.swp391.utils.UploadImageUtils;
@@ -152,7 +153,7 @@ public class BirdServiceImpl implements BirdService {
     @Override
     public void uploadThumbnail(Long birdId, MultipartFile imageFile) throws IOException {
         Bird existingBird = getBirdById(birdId);
-        existingBird.setThumbnail(UploadImageUtils.storeFile(imageFile));
+        existingBird.setThumbnail(UploadImageUtils.storeFile(imageFile, Image.BIRD_IMAGE_PATH));
         birdRepository.save(existingBird);
     }
     public BirdRecommendResponse getRecommendBird() {

@@ -94,17 +94,6 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User uploadAvatar(Long id, MultipartFile imageFile) throws IOException {
-        User existingUser = userRepository
-                .findById(id)
-                .orElseThrow(()
-                        -> new ResourceNotFoundException("User", "id", id));
-
-        existingUser.setImageUrl(UploadImageUtils.storeFile(imageFile));
-        return userRepository.save(existingUser);
-    }
-
-    @Override
     public Page<User> getAllUser(Long roleId, String fullName, String phoneNumber, String email, PageRequest pageRequest) {
         Page<User> usersPage;
         usersPage = userRepository.searchUsers(fullName, roleId, phoneNumber, email, pageRequest);

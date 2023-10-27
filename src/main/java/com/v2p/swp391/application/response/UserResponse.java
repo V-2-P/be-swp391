@@ -1,5 +1,7 @@
 package com.v2p.swp391.application.response;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.v2p.swp391.application.model.RoleEntity;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
@@ -9,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -16,9 +19,22 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class UserResponse implements Serializable {
 
+    @JsonIgnore
     private Long id;
-    private String name;
+
+    private String fullName;
+
     private String email;
-    private String imageUrl;
+
+    @JsonIgnore
     private String password;
+
+    private String imageUrl;
+
+    private String phoneNumber;
+
+    private String roleEntity;
+
+    private String dob;
+
 }

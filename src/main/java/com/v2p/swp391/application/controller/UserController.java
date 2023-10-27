@@ -64,14 +64,7 @@ public class UserController {
         return CoreApiResponse.success(user, "Successfully!");
     }
 
-    @PostMapping("/uploadavatar/{userId}")
-    public CoreApiResponse<?> uploadThumbnail(
-            @PathVariable Long userId,
-            @RequestParam("imageFile") MultipartFile imageFile) throws IOException
-    {
-        userService.uploadAvatar(userId, imageFile);
-        return CoreApiResponse.success("Thumbnail uploaded successfully.");
-    }
+
 
     @GetMapping("")
     public CoreApiResponse<UserPageRespone> getUsers(

@@ -4,6 +4,7 @@ import com.v2p.swp391.application.model.Bird;
 import com.v2p.swp391.application.model.BirdImage;
 import com.v2p.swp391.application.repository.BirdImageRepository;
 import com.v2p.swp391.application.repository.BirdRepository;
+import com.v2p.swp391.common.constant.Image;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.utils.UploadImageUtils;
@@ -42,7 +43,7 @@ public class BirdImageServiceImpl implements com.v2p.swp391.application.service.
             if(!image.isEmpty()) {
                 BirdImage birdImage = new BirdImage();
                 birdImage.setBird(existingProduct);
-                birdImage.setImageUrl(UploadImageUtils.storeFile(image));
+                birdImage.setImageUrl(UploadImageUtils.storeFile(image, Image.BIRD_IMAGE_PATH));
                 birdImageRepository.save(birdImage);
             }
         }
