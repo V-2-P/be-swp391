@@ -42,4 +42,7 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
     @Query("SELECT p FROM Bird p WHERE p.id IN :birdIds")
     List<Bird> findBirdsByIds(@Param("birdIds") List<Long> birdIds);
 
+    List<Bird> findByBirdTypeIdOrCategoryId(Long birdTypeId, Long categoryId);
+
+
 }
