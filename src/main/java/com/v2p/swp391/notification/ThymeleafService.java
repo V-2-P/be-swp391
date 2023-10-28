@@ -4,4 +4,6 @@ import com.v2p.swp391.application.model.User;
 
 public interface ThymeleafService {
     String getVerifyContent(User user, String url);
+
+    String getResetPasswordContent(User user, String url);
 }

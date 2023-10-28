@@ -4,6 +4,7 @@ import com.v2p.swp391.application.event.MailEvent;
 import com.v2p.swp391.application.model.RoleEntity;
 import com.v2p.swp391.application.model.Token;
 import com.v2p.swp391.application.repository.TokenRepository;
+import com.v2p.swp391.application.request.SetPasswordByForgotRequest;
 import com.v2p.swp391.application.service.AuthService;
 import com.v2p.swp391.common.constant.Image;
 import com.v2p.swp391.common.constant.Role;
@@ -13,8 +14,12 @@ import com.v2p.swp391.application.repository.UserRepository;
 import com.v2p.swp391.application.request.LoginRequest;
 import com.v2p.swp391.application.request.SignUpRequest;
 import com.v2p.swp391.application.response.AuthResponse;
+import com.v2p.swp391.exception.ResourceNotFoundException;
+import com.v2p.swp391.notification.impl.MailServiceImpl;
 import com.v2p.swp391.security.TokenProvider;
 import com.v2p.swp391.security.UserPrincipal;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
@@ -32,6 +37,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
+@AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     @Autowired
@@ -51,9 +57,16 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private TokenProvider tokenProvider;
+    private MailServiceImpl mailService;
 
     @Value("${app.fe.verify_url}")
     private String verifyUrl;
+
+    @Value("${app.fe.forgot_password_url}")
+    private String forgotPasswordUrl;
+
+    public AuthServiceImpl() {
+    }
 
     @Override
     public AuthResponse signIn(LoginRequest request) {
@@ -152,6 +165,34 @@ public class AuthServiceImpl implements AuthService {
         String token = tokenProvider.createToken(user.getId(), 300000); // 5 minutes
         String urlPattern = verifyUrl + "?userId={0}&token={1}";
         String url = MessageFormat.format(urlPattern, user.getId(), token);
-            applicationEventPublisher.publishEvent(new MailEvent(this, user, url));
+            applicationEventPublisher.publishEvent(new MailEvent(this, user, url, "verify"));
+    }
+
+    @Override
+    public void sendMailForgotPassword(String email){
+        User user = userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User", "Email", email));
+
+        String token = tokenProvider.createToken(user.getId(), 600000); //10 minutes    `
+        String urlPattern = forgotPasswordUrl + "?userId={0}&token={1}";
+        String url = MessageFormat.format(urlPattern, user.getId(), token);
+            applicationEventPublisher.publishEvent(new MailEvent(this, user, url, "forgot"));
+    }
+
+    @Override
+    public void setPassword(Long userId, String token, SetPasswordByForgotRequest request) {
+        tokenProvider.validateToken(token);
+        User user = userRepository
+                .findById(userId)
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("User", "id", userId));
+        if(request.getPassword().equals(request.getConfirmedPassword())){
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+        else{
+            throw new AppException(HttpStatus.BAD_REQUEST, "Confirmed password is wrong");
+        }
+        userRepository.save(user);
     }
 }

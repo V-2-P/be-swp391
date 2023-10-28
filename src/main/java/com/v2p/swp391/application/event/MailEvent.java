@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.context.ApplicationEvent;
 
+import java.time.Clock;
+
 public class MailEvent  extends ApplicationEvent {
 
     @Getter
@@ -13,11 +15,16 @@ public class MailEvent  extends ApplicationEvent {
 
     @Getter
     @Setter
-    private String verificationUrl;
+    private String Url;
 
-    public MailEvent(Object source, User user, String verificationUrl) {
+    @Getter
+    @Setter
+    private String type;
+
+    public MailEvent(Object source, User user, String url, String type) {
         super(source);
         this.user = user;
-        this.verificationUrl = verificationUrl;
+        Url = url;
+        this.type = type;
     }
 }
