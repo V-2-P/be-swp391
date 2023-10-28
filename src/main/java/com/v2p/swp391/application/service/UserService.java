@@ -15,6 +15,6 @@ public interface UserService {
     void create(User user);
     User getUserById(Long id);
     User updateUser(Long id, UserUpdateRequest update);
-    Page<User> getAllUser(Long roleId, String fullName, String phoneNumber, String email, PageRequest pageRequest);
+    Page<User> getAllUser(Long roleId, String keyword, PageRequest pageRequest);
     User deleteUser(Long id);
 }

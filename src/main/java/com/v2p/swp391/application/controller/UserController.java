@@ -69,9 +69,7 @@ public class UserController {
     @GetMapping("")
     public CoreApiResponse<UserPageRespone> getUsers(
             @RequestParam(defaultValue = "0", name = "roleId") Long roleId,
-            @RequestParam(defaultValue = "", name = "email") String email,
-            @RequestParam(defaultValue = "", name = "phoneNumber") String phoneNumber,
-            @RequestParam(defaultValue = "", name = "fullName") String fullName,
+            @RequestParam(defaultValue = "", name = "keyword") String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit
     ){
@@ -80,7 +78,7 @@ public class UserController {
                 Sort.by("createdAt").descending()
         );
 
-        Page<User> userPage = userService.getAllUser(roleId, fullName, phoneNumber, email, pageRequest);
+        Page<User> userPage = userService.getAllUser(roleId, keyword, pageRequest);
         int totalPages = userPage.getTotalPages();
         List<User> users = userPage.getContent();
         UserPageRespone userPageRespone = new UserPageRespone();

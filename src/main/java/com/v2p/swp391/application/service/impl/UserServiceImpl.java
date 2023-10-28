@@ -94,12 +94,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getAllUser(Long roleId, String fullName, String phoneNumber, String email, PageRequest pageRequest) {
+    public Page<User> getAllUser(Long roleId, String keyword, PageRequest pageRequest) {
         Page<User> usersPage;
-        usersPage = userRepository.searchUsers(fullName, roleId, phoneNumber, email, pageRequest);
+        usersPage = userRepository.searchUsers(roleId, keyword, pageRequest);
         return usersPage;
     }
-
 
     @Override
     public User deleteUser(Long id) {
