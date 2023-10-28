@@ -1,9 +1,8 @@
 package com.v2p.swp391.application.controller;
 
-import com.v2p.swp391.application.request.LoginRequest;
-import com.v2p.swp391.application.request.RefreshRequest;
-import com.v2p.swp391.application.request.SignUpRequest;
+import com.v2p.swp391.application.request.*;
 import com.v2p.swp391.application.response.RefreshReponse;
+import com.v2p.swp391.application.service.UserService;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import com.v2p.swp391.application.response.AuthResponse;
 import com.v2p.swp391.application.service.AuthService;
@@ -77,5 +76,23 @@ public class AuthController {
     private boolean isJWT(String token) {
         String[] parts = token.split("\\.");
         return parts.length == 3;
+    }
+
+    @PutMapping("/forgotpassword")
+    public CoreApiResponse<?> forgotPassword(
+            @RequestParam("email") String email
+    ){
+        authService.sendMailForgotPassword(email);
+        return CoreApiResponse.success("Check your mail");
+    }
+
+    @PutMapping("/setpassword")
+    public CoreApiResponse<?> setPassword(
+            @RequestParam("userId") Long userId,
+            @RequestParam("token") String token,
+            @RequestBody SetPasswordByForgotRequest request
+            ){
+        authService.setPassword(userId, token, request);
+        return CoreApiResponse.success("Successfully!");
     }
 }
