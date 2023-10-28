@@ -37,14 +37,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
 //    );
 
     @Query("SELECT u FROM User u WHERE " +
-            "(:fullName = '' OR u.fullName LIKE %:fullName%) " +
-            "AND (:roleId = 0 OR u.roleEntity.id = :roleId) " +
-            "AND (:phoneNumber = '' OR u.phoneNumber = :phoneNumber)"+
-            "AND (:email = '' OR u.email LIKE %:email%)"
+            "(:roleId = 0 OR u.roleEntity.id = :roleId) " +
+            "AND (:keyword = '' OR u.email LIKE %:keyword% OR u.fullName LIKE %:keyword% OR u.phoneNumber LIKE %:keyword%)"
     )
-    Page<User> searchUsers(@Param("fullName") String fullName,
-                           @Param("roleId") Long roleId,
-                           @Param("phoneNumber") String phoneNumber,
-                           @Param("email") String email,
+    Page<User> searchUsers(@Param("roleId") Long roleId,
+                           @Param("keyword") String phoneNumber,
                            Pageable pageable);
 }

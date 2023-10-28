@@ -53,5 +53,6 @@ public class User  extends BaseEntity{
     private int isActive;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Token> tokens;
 }
