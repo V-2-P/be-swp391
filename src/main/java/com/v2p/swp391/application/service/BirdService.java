@@ -40,7 +40,9 @@ public interface BirdService {
 
     List<Bird> findBirdsByIds(List<Long> birdIds);
 
-    List<Bird> recommend(User user, Bird recentViewed, int K);
+    List<Bird> recommend( Bird recentViewed, int K);
+
+    List<Bird> findBirdsInPriceRange(Float minPrice, Float maxPrice);
 
 }
 
