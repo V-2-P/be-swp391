@@ -44,5 +44,8 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
 
     List<Bird> findByBirdTypeIdOrCategoryId(Long birdTypeId, Long categoryId);
 
+    @Query("SELECT b FROM Bird b WHERE b.price >= :minPrice AND b.price <= :maxPrice")
+    List<Bird> findBirdsInPriceRange(@Param("minPrice") Float minPrice, @Param("maxPrice") Float maxPrice);
+
 
 }

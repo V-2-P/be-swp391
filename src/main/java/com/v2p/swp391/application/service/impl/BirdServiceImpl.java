@@ -10,11 +10,14 @@ import com.v2p.swp391.application.response.BirdResponse;
 import com.v2p.swp391.application.service.BirdService;
 import com.v2p.swp391.common.constant.Image;
 import com.v2p.swp391.exception.ResourceNotFoundException;
+import com.v2p.swp391.security.UserPrincipal;
 import com.v2p.swp391.utils.StringUtlis;
 import com.v2p.swp391.utils.UploadImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -200,26 +203,48 @@ public class BirdServiceImpl implements BirdService {
         }
     }
 
-    public List<Bird> recommend(User user, Bird recentViewed, int K) {
-        List<Order> userOrders = orderRepository.findByUserId(user.getId());
+    public List<Bird> recommend( Bird recentViewed, int K) {
         BirdType recentViewedBirdType = recentViewed.getBirdType();
         Category recentViewedCategory = recentViewed.getCategory();
 
-        Map<Bird, Integer> freqMap = new HashMap<>();
+        Map<Bird, Integer> freqMap = new HashMap();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.getPrincipal() instanceof UserPrincipal) {
+            UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+            User user = userPrincipal.getUser();
 
-        for (Order order : userOrders) {
-            for (OrderDetail detail : order.getOrderDetails()) {
-                Bird bird = detail.getBird();
-                BirdType birdType = bird.getBirdType();
-                Category category = bird.getCategory();
 
-                if (birdType.getId().equals(recentViewedBirdType.getId()) || category.getId().equals(recentViewedCategory.getId())) {
-                    freqMap.put(bird, freqMap.getOrDefault(bird, 0) + 1);
+            if (user != null) {
+                List<Order> userOrders = orderRepository.findByUserId(user.getId());
+
+                for (Order order : userOrders) {
+                    for (OrderDetail detail : order.getOrderDetails()) {
+                        Bird bird = detail.getBird();
+                        BirdType birdType = bird.getBirdType();
+                        Category category = bird.getCategory();
+
+                        if (birdType.getId().equals(recentViewedBirdType.getId()) || category.getId().equals(recentViewedCategory.getId())) {
+                            freqMap.put(bird, freqMap.getOrDefault(bird, 0) + 1);
+                        }
+                    }
                 }
             }
         }
 
-        List<Bird> contentBasedRecommendations = birdRepository.findByBirdTypeIdOrCategoryId(recentViewedBirdType.getId(), recentViewedCategory.getId());
+        // Lấy tất cả loài chim cùng loại với recentViewed
+        List<Bird> birdsOfSameType = birdRepository.findByBirdTypeId(recentViewedBirdType.getId());
+
+        // Lấy tất cả loài chim cùng danh mục với recentViewed
+        List<Bird> birdsOfSameCategory = birdRepository.findByCategoryId(recentViewedCategory.getId());
+
+        // Tổng hợp loài chim từ cùng loại và cùng danh mục
+        List<Bird> allSimilarBirds = new ArrayList<>();
+        allSimilarBirds.addAll(birdsOfSameType);
+        allSimilarBirds.addAll(birdsOfSameCategory);
+
+        for (Bird bird : allSimilarBirds) {
+            freqMap.put(bird, freqMap.getOrDefault(bird, 0) + 1);
+        }
 
         List<Bird> recommendations = freqMap.entrySet()
                 .stream()
@@ -228,20 +253,10 @@ public class BirdServiceImpl implements BirdService {
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
 
-        Set<Bird> hybridSet = new HashSet<>();
-        hybridSet.addAll(recommendations);
-        hybridSet.addAll(contentBasedRecommendations);
-
-        List<Bird> result = new ArrayList<>(hybridSet);
-        result.sort((b1, b2) -> {
-            int ur1 = recommendations.indexOf(b1);
-            int cr1 = contentBasedRecommendations.indexOf(b1);
-            int ur2 = recommendations.indexOf(b2);
-            int cr2 = contentBasedRecommendations.indexOf(b2);
-
-            return (ur1 + cr1) - (ur2 + cr2);
-        });
-
-        return result.subList(0, K);
+        return recommendations;
+    }
+    @Override
+    public List<Bird> findBirdsInPriceRange(Float minPrice, Float maxPrice) {
+        return birdRepository.findBirdsInPriceRange(minPrice, maxPrice);
     }
 }

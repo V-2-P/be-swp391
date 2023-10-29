@@ -154,11 +154,16 @@ public class BirdController {
     public CoreApiResponse<List<Bird>> recommendList(
             @RequestParam Long birdId,
             @RequestParam int K) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-        User user = userPrincipal.getUser();
         Bird recentViewed = birdService.getBirdById(birdId);
-        List<Bird> recommendedBirds = birdService.recommend(user, recentViewed, K);
+        List<Bird> recommendedBirds = birdService.recommend(recentViewed, K);
         return CoreApiResponse.success(recommendedBirds);
+    }
+
+    @GetMapping("/priceRange")
+    public CoreApiResponse<List<Bird> >findBirdsInPriceRange(
+            @RequestParam Float minPrice,
+            @RequestParam Float maxPrice
+    ) {
+        return CoreApiResponse.success(birdService.findBirdsInPriceRange(minPrice, maxPrice));
     }
 }
