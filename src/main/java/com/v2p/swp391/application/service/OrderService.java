@@ -18,5 +18,5 @@ public interface OrderService {
     Order confirmOrder(Long id);
     Order deliveredOrder(Long id);
     void deleteOrder(Long id);
-    List<Order> findByUserId(Long userId);
+    List<Order> findByUserId();
 }

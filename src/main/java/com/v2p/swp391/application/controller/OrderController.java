@@ -64,9 +64,9 @@ public class OrderController {
         return CoreApiResponse.success(orderPageResponse);
     }
 
-    @GetMapping("/user/{user_id}")
-    public CoreApiResponse<List<OrderResponse>> getOrdersByUserId(@Valid @PathVariable("user_id") Long userId) {
-            List<Order> orders = orderService.findByUserId(userId);
+    @GetMapping("/user")
+    public CoreApiResponse<List<OrderResponse>> getOrdersByUserId() {
+            List<Order> orders = orderService.findByUserId();
             return CoreApiResponse.success(INSTANCE.toListResponses(orders));
 
     }
