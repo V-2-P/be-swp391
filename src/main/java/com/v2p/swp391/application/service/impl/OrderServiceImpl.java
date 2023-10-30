@@ -44,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
         order.setActive(true);
 
         float totalPayment = 0.0f;
+        float totalMoney = 0.0f;
 
         List<OrderDetail> orderDetails = new ArrayList<>();
         for (CartItemRequest cartItemDTO : cartItems) {
@@ -57,13 +58,13 @@ public class OrderServiceImpl implements OrderService {
             if (bird.getQuantity() < quantity) {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Not enough birds in stock.");
             }
-            float totalMoney = bird.getPrice() * quantity;
+            float totalProductPrice = bird.getPrice() * quantity;
+            totalMoney += totalProductPrice;
             totalPayment += totalMoney;
             orderDetail.setBird(bird);
             orderDetail.setNumberOfProducts(quantity);
             orderDetail.setPrice(bird.getPrice());
             orderDetails.add(orderDetail);
-            order.setTotalMoney(totalMoney);
         }
 
         UseVoucher useVoucher = new UseVoucher();
@@ -82,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
                         ("Shipping method", "id", order.getShippingMethod().getId()));
         float shippingMoney= shippingMethod.getShippingMoney();
         totalPayment+=shippingMoney;
+        order.setTotalMoney(totalMoney);
         order.setShippingMethod(shippingMethod);
         order.setTotalPayment(totalPayment);
         order.setOrderDate(LocalDate.now());
