@@ -10,6 +10,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderDetailResponse {
+    private long id ;
 
     private Long birdId;
 
