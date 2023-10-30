@@ -9,10 +9,13 @@ import com.v2p.swp391.application.response.OrderResponse;
 import com.v2p.swp391.application.service.OrderService;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
+import com.v2p.swp391.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -159,9 +162,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByUserId(Long userId) {
-
-        return orderRepository.findByUserId(userId);
+    public List<Order> findByUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        return orderRepository.findByUserId(user.getId());
     }
 
     private float discount(Order order, User user, float totalMoney) {
