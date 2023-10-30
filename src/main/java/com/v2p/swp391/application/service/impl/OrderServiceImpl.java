@@ -13,6 +13,7 @@ import com.v2p.swp391.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -166,7 +167,12 @@ public class OrderServiceImpl implements OrderService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
-        return orderRepository.findByUserId(user.getId());
+
+        // Tạo một đối tượng Sort để sắp xếp theo trường 'createdAt' theo thứ tự giảm dần (newest first)
+        Sort sortByCreatedAtDesc = Sort.by(Sort.Order.desc("createdAt"));
+
+        // Truy vấn và sắp xếp các đơn hàng
+        return orderRepository.findByUserId(user.getId(), sortByCreatedAtDesc);
     }
 
     private float discount(Order order, User user, float totalMoney) {
