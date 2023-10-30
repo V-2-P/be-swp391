@@ -16,6 +16,7 @@ import com.v2p.swp391.utils.UploadImageUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -215,7 +216,8 @@ public class BirdServiceImpl implements BirdService {
 
 
             if (user != null) {
-                List<Order> userOrders = orderRepository.findByUserId(user.getId());
+                Sort sortByCreatedAtDesc = Sort.by(Sort.Order.desc("createdAt"));
+                List<Order> userOrders = orderRepository.findByUserId(user.getId(),sortByCreatedAtDesc);
 
                 for (Order order : userOrders) {
                     for (OrderDetail detail : order.getOrderDetails()) {
