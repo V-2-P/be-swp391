@@ -21,13 +21,12 @@ import static com.v2p.swp391.application.mapper.UserHttpMapper.INSTANCE;
 @AllArgsConstructor
 @RestController
 @RequestMapping("${app.api.version.v1}/user")
-@PreAuthorize("isAuthenticated()")
+@PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN', 'MANAGER', 'STAFF')")
 public class PersonalController {
 
     private final PersonalServiceImpl personalService;
 
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN', 'MANAGER', 'STAFF')")
     public CoreApiResponse<UserResponse> getCurrentUser() {
         return CoreApiResponse.success(INSTANCE.toResponse(personalService.getPersonalInformation()));
     }
