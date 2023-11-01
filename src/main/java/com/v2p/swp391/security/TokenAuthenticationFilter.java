@@ -48,9 +48,9 @@ public class TokenAuthenticationFilter extends OncePerRequestFilter {
 
             ObjectMapper objectMapper = new ObjectMapper();
             String jsonResponse = objectMapper.writeValueAsString(apiResponse.getBody());
-            
+
             response.setStatus(apiResponse.getStatusCode().value());
-            response.getWriter().write(jsonResponse);
+//            response.getWriter().write(jsonResponse);
         }
 
         filterChain.doFilter(request, response);

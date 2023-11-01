@@ -1,17 +1,17 @@
 package com.v2p.swp391.application.response;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class AuthResponse {
+    private String refreshToken;
     private String accessToken;
+    private Long userId;
+    private String role;
     private String tokenType = "Bearer";
-    public AuthResponse(String accessToken) {
-        this.accessToken = accessToken;
-    }
+
 }

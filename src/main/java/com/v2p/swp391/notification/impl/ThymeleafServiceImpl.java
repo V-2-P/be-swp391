@@ -1,5 +1,7 @@
 package com.v2p.swp391.notification.impl;
 
+import com.v2p.swp391.application.model.User;
+import com.v2p.swp391.common.constant.Template;
 import com.v2p.swp391.notification.ThymeleafService;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Service;
@@ -16,9 +18,6 @@ public class ThymeleafServiceImpl implements ThymeleafService {
     private static final String MAIL_TEMPLATE_PREFIX = "/templates/";
     private static final String MAIL_TEMPLATE_SUFFIX = ".html";
     private static final String UTF_8 = "UTF-8";
-
-    private static final String TEMPLATE_NAME = "mail-template";
-
     private static TemplateEngine templateEngine;
 
     static {
@@ -48,12 +47,24 @@ public class ThymeleafServiceImpl implements ThymeleafService {
         return templateResolver;
     }
     @Override
-    public String getContent() {
+    public String getVerifyContent(User user, String url) {
         final Context context = new Context();
 
-        context.setVariable("name", "Messi");
-        context.setVariable("project_name", "spring-email-with-thymeleaf Demo");
+        context.setVariable("firstName", user.getFullName());
+        context.setVariable("url", url);
 
-        return templateEngine.process(TEMPLATE_NAME, context);
+        return templateEngine.process(Template.VERIFY_MAIL, context);
     }
+
+    @Override
+    public String getResetPasswordContent(User user, String url) {
+        final Context context = new Context();
+
+        context.setVariable("firstName", user.getFullName());
+        context.setVariable("url", url);
+
+        return templateEngine.process(Template.RESET_PASSWORD_MAIL, context);
+    }
+
+
 }
