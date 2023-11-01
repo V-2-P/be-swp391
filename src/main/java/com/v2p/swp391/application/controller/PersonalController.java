@@ -21,7 +21,7 @@ import static com.v2p.swp391.application.mapper.UserHttpMapper.INSTANCE;
 @AllArgsConstructor
 @RestController
 @RequestMapping("${app.api.version.v1}/user")
-@PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN', 'MANAGER', 'STAFF')")
+@PreAuthorize("isAuthenticated() && hasAnyRole('CUSTOMER', 'ADMIN', 'MANAGER', 'STAFF')")
 public class PersonalController {
 
     private final PersonalServiceImpl personalService;
