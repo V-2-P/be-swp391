@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.controller;
 
+import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.request.PersonalUpdateRequest;
 import com.v2p.swp391.application.response.UserResponse;
 import com.v2p.swp391.application.service.impl.PersonalServiceImpl;
@@ -27,16 +28,16 @@ public class PersonalController {
     private final PersonalServiceImpl personalService;
 
     @GetMapping("/me")
-    public CoreApiResponse<UserResponse> getCurrentUser() {
-        return CoreApiResponse.success(INSTANCE.toResponse(personalService.getPersonalInformation()));
+    public CoreApiResponse<User> getCurrentUser() {
+        return CoreApiResponse.success(personalService.getPersonalInformation());
     }
 
     @PutMapping("")
-    public CoreApiResponse<UserResponse> updateUser(
+    public CoreApiResponse<User> updateUser(
             @RequestBody PersonalUpdateRequest personalUpdateRequest
     ) {
-        UserResponse userResponse = INSTANCE.toResponse(personalService.updatePersonalInformation(personalUpdateRequest));
-        return CoreApiResponse.success(userResponse);
+        User user = personalService.updatePersonalInformation(personalUpdateRequest);
+        return CoreApiResponse.success(user);
     }
 
     @PostMapping("/uploadavatar")
