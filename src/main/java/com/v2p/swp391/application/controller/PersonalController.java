@@ -27,7 +27,7 @@ public class PersonalController {
     private final PersonalServiceImpl personalService;
 
     @GetMapping("/me")
-    @PreAuthorize("hasRole('CUSTOMER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'ADMIN', 'MANAGER', 'STAFF')")
     public CoreApiResponse<UserResponse> getCurrentUser() {
         return CoreApiResponse.success(INSTANCE.toResponse(personalService.getPersonalInformation()));
     }
