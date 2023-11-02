@@ -40,10 +40,10 @@ public class AuthController {
             @CookieValue(value = "refreshToken", required = false) String cookieRT,
             @RequestBody RefreshRequest bodyRT
     ) {
-        if(!isValidToken(bodyRT.getRefreshToken()) && !isValidToken(cookieRT)){
+        if(bodyRT == null && !isValidToken(cookieRT)){
             throw new AppException(HttpStatus.BAD_REQUEST, "Invalid token");
         }
-        String token = isValidToken(bodyRT.getRefreshToken()) ? bodyRT.getRefreshToken() : cookieRT;
+        String token = bodyRT != null ? bodyRT.getRefreshToken() : cookieRT;
 
         String accessToken = authService.refresh(token);
 
@@ -56,7 +56,7 @@ public class AuthController {
         Cookie cookie = new Cookie("refreshToken", res.getRefreshToken());
 
         // expires in 15 minutes
-        cookie.setMaxAge(appProperties.getAuth().getAccessTokenExpirationMsec());
+        cookie.setMaxAge(appProperties.getAuth().getRefreshTokenExpirationMsec());
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         response.addCookie(cookie);
