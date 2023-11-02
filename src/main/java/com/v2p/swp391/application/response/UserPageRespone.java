@@ -12,6 +12,6 @@ import java.util.List;
 @Getter
 @Setter
 public class UserPageRespone {
-    private List<User> users;
+    private List<UserResponse> users;
     private int totalPages;
 }

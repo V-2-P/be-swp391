@@ -4,6 +4,7 @@ import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.request.UserRequest;
 import com.v2p.swp391.application.request.UserUpdateRequest;
 import com.v2p.swp391.application.response.UserPageRespone;
+import com.v2p.swp391.application.response.UserResponse;
 import com.v2p.swp391.application.service.UserService;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import jakarta.validation.Valid;
@@ -78,11 +79,10 @@ public class UserController {
                 Sort.by("createdAt").descending()
         );
 
-        Page<User> userPage = userService.getAllUser(roleId, keyword, pageRequest);
-        int totalPages = userPage.getTotalPages();
-        List<User> users = userPage.getContent();
+        List<UserResponse> userPage = userService.getAllUser(roleId, keyword, pageRequest);
+        int totalPages = (userPage.size() % limit == 0) ? userPage.size() / limit : userPage.size() / limit + 1;
         UserPageRespone userPageRespone = new UserPageRespone();
-        userPageRespone.setUsers(users);
+        userPageRespone.setUsers(userPage);
         userPageRespone.setTotalPages(totalPages);
         return CoreApiResponse.success(userPageRespone);
     }

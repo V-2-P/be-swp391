@@ -14,6 +14,7 @@ import java.util.List;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserId(Long userId, Sort sort);
+    List<Order> findByUserId(Long userId);
 
 
     @Query("SELECT o FROM Order o WHERE (:status is null OR o.status = :status)")
