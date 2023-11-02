@@ -1,6 +1,8 @@
 package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.UserHttpMapper;
+import com.v2p.swp391.application.model.Booking;
+import com.v2p.swp391.application.model.Order;
 import com.v2p.swp391.application.model.RoleEntity;
 import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.request.UserUpdateRequest;
@@ -102,18 +104,6 @@ public class UserServiceImpl implements UserService {
 
         List<UserResponse> usersList = new ArrayList<>();
         for(User user: users){
-//            UserResponse.builder()
-//                    .id(user.getId())
-//                    .fullName(user.getFullName())
-//                    .phoneNumber(user.getPhoneNumber())
-//                    .email(user.getEmail())
-//                    .password(user.getPassword())
-//                    .address(user.getAddress())
-//                    .imageUrl(user.getImageUrl())
-//                    .roleEntity(user.getRoleEntity())
-//                    .emailVerified(user.getEmailVerified())
-//                    .dob(user.getDob())
-//                    .isActive(user.getIsActive());
             UserResponse userResponse = new UserResponse();
                 userResponse.setId(user.getId());
                 userResponse.setFullName(user.getFullName());
@@ -125,8 +115,25 @@ public class UserServiceImpl implements UserService {
                 userResponse.setEmailVerified(user.getEmailVerified());
                 userResponse.setDob(user.getDob());
                 userResponse.setIsActive(user.getIsActive());
-                userResponse.setBookingQuantity(bookingRepository.findByUserId(userResponse.getId()).size());
-                userResponse.setOrderQuantity(orderRepository.findByUserId(userResponse.getId()).size());
+                List<Booking> bookingList = bookingRepository.findByUserId(userResponse.getId());
+                List<Order> orderList = orderRepository.findByUserId(userResponse.getId());
+
+                float total = 0;
+                for(Booking booking: bookingList){
+                    if(booking.getTotalPayment() != null){
+                        total += booking.getTotalPayment();
+                    }
+
+                }
+                for(Order order: orderList){
+                    if(order.getPaymentMethod() != null){
+                        total += order.getTotalPayment();
+                    }
+                }
+
+                userResponse.setBookingQuantity(bookingList.size());
+                userResponse.setOrderQuantity(orderList.size());
+                userResponse.setTotalMoney(total);
             usersList.add(userResponse);
         }
         return usersList;

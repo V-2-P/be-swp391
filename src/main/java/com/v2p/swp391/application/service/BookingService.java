@@ -12,6 +12,7 @@ public interface BookingService {
     Booking createBooking(Booking booking, BookingDetail bookingDetail);
     Booking getBookingById(Long id);
     List<Booking> getAllBookings();
+    List<Booking> getBookingsByUserId(Long id);
     Booking updateStatusBooking(Long bookingId, BookingStatus status);
     Booking updateTotalPaymentBooking(Long bookingId, Float total);
     Booking updateTimeBooking(Long bookingId, String dateString);

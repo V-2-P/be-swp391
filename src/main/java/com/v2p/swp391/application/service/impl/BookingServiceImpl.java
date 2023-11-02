@@ -52,6 +52,11 @@ public class    BookingServiceImpl implements BookingService {
         return bookingRepository.findAll();
     }
 
+    @Override
+    public List<Booking> getBookingsByUserId(Long id) {
+        return bookingRepository.findByUserId(id);
+    }
+
     private boolean checkFormatStatus(Booking booking, BookingStatus status){
         List<Object> statuses = new ArrayList<Object>();
         statuses.add(BookingStatus.Pending);

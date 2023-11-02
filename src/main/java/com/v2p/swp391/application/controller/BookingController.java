@@ -42,6 +42,14 @@ public class BookingController {
         return CoreApiResponse.success(bookings);
     }
 
+    @GetMapping("/users/{id}")
+    public CoreApiResponse<List<Booking>> getBookingByUserId (
+            @Valid @PathVariable Long id
+    ){
+        List<Booking> bookings = bookingService.getBookingsByUserId(id);
+        return CoreApiResponse.success(bookings);
+    }
+
     @GetMapping("/{id}")
     public CoreApiResponse<Booking> getBookingById (
             @Valid @PathVariable Long id
