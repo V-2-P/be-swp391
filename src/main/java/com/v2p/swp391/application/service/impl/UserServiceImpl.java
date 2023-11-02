@@ -2,13 +2,12 @@ package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.UserHttpMapper;
 import com.v2p.swp391.application.model.RoleEntity;
-import com.v2p.swp391.application.repository.RoleRepository;
-import com.v2p.swp391.application.repository.TokenRepository;
+import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.request.UserUpdateRequest;
+import com.v2p.swp391.application.response.UserResponse;
 import com.v2p.swp391.common.constant.Image;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.application.model.User;
-import com.v2p.swp391.application.repository.UserRepository;
 import com.v2p.swp391.application.service.UserService;
 import com.v2p.swp391.security.UserPrincipal;
 import com.v2p.swp391.utils.UploadImageUtils;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,6 +36,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final TokenRepository tokenRepository;
+    private final BookingRepository bookingRepository;
+    private final OrderRepository orderRepository;
 
     @Override
     public User findById(Long id) {
@@ -94,10 +96,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Page<User> getAllUser(Long roleId, String keyword, PageRequest pageRequest) {
-        Page<User> usersPage;
-        usersPage = userRepository.searchUsers(roleId, keyword, pageRequest);
-        return usersPage;
+    public List<UserResponse> getAllUser(Long roleId, String keyword, PageRequest pageRequest) {
+        List<User> users;
+        users = userRepository.searchUsers(roleId, keyword, pageRequest);
+
+        List<UserResponse> usersList = new ArrayList<>();
+        for(User user: users){
+//            UserResponse.builder()
+//                    .id(user.getId())
+//                    .fullName(user.getFullName())
+//                    .phoneNumber(user.getPhoneNumber())
+//                    .email(user.getEmail())
+//                    .password(user.getPassword())
+//                    .address(user.getAddress())
+//                    .imageUrl(user.getImageUrl())
+//                    .roleEntity(user.getRoleEntity())
+//                    .emailVerified(user.getEmailVerified())
+//                    .dob(user.getDob())
+//                    .isActive(user.getIsActive());
+            UserResponse userResponse = new UserResponse();
+                userResponse.setId(user.getId());
+                userResponse.setFullName(user.getFullName());
+                userResponse.setPhoneNumber(user.getPhoneNumber());
+                userResponse.setPassword(user.getPassword());
+                userResponse.setAddress(user.getAddress());
+                userResponse.setImageUrl(user.getImageUrl());
+                userResponse.setRoleEntity(user.getRoleEntity());
+                userResponse.setEmailVerified(user.getEmailVerified());
+                userResponse.setDob(user.getDob());
+                userResponse.setIsActive(user.getIsActive());
+                userResponse.setBookingQuantity(bookingRepository.findByUserId(userResponse.getId()).size());
+                userResponse.setOrderQuantity(orderRepository.findByUserId(userResponse.getId()).size());
+            usersList.add(userResponse);
+        }
+        return usersList;
     }
 
     @Override
