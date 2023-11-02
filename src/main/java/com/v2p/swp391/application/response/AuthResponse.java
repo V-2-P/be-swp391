@@ -12,6 +12,6 @@ public class AuthResponse {
     private String accessToken;
     private Long userId;
     private String role;
-    private String tokenType = "Bearer";
+    private String imageUrl;
 
 }

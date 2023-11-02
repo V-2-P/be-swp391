@@ -92,6 +92,7 @@ public class AuthServiceImpl implements AuthService {
                 .refreshToken(refreshToken)
                 .role(userPrincipal.getAuthorities().iterator().next().getAuthority())
                 .userId(userPrincipal.getId())
+                .imageUrl(userPrincipal.getUser().getImageUrl())
                 .build();
     }
 

@@ -2,6 +2,7 @@ package com.v2p.swp391.application.controller;
 
 import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.request.PersonalUpdateRequest;
+import com.v2p.swp391.application.response.UploadRespone;
 import com.v2p.swp391.application.response.UserResponse;
 import com.v2p.swp391.application.service.impl.PersonalServiceImpl;
 import com.v2p.swp391.security.CurrentUser;
@@ -41,10 +42,10 @@ public class PersonalController {
     }
 
     @PostMapping("/uploadavatar")
-    public CoreApiResponse<?> uploadThumbnail(
+    public CoreApiResponse<UploadRespone> uploadThumbnail(
             @RequestParam("imageFile") MultipartFile imageFile) throws IOException
     {
-        personalService.uploadAvatar(imageFile);
-        return CoreApiResponse.success("Avatar uploaded successfully.");
+        User user = personalService.uploadAvatar(imageFile);
+        return CoreApiResponse.success(new UploadRespone(user.getImageUrl()) ,"Avatar uploaded successfully.");
     }
 }

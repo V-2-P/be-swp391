@@ -19,6 +19,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse extends User {
-    private int orderQuantity = 0;
-    private int bookingQuantity = 0;
+    private int orderQuantity;
+    private int bookingQuantity;
+    private float totalMoney;
 }
