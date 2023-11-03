@@ -42,7 +42,7 @@ public class PersonalServiceImpl implements PersonalService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
-        UserHttpMapper.INSTANCE.updatePersonalFromRequest(update, user);
+
 
         if(update.getCurrentPassword() != null && user.getPassword() != null) {
             if (passwordEncoder.matches(update.getCurrentPassword(), user.getPassword())) {
@@ -57,7 +57,7 @@ public class PersonalServiceImpl implements PersonalService {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Wrong password!!");
             }
         }
-
+        UserHttpMapper.INSTANCE.updatePersonalFromRequest(update, user);
         return userRepository.save(user);
     }
 
