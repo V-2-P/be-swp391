@@ -30,6 +30,7 @@ public interface OrderHttpMapper {
     @Mapping(source = "voucher.discount", target = "discount")
     @Mapping(source = "shippingMethod.name", target = "shippingMethod")
     @Mapping(source = "shippingMethod.shippingMoney", target = "shippingMoney")
+    @Mapping(source = "feedback.status", target = "feedbackStatus")
     OrderResponse toResponse(Order order);
 
     @Mapping(source = "fullName", target = "userName")

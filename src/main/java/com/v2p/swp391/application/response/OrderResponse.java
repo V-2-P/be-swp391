@@ -50,4 +50,6 @@ public class OrderResponse {
     private String trackingNumber;
 
     private List<OrderDetailResponse> orderDetails;
+
+    private boolean feedbackStatus;
 }
