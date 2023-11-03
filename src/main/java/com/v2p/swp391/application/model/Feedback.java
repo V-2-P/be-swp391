@@ -23,4 +23,6 @@ public class Feedback {
 
     @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FeedbackBird> feedbackBirds;
+
+    private boolean status;
 }

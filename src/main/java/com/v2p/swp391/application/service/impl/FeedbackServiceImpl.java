@@ -30,7 +30,6 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
         if (feedBackRepository.existsByOrderId(feedback.getOrder().getId())) {
             throw new AppException(HttpStatus.BAD_REQUEST,"Feedback for this order already exists.");
         }
-
         feedback.setOrder(order);
 
 
@@ -45,6 +44,7 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
             feedbackBirdRepository.save(feedbackBird);
         }
         feedback.setFeedbackBirds(feedbackBirds);
+        feedback.setStatus(true);
         return feedback;
     }
 
