@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -60,22 +61,40 @@ public class OrderServiceImpl implements OrderService {
             }
             float totalProductPrice = bird.getPrice() * quantity;
             totalMoney += totalProductPrice;
-            totalPayment += totalMoney;
+
+
             orderDetail.setBird(bird);
             orderDetail.setNumberOfProducts(quantity);
             orderDetail.setPrice(bird.getPrice());
             orderDetails.add(orderDetail);
         }
+        totalPayment += totalMoney;
 
-        UseVoucher useVoucher = new UseVoucher();
-        if (order.getVoucher() != null && order.getVoucher().getId() != null) {
-            float discount = discount(order, user, totalPayment);
+
+
+        if (order.getVoucher() != null) {
+            Voucher voucher = voucherRepository
+                    .findById(order.getVoucher().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", order.getVoucher().getId()));
+
+
+            if(useVoucherRepository.existsByUser_IdAndVoucher_Id(user.getId(),voucher.getId())) {
+                throw new AppException(HttpStatus.BAD_REQUEST, "User has already used this voucher.");
+            }
+
+
+            order.setVoucher(voucher);
+            float discount = discount(order, totalMoney);
+            UseVoucher useVoucher = new UseVoucher();
             useVoucher.setUser(user);
             useVoucher.setVoucher(order.getVoucher());
             useVoucher.setCreatedAt(LocalDate.now());
-            useVoucherRepository.save(useVoucher);
             totalPayment -= discount;
+            useVoucher.setOrder(order);
+            order.setUseVouchers(useVoucher);
+
         }
+
 
         ShippingMethod shippingMethod= shippingMethodRepository
                 .findById(order.getShippingMethod().getId())
@@ -90,8 +109,9 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.pending);
         order.setOrderDetails(orderDetails);
         orderRepository.save(order);
-        useVoucher.setOrder(order);
-        orderDetailRepository.saveAll(orderDetails);
+
+
+
 
         for (OrderDetail orderDetail : orderDetails) {
             Bird bird = orderDetail.getBird();
@@ -177,18 +197,12 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.findByUserId(user.getId(), sortByCreatedAtDesc);
     }
 
-    private float discount(Order order, User user, float totalMoney) {
+    private float discount(Order order,  float totalMoney) {
         float discount;
 
-        Long userId = user.getId();
-        Long voucherId = order.getVoucher().getId();
-        if (useVoucherRepository.existsByUser_IdAndVoucher_Id(userId, voucherId)) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "User has already used this voucher.");
-        }
 
-        Voucher voucher = voucherRepository
-                .findById(order.getVoucher().getId())
-                .orElseThrow(() -> new ResourceNotFoundException("Voucher", "id", order.getVoucher().getId()));
+        Voucher voucher = order.getVoucher();
+
         float minValue = voucher.getMinValue();
 
 
@@ -207,7 +221,6 @@ public class OrderServiceImpl implements OrderService {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Voucher is out of stock.");
             }
             discount = voucher.getDiscount();
-            order.setVoucher(voucher);
         } else {
             throw new AppException(HttpStatus.BAD_REQUEST, "Total money is less than minValue. Cannot use this voucher.");
         }

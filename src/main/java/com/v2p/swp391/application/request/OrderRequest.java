@@ -41,8 +41,8 @@ public class OrderRequest {
     @JsonProperty("shippingMoney")
     private Float shippingMoney;
 
-    @Min(value = 1, message = "Voucher ID must be > 0")
-    @JsonProperty("voucher")
+//    @Min(value = 1, message = "Voucher ID must be > 0")
+//    @JsonProperty("voucher")
     private Long voucherId;
 
     @JsonProperty("cartItems")
