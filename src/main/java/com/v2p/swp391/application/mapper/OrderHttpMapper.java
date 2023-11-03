@@ -3,6 +3,7 @@ package com.v2p.swp391.application.mapper;
 import com.v2p.swp391.application.model.Order;
 
 import com.v2p.swp391.application.model.OrderDetail;
+import com.v2p.swp391.application.model.Voucher;
 import com.v2p.swp391.application.request.OrderRequest;
 import com.v2p.swp391.application.request.ShippingOrderRequest;
 
@@ -19,10 +20,20 @@ import java.util.List;
 
 public interface OrderHttpMapper {
     OrderHttpMapper INSTANCE = Mappers.getMapper(OrderHttpMapper.class);
-    @Mapping(source = "voucherId", target = "voucher.id")
+
+    @Mapping(target = "voucher", expression = "java(voucherFromId(request.getVoucherId()))")
     @Mapping(source = "userId", target = "user.id")
     @Mapping(source = "shippingMethod", target = "shippingMethod.id")
     Order toModel(OrderRequest request);
+
+    default Voucher voucherFromId(Long id) {
+        if (id == null) {
+            return null; // Trả về null nếu id là null, tránh tạo instance mới
+        }
+        Voucher voucher = new Voucher();
+        voucher.setId(id);
+        return voucher;
+    }
 
     Order toModelUpdate(ShippingOrderRequest order);
 
