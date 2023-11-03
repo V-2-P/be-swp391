@@ -48,7 +48,7 @@ public class PersonalServiceImpl implements PersonalService {
             if (passwordEncoder.matches(update.getCurrentPassword(), user.getPassword())) {
                 if (update.getPassword().equals(update.getConfirmedPassword())) {
                     if (update.getPassword() != null) {
-                        user.setPassword(passwordEncoder.encode(update.getPassword()));
+                        update.setPassword(passwordEncoder.encode(update.getPassword()));
                     }
                 } else {
                     throw new AppException(HttpStatus.BAD_REQUEST, "Confirmed password is wrong!!");
