@@ -13,7 +13,7 @@ import java.util.List;
 public interface OrderService {
     Order createOrder(Order order, List<CartItemRequest> cartItems) ;
     Order getOrder(Long id);
-    Page<OrderResponse> getListOrder( OrderStatus status, PageRequest pageRequest);
+    Page<OrderResponse> getListOrder(OrderStatus status,String keyword, PageRequest pageRequest);
     Order shippingOrder(Long id, Order order) ;
     Order confirmOrder(Long id);
     Order deliveredOrder(Long id);
