@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "vouchers")
@@ -41,4 +42,8 @@ public class Voucher extends BaseEntity{
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
+
+    private boolean status;
+
+
 }

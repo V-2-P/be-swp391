@@ -12,8 +12,12 @@ import org.mapstruct.factory.Mappers;
 public interface VoucherHttpMapper {
     VoucherHttpMapper INSTANCE = Mappers.getMapper(VoucherHttpMapper.class);
 
+    @Mapping(source = "amount", target = "amount")
+    @Mapping(source = "status", target = "status")
     Voucher toModel(VoucherRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(source = "amount", target = "amount")
+    @Mapping(source = "status", target = "status")
     void updateVoucherFromRequest(VoucherRequest request, @MappingTarget Voucher voucher);
 }
