@@ -216,6 +216,9 @@ public class OrderServiceImpl implements OrderService {
             }
             if (voucher.getAmount() > 0) {
                 voucher.setAmount(voucher.getAmount() - 1);
+                if(voucher.getAmount()==0){
+                    voucher.setStatus(false);
+                }
                 voucherRepository.save(voucher);
             } else {
                 throw new AppException(HttpStatus.BAD_REQUEST, "Voucher is out of stock.");

@@ -8,9 +8,14 @@ import com.v2p.swp391.application.service.VoucherService;
 import com.v2p.swp391.exception.AppException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class VoucherServiceImpl implements VoucherService {
@@ -21,6 +26,7 @@ public class VoucherServiceImpl implements VoucherService {
         if(voucherRepository.existsByCode(voucher.getCode())){
             throw new AppException(HttpStatus.BAD_REQUEST, "Voucher code already exists");
         }
+        voucher.setStatus(true);
         return voucherRepository.save(voucher);
     }
 
@@ -37,7 +43,11 @@ public class VoucherServiceImpl implements VoucherService {
 
     @Override
     public List<Voucher> getAllVoucher() {
-        return voucherRepository.findAll();
+
+        List<Voucher> sortedVouchers = voucherRepository.findAll().stream()
+                .sorted(Comparator.comparing(Voucher::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+        return  sortedVouchers;
     }
 
     @Override
@@ -52,5 +62,17 @@ public class VoucherServiceImpl implements VoucherService {
         Voucher existingVoucher = getVoucherById(id);
         voucherRepository.deleteById(id);
 
+    }
+
+    @Scheduled(cron = "0 00 00 * * ?") // Chạy mỗi ngày vào lúc nửa đêm
+    public void expireVouchers() {
+        LocalDate today = LocalDate.now();
+        List<Voucher> vouchersToExpire = voucherRepository.findByExpirationDateBeforeOrAmountLessThanEqualAndStatusIsTrue(today, 0);
+
+        for (Voucher voucher : vouchersToExpire) {
+            voucher.setStatus(false);
+            // Cập nhật thông tin voucher nếu cần
+            voucherRepository.save(voucher);
+        }
     }
 }

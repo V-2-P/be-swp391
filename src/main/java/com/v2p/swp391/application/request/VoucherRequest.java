@@ -13,7 +13,7 @@ import java.time.LocalDate;
 public class VoucherRequest {
     @NotNull(message = "Discount cannot be empty")
     @Min(value = 1000, message = "Discount must be at least 1000")
-    private float discount;
+    private Float discount;
 
     @NotEmpty(message = "Voucher name cannot be empty")
     @Size(min = 5, max = 50, message = "Name must be between 10 and 50 characters")
@@ -28,15 +28,17 @@ public class VoucherRequest {
     private LocalDate startDate;
 
     @Min(value = 1, message = "Amount must be at least 1")
-    private int amount;
+    private String amount;
 
     @JsonProperty("minValue")
     @NotNull(message = "minValue cannot be empty")
-    private float minValue;
+    private Float minValue;
 
     @NotEmpty(message = "Voucher code cannot be empty")
     @Size(min = 1, max = 20, message = "Code must be between 1 and 20 characters")
     private String code;
+
+    private String status;
 
 }
 

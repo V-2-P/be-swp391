@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDate;
 import java.util.List;
 
 
@@ -12,6 +13,11 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long > {
 
     boolean existsByCode(String code);
 
-    @Query("SELECT v FROM Voucher v WHERE v.code LIKE %:search% OR v.name LIKE %:search%")
+    @Query("SELECT v FROM Voucher v WHERE (:search IS NULL OR :search = '' " +
+            "OR v.code LIKE %:search% OR v.name LIKE %:search%) AND v.status = true")
     List<Voucher> searchByCodeOrName(@Param("search") String searchText);
+
+    List<Voucher> findByExpirationDateBeforeOrAmountLessThanEqualAndStatusIsTrue(LocalDate currentDate, int amount);
+
+
 }
