@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -130,9 +131,9 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Page<OrderResponse> getListOrder(OrderStatus status, PageRequest pageRequest) {
+    public Page<OrderResponse> getListOrder(OrderStatus status,String keyword, PageRequest pageRequest) {
         Page<Order> orderPage;
-        orderPage = orderRepository.findByStatus(status, pageRequest);
+        orderPage = orderRepository.findByStatus(status, keyword,pageRequest);
         return orderPage.map(orderMapper::toResponse);
     }
 
@@ -229,5 +230,19 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return discount;
+    }
+
+
+    @Scheduled(cron = "0 00 00 * * ?") // Chạy mỗi ngày vào lúc nửa đêm
+    public void updatePendingOrder() {
+
+        List<Order> orderPending = orderRepository.findByStatus(OrderStatus.pending);
+
+
+        for (Order order : orderPending) {
+            order.setStatus(OrderStatus.processing);
+
+        }
+        orderRepository.saveAll(orderPending);
     }
 }

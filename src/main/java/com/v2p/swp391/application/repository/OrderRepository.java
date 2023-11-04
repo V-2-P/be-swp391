@@ -17,8 +17,15 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     List<Order> findByUserId(Long userId);
 
 
-    @Query("SELECT o FROM Order o WHERE (:status is null OR o.status = :status)")
-    Page<Order> findByStatus(@Param("status") OrderStatus status, Pageable pageable);
+    @Query("SELECT o FROM Order o WHERE (:status is null OR o.status = :status)"+
+            "AND (:keyword IS NULL OR :keyword = '' OR o.fullName LIKE %:keyword% OR o.id LIKE %:keyword%)")
+
+    Page<Order> findByStatus(@Param("status") OrderStatus status,
+                             @Param("keyword") String keyword,
+                             Pageable pageable);
+
+
+    List<Order> findByStatus(OrderStatus status);
 
     long count();
 

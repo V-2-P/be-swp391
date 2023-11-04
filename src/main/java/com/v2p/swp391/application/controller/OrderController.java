@@ -49,6 +49,7 @@ public class OrderController {
 
     @GetMapping("")
     public CoreApiResponse<OrderPageResponse> getListOrders(
+            @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "") OrderStatus status,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit){
@@ -56,7 +57,7 @@ public class OrderController {
                 page, limit,
                 Sort.by("createdAt").descending()
         );
-        Page<OrderResponse> orderPage = orderService.getListOrder(status,pageRequest);
+        Page<OrderResponse> orderPage = orderService.getListOrder(status,keyword,pageRequest);
         int totalPages= orderPage.getTotalPages();
         List<OrderResponse> orders = orderPage.getContent();
         OrderPageResponse orderPageResponse= new OrderPageResponse();
