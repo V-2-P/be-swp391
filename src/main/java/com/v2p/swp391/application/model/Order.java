@@ -77,8 +77,7 @@ public class Order extends BaseEntity {
     @JsonManagedReference
     private List<OrderDetail> orderDetails;
 
-    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JsonIgnore
+    @OneToOne(mappedBy = "order", cascade = CascadeType.ALL)
     private Feedback feedback;
 
 

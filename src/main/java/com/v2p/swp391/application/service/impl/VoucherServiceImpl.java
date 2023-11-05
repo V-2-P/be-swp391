@@ -2,6 +2,7 @@ package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.VoucherHttpMapper;
 import com.v2p.swp391.application.model.Voucher;
+import com.v2p.swp391.application.model.VoucherStatus;
 import com.v2p.swp391.application.repository.VoucherRepository;
 import com.v2p.swp391.application.request.VoucherRequest;
 import com.v2p.swp391.application.service.VoucherService;
@@ -26,7 +27,13 @@ public class VoucherServiceImpl implements VoucherService {
         if(voucherRepository.existsByCode(voucher.getCode())){
             throw new AppException(HttpStatus.BAD_REQUEST, "Voucher code already exists");
         }
-        voucher.setStatus(true);
+        LocalDate today = LocalDate.now();
+
+        if (!today.isBefore(voucher.getStartDate())) {
+            voucher.setStatus(VoucherStatus.isActive);
+        } else {
+            voucher.setStatus(VoucherStatus.notActivated);
+        }
         return voucherRepository.save(voucher);
     }
 
@@ -58,21 +65,35 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
-    public void deleteVoucher(Long id) {
+    public void cancelVoucher(Long id) {
         Voucher existingVoucher = getVoucherById(id);
-        voucherRepository.deleteById(id);
+        existingVoucher.setStatus(VoucherStatus.cancelled);
+        voucherRepository.save(existingVoucher);
 
     }
 
-    @Scheduled(cron = "0 00 00 * * ?") // Chạy mỗi ngày vào lúc nửa đêm
+    @Scheduled(cron = "${app.task.scheduling.cron.expire-vouchers}") // Chạy mỗi ngày vào lúc nửa đêm
     public void expireVouchers() {
         LocalDate today = LocalDate.now();
-        List<Voucher> vouchersToExpire = voucherRepository.findByExpirationDateBeforeOrAmountLessThanEqualAndStatusIsTrue(today, 0);
+        List<Voucher> vouchersToExpire = voucherRepository.findExpiredOrOutOfStockVouchers(today, 0, VoucherStatus.isActive);
 
         for (Voucher voucher : vouchersToExpire) {
-            voucher.setStatus(false);
-            // Cập nhật thông tin voucher nếu cần
-            voucherRepository.save(voucher);
+            voucher.setStatus(VoucherStatus.expired);
+        }
+        voucherRepository.saveAll(vouchersToExpire);
+
+    }
+
+    @Scheduled(cron = "${app.task.scheduling.cron.active-voucher}")
+    public void checkVoucherStartDate() {
+        LocalDate today = LocalDate.now();
+        List<Voucher> vouchers = voucherRepository.findByStatus(VoucherStatus.notActivated);
+
+        for (Voucher voucher : vouchers) {
+            if (today.isEqual(voucher.getStartDate())) {
+                voucher.setStatus(VoucherStatus.isActive);
+                voucherRepository.save(voucher);
+            }
         }
     }
 }

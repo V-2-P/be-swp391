@@ -12,7 +12,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,10 +43,10 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
             feedbackBird.setBird(bird);
             feedbackBird.setActive(true);
             feedbackBird.setFeedback(feedback);
-            feedbackBirdRepository.save(feedbackBird);
         }
         feedback.setFeedbackBirds(feedbackBirds);
         feedback.setStatus(true);
+        feedBackRepository.save(feedback);
         return feedback;
     }
 
@@ -62,7 +64,10 @@ public class FeedbackServiceImpl implements FeedbackOrderService {
 
     @Override
     public List<FeedbackBird> getAll() {
-        return feedbackBirdRepository.findAll();
+        List<FeedbackBird> feedbackBirds = feedbackBirdRepository.findAll();
+        return feedbackBirds.stream()
+                .sorted(Comparator.comparing(FeedbackBird::getCreatedAt).reversed())
+                .collect(Collectors.toList());
     }
 
     @Override

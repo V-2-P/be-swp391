@@ -13,6 +13,6 @@ public interface VoucherService {
     List<Voucher> searchByCodeOrName(String searchText);
     List<Voucher> getAllVoucher();
     Voucher updateVoucher(Long id, VoucherRequest voucher);
-    void deleteVoucher(Long id);
+    void cancelVoucher(Long id);
 
 }

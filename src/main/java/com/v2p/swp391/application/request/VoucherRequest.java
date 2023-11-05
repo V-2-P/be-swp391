@@ -38,7 +38,6 @@ public class VoucherRequest {
     @Size(min = 1, max = 20, message = "Code must be between 1 and 20 characters")
     private String code;
 
-    private String status;
 
 }
 

@@ -2,6 +2,7 @@ server:
   port: ${SERVER_PORT:8088}
 
 spring:
+
   datasource:
     url: jdbc:mysql://${MYSQL_HOST:localhost}:${MYSQL_PORT:3306}/birdfarmshop?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: ${MYSQL_USER:root}
@@ -48,6 +49,14 @@ springdoc:
   swagger-ui:
     operationsSorter: method
 app:
+  task:
+    scheduling:
+      cron:
+        expire-vouchers: ${CRON_VOUCHERS:0 0 0 * * ?}
+        set-status-order: ${CRON_ORDER:0 0 0 * * ?}
+        active-voucher: ${CRON_ACTIVE_VOUCHER:0 0 0 * * ?}
+
+
   fe:
     verify_url: ${VERIFY_URL:http://localhost:8080/api/v1/auth/verify}
     forgot_password_url: ${FORGOT_PASSWORD_URL:http://localhost:8080/api/v1/user/setpassword}
