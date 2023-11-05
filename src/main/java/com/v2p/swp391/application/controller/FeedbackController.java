@@ -66,7 +66,7 @@ public class FeedbackController {
     }
 
     @PutMapping("/hidden/{id}")
-    public CoreApiResponse<?> hiddenFeedback(Long id ){
+    public CoreApiResponse<?> hiddenFeedback(@Valid @PathVariable("id") Long id ){
         feedbackService.deleteFeedback(id);
         return CoreApiResponse.success("Hidden feedback successfully");
     }
