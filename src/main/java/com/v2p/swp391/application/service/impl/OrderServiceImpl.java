@@ -218,7 +218,7 @@ public class OrderServiceImpl implements OrderService {
             if (voucher.getAmount() > 0) {
                 voucher.setAmount(voucher.getAmount() - 1);
                 if(voucher.getAmount()==0){
-                    voucher.setStatus(false);
+                    voucher.setStatus(VoucherStatus.expired);
                 }
                 voucherRepository.save(voucher);
             } else {
@@ -233,7 +233,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-    @Scheduled(cron = "0 00 00 * * ?") // Chạy mỗi ngày vào lúc nửa đêm
+    @Scheduled(cron ="${app.task.scheduling.cron.set-status-order}")
     public void updatePendingOrder() {
 
         List<Order> orderPending = orderRepository.findByStatus(OrderStatus.pending);

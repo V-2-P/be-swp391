@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,10 +19,11 @@ public class Feedback {
     private Long id;
 
     @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "order_id")
     private Order order;
 
-    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedbackBird> feedbackBirds;
 
     private boolean status;

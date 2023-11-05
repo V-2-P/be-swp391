@@ -64,4 +64,10 @@ public class FeedbackController {
         List<FeedbackBird> feedbackBirds = feedbackService.getFeedbackBirdsByBirdType(birdId);
         return CoreApiResponse.success(INSTANCE.toListResponse(feedbackBirds));
     }
+
+    @PutMapping("/hidden/{id}")
+    public CoreApiResponse<?> hiddenFeedback(@Valid @PathVariable("id") Long id ){
+        feedbackService.deleteFeedback(id);
+        return CoreApiResponse.success("Hidden feedback successfully");
+    }
 }

@@ -58,7 +58,7 @@ public class VoucherController {
     public CoreApiResponse<?> deleteVoucher(
             @PathVariable Long id
     ){
-        voucherService.deleteVoucher(id);
-        return CoreApiResponse.success("Delete voucher with id: " + id + " successfully");
+        voucherService.cancelVoucher(id);
+        return CoreApiResponse.success("Cancel voucher with id: " + id + " successfully");
     }
 }

@@ -43,7 +43,8 @@ public class Voucher extends BaseEntity{
     @Column(name = "expiration_date")
     private LocalDate expirationDate;
 
-    private boolean status;
+    @Enumerated(EnumType.STRING)
+    private VoucherStatus status;
 
 
 }
