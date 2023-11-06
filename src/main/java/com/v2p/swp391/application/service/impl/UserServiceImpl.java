@@ -64,21 +64,19 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    private UserResponse transformFromUser(User user){
-        UserResponse userResponse = new UserResponse();
-        userResponse.setId(user.getId());
-        userResponse.setFullName(user.getFullName());
-        userResponse.setPhoneNumber(user.getPhoneNumber());
-        userResponse.setEmail(user.getEmail());
-        userResponse.setPassword(user.getPassword());
-        userResponse.setAddress(user.getAddress());
-        userResponse.setImageUrl(user.getImageUrl());
-        userResponse.setRoleEntity(user.getRoleEntity());
-        userResponse.setEmailVerified(user.getEmailVerified());
-        userResponse.setDob(user.getDob());
-        userResponse.setIsActive(user.getIsActive());
-        List<Booking> bookingList = bookingRepository.findByUserId(userResponse.getId());
-        List<Order> orderList = orderRepository.findByUserId(userResponse.getId());
+    @Override
+    public User getUserById(Long id) {
+        User user =  userRepository.findById(id)
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("User", "id", id));
+        return user;
+    }
+
+    @Override
+    public UserResponse getUserResponeById(Long id) {
+        User user = getUserById(id);
+        List<Booking> bookingList = bookingRepository.findByUserId(user.getId());
+        List<Order> orderList = orderRepository.findByUserId(user.getId());
 
         float total = 0;
         for(Booking booking: bookingList){
@@ -93,6 +91,8 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        UserResponse userResponse = new UserResponse();
+        userResponse.setUser(user);
         userResponse.setBookingQuantity(bookingList.size());
         userResponse.setOrderQuantity(orderList.size());
         userResponse.setTotalMoney(total);
@@ -100,14 +100,6 @@ public class UserServiceImpl implements UserService {
         return userResponse;
     }
 
-    @Override
-    public UserResponse getUserById(Long id) {
-        User user =  userRepository.findById(id)
-                .orElseThrow(()
-                        -> new ResourceNotFoundException("User", "id", id));
-        UserResponse userResponse = transformFromUser(user);
-        return userResponse;
-    }
 
     @Override
     public User updateUser(Long id, UserUpdateRequest update) {
@@ -141,7 +133,7 @@ public class UserServiceImpl implements UserService {
 
         List<UserResponse> usersList = new ArrayList<>();
         for(User user: users){
-            UserResponse userResponse = transformFromUser(user);
+            UserResponse userResponse = getUserResponeById(user.getId());
             usersList.add(userResponse);
         }
         return usersList;

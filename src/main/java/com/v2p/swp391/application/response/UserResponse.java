@@ -18,7 +18,8 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResponse extends User {
+public class UserResponse {
+    private User user;
     private int orderQuantity;
     private int bookingQuantity;
     private float totalMoney;

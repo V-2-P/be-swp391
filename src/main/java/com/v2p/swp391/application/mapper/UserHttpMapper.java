@@ -15,6 +15,7 @@ public interface UserHttpMapper {
     UserHttpMapper INSTANCE = Mappers.getMapper(UserHttpMapper.class);
     @Mapping(source = "roleId", target = "roleEntity.id")
     User toModel(UserRequest request);
+    UserResponse toRespone (User user);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(source = "isActive", target = "isActive")
