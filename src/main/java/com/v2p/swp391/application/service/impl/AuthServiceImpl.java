@@ -115,7 +115,7 @@ public class AuthServiceImpl implements AuthService {
         user.setFullName(request.getFullName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setImageUrl(Image.USER_IMAGE_PATH+Image.DEFAULT_AVATAR);
+        user.setImageUrl(Image.DEFAULT_AVATAR);
         user.setEmailVerified(false);
         user.setRoleEntity(RoleEntity.builder().id(Long.valueOf(Role.CUSTOMER)).build());
         user.setAddress(request.getAddress());

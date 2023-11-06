@@ -40,7 +40,7 @@ public class UserController {
     public CoreApiResponse<UserResponse> getUserById(
             @PathVariable Long userId
     ){
-        UserResponse user = userService.getUserById(userId);
+        UserResponse user = userService.getUserResponeById(userId);
         return CoreApiResponse.success(user);
     }
 
