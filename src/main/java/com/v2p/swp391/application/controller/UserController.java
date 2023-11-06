@@ -37,10 +37,10 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public CoreApiResponse<User> getUserById(
+    public CoreApiResponse<UserResponse> getUserById(
             @PathVariable Long userId
     ){
-        User user = userService.getUserById(userId);
+        UserResponse user = userService.getUserById(userId);
         return CoreApiResponse.success(user);
     }
 

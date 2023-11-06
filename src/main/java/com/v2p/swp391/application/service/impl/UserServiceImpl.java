@@ -64,12 +64,49 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    private UserResponse transformFromUser(User user){
+        UserResponse userResponse = new UserResponse();
+        userResponse.setId(user.getId());
+        userResponse.setFullName(user.getFullName());
+        userResponse.setPhoneNumber(user.getPhoneNumber());
+        userResponse.setEmail(user.getEmail());
+        userResponse.setPassword(user.getPassword());
+        userResponse.setAddress(user.getAddress());
+        userResponse.setImageUrl(user.getImageUrl());
+        userResponse.setRoleEntity(user.getRoleEntity());
+        userResponse.setEmailVerified(user.getEmailVerified());
+        userResponse.setDob(user.getDob());
+        userResponse.setIsActive(user.getIsActive());
+        List<Booking> bookingList = bookingRepository.findByUserId(userResponse.getId());
+        List<Order> orderList = orderRepository.findByUserId(userResponse.getId());
+
+        float total = 0;
+        for(Booking booking: bookingList){
+            if(booking.getTotalPayment() != null){
+                total += booking.getTotalPayment();
+            }
+
+        }
+        for(Order order: orderList){
+            if(order.getPaymentMethod() != null){
+                total += order.getTotalPayment();
+            }
+        }
+
+        userResponse.setBookingQuantity(bookingList.size());
+        userResponse.setOrderQuantity(orderList.size());
+        userResponse.setTotalMoney(total);
+
+        return userResponse;
+    }
+
     @Override
-    public User getUserById(Long id) {
-        return userRepository
-                .findById(id)
+    public UserResponse getUserById(Long id) {
+        User user =  userRepository.findById(id)
                 .orElseThrow(()
                         -> new ResourceNotFoundException("User", "id", id));
+        UserResponse userResponse = transformFromUser(user);
+        return userResponse;
     }
 
     @Override
@@ -104,37 +141,7 @@ public class UserServiceImpl implements UserService {
 
         List<UserResponse> usersList = new ArrayList<>();
         for(User user: users){
-            UserResponse userResponse = new UserResponse();
-                userResponse.setId(user.getId());
-                userResponse.setFullName(user.getFullName());
-                userResponse.setPhoneNumber(user.getPhoneNumber());
-                userResponse.setEmail(user.getEmail());
-                userResponse.setPassword(user.getPassword());
-                userResponse.setAddress(user.getAddress());
-                userResponse.setImageUrl(user.getImageUrl());
-                userResponse.setRoleEntity(user.getRoleEntity());
-                userResponse.setEmailVerified(user.getEmailVerified());
-                userResponse.setDob(user.getDob());
-                userResponse.setIsActive(user.getIsActive());
-                List<Booking> bookingList = bookingRepository.findByUserId(userResponse.getId());
-                List<Order> orderList = orderRepository.findByUserId(userResponse.getId());
-
-                float total = 0;
-                for(Booking booking: bookingList){
-                    if(booking.getTotalPayment() != null){
-                        total += booking.getTotalPayment();
-                    }
-
-                }
-                for(Order order: orderList){
-                    if(order.getPaymentMethod() != null){
-                        total += order.getTotalPayment();
-                    }
-                }
-
-                userResponse.setBookingQuantity(bookingList.size());
-                userResponse.setOrderQuantity(orderList.size());
-                userResponse.setTotalMoney(total);
+            UserResponse userResponse = transformFromUser(user);
             usersList.add(userResponse);
         }
         return usersList;
