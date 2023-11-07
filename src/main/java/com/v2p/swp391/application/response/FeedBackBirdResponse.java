@@ -34,7 +34,7 @@ public class FeedBackBirdResponse {
 
     private String phoneNumber;
 
-    private boolean status;
+    private boolean active;
 
     private LocalDate createdAt;
 
