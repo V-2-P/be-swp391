@@ -68,11 +68,18 @@ public class OrderController {
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public CoreApiResponse<List<OrderResponse>> getOrdersByUserId() {
-            List<Order> orders = orderService.findByUserId();
+    public CoreApiResponse<List<OrderResponse>> getOrdersByUserMe() {
+            List<Order> orders = orderService.findByUser();
             return CoreApiResponse.success(INSTANCE.toListResponses(orders));
 
     }
+    @GetMapping("/user/{id}")
+    public CoreApiResponse<List<OrderResponse>> getOrdersByUserId(@PathVariable Long id) {
+        List<Order> orders = orderService.findByUserId(id);
+        return CoreApiResponse.success(INSTANCE.toListResponses(orders));
+
+    }
+
     @PutMapping("/shipping/{id}")
     public CoreApiResponse<OrderResponse> shippingOrder(
             @PathVariable Long id,

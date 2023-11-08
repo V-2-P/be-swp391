@@ -186,7 +186,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> findByUserId() {
+    public List<Order> findByUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
@@ -196,6 +196,12 @@ public class OrderServiceImpl implements OrderService {
 
         // Truy vấn và sắp xếp các đơn hàng
         return orderRepository.findByUserId(user.getId(), sortByCreatedAtDesc);
+    }
+
+    @Override
+    public List<Order> findByUserId(long userId) {
+        Sort sortByCreatedAtDesc = Sort.by(Sort.Order.desc("createdAt"));
+        return orderRepository.findByUserId(userId, sortByCreatedAtDesc);
     }
 
     private float discount(Order order,  float totalMoney) {

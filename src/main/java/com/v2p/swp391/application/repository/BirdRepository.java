@@ -21,19 +21,25 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
 
     @Query("SELECT p FROM Bird p WHERE " +
             "(:categoryId IS NULL OR :categoryId = 0 OR p.category.id = :categoryId) " +
-            "AND(:typeId IS NULL OR : typeId = 0 OR p.birdType.id = :typeId)"+
-            "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE %:keyword% OR p.description LIKE %:keyword%)")
+            "AND (:typeId IS NULL OR :typeId = 0 OR p.birdType.id = :typeId) " +
+            "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE %:keyword% OR p.description LIKE %:keyword%) " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) ")
     Page<Bird> searchBirds
             (@Param("categoryId") Long categoryId,
              @Param("typeId") Long typeId,
-             @Param("keyword") String keyword, Pageable pageable);
+             @Param("keyword") String keyword,
+             @Param("minPrice") Float minPrice,
+             @Param("maxPrice") Float maxPrice,
+             Pageable pageable);
+
+
     @Query("SELECT p FROM Bird p LEFT JOIN FETCH p.birdImages WHERE p.id = :birdId")
     Optional<Bird> getDetailBird(@Param("birdId") Long birdId);
 
     @Query("SELECT od.bird FROM OrderDetail od " +
             "GROUP BY od.bird " +
-            "ORDER BY SUM(od.numberOfProducts) DESC " +
-            "LIMIT 4")
+            "ORDER BY SUM(od.numberOfProducts) DESC ")
     List<Bird> findBestSeller();
 
     @Query("SELECT b FROM Bird b ORDER BY b.createdAt DESC LIMIT 20")
