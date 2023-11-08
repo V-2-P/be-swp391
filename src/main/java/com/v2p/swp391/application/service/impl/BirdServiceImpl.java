@@ -109,9 +109,9 @@ public class BirdServiceImpl implements BirdService {
     }
 
     @Override
-    public Page<Bird> getAllBirds(String keyword, Long categoryId, Long typeId, PageRequest pageRequest) {
+    public Page<Bird> getAllBirds(String keyword, Long categoryId, Long typeId,Float minPrice, Float maxPrice, PageRequest pageRequest) {
         Page<Bird> productsPage;
-        productsPage = birdRepository.searchBirds(categoryId, typeId, keyword, pageRequest);
+        productsPage = birdRepository.searchBirds(categoryId, typeId, keyword,minPrice, maxPrice, pageRequest);
         return productsPage;
     }
 
