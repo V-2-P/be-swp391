@@ -31,8 +31,8 @@ public class BirdParingServiceImpl implements BirdPairingService {
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Booking Detail", "id", birdPairing.getBookingDetail().getId()));
 
-        if(!existingBookingDetail.getStatus().equals(BookingDetailStatus.Brooding))
-            throw new AppException(HttpStatus.BAD_REQUEST, "Booking detail status must be BROODING!");
+//        if(!existingBookingDetail.getStatus().equals(BookingDetailStatus.Brooding))
+//            throw new AppException(HttpStatus.BAD_REQUEST, "Booking detail status must be BROODING!");
 
         Bird newBird = new Bird();
         newBird.setBirdType(existingBookingDetail.getBirdType());
@@ -43,6 +43,12 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
         birdPairing.setNewBird(newBird);
         birdPairing.setStatus(BirdPairingStatus.Egg);
+
+
+        if(existingBookingDetail.getStatus().equals(BookingDetailStatus.In_Breeding_Progress)){
+            existingBookingDetail.setStatus(BookingDetailStatus.Brooding);
+            bookingDetailRepository.save(existingBookingDetail);
+        }
 
         return birdPairingRepository.save(birdPairing);
     }
