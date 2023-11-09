@@ -78,13 +78,14 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         BookingDetail existingBookingDetail = this.getBookingDetailById(id);
         if(!checkValidateStatus(existingBookingDetail, status))
             throw new AppException(HttpStatus.BAD_REQUEST, "Status is wrong format");
-        if(status.equals(BookingDetailStatus.Brooding)){
-            BirdPairing newBirdPairing = new BirdPairing();
-            newBirdPairing.setBookingDetail(existingBookingDetail);
-            existingBookingDetail.setStatus(status);
-
-            birdParingService.createBirdPairing(newBirdPairing);
-        }
+//        if(status.equals(BookingDetailStatus.Brooding)){
+//            BirdPairing newBirdPairing = new BirdPairing();
+//            newBirdPairing.setBookingDetail(existingBookingDetail);
+//            existingBookingDetail.setStatus(status);
+//
+//            birdParingService.createBirdPairing(newBirdPairing);
+//        }
+        existingBookingDetail.setStatus(status);
         return bookingDetailRepository.save(existingBookingDetail);
     }
 
