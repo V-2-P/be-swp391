@@ -8,7 +8,9 @@ import com.v2p.swp391.application.model.OrderStatus;
 import com.v2p.swp391.application.request.OrderRequest;
 import com.v2p.swp391.application.request.ShippingOrderRequest;
 import com.v2p.swp391.application.response.OrderPageResponse;
+import com.v2p.swp391.application.response.OrderPaymentRespone;
 import com.v2p.swp391.application.response.OrderResponse;
+import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.OrderService;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import jakarta.validation.Valid;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static com.v2p.swp391.application.mapper.OrderHttpMapper.INSTANCE;
@@ -30,10 +33,18 @@ import static com.v2p.swp391.application.mapper.OrderHttpMapper.INSTANCE;
 public class OrderController {
     private final OrderService orderService;
     @PostMapping("")
-    public CoreApiResponse<OrderResponse> createOrder(
-            @Valid @RequestBody OrderRequest request) {
-        Order order = orderService.createOrder(INSTANCE.toModel(request),request.getCartItems());
-        return CoreApiResponse.success(INSTANCE.toResponse(order),"Create order successfully");
+    public CoreApiResponse<OrderPaymentRespone> createOrder(
+            @Valid @RequestBody OrderRequest request) throws UnsupportedEncodingException {
+        OrderPaymentRespone order = orderService.createOrderHavePayment(INSTANCE.toModel(request),request.getCartItems());
+        return CoreApiResponse.success(order ,"Create order successfully");
+    }
+
+    @GetMapping("/pay-unpaid-order")
+    public CoreApiResponse<PaymentRespone> payUnpaidOrder(
+            @Valid @RequestParam Long id
+    ) throws UnsupportedEncodingException {
+        PaymentRespone paymentRespone = orderService.payUnpaidOrder(id);
+        return CoreApiResponse.success(paymentRespone, "Successfully!");
     }
 
     @GetMapping("/{id}")

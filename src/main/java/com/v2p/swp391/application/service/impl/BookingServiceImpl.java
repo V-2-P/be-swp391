@@ -2,21 +2,24 @@ package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.BookingHttpMapper;
 import com.v2p.swp391.application.model.*;
-import com.v2p.swp391.application.repository.BookingDetailRepository;
-import com.v2p.swp391.application.repository.BookingRepository;
-import com.v2p.swp391.application.repository.UserRepository;
+import com.v2p.swp391.application.repository.*;
+import com.v2p.swp391.application.request.PaymentRequest;
+import com.v2p.swp391.application.response.BookingResponse;
+import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.BookingDetailService;
 import com.v2p.swp391.application.service.BookingService;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
+import com.v2p.swp391.payment.PaymentService;
 import com.v2p.swp391.utils.DateUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -27,6 +30,9 @@ public class    BookingServiceImpl implements BookingService {
     private final UserRepository userRepository;
     private final BookingDetailService bookingDetailService;
     private final BookingDetailRepository bookingDetailRepository;
+    private final PaymentService paymentService;
+    private final BirdRepository birdRepository;
+    private final PaymentRepositorty paymentRepository;
     private final BookingHttpMapper bookingMapper;
 
     @Override
@@ -34,11 +40,63 @@ public class    BookingServiceImpl implements BookingService {
         User user = userRepository
                         .findById(booking.getUser().getId())
                         .orElseThrow(()-> new ResourceNotFoundException("User", "id", booking.getUser().getId()));
+
+        Long id = bookingDetail.getFatherBird().getId();
+        Bird fatherBird = birdRepository
+                .findById(id)
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("Bird", "id", bookingDetail.getFatherBird().getId()));
+        id = bookingDetail.getMotherBird().getId();
+        Bird motherBird = birdRepository
+                .findById(id)
+                .orElseThrow(()
+                        -> new ResourceNotFoundException("Bird", "id", bookingDetail.getMotherBird().getId()));
         Booking createdBooking = bookingRepository.save(booking);
         bookingDetailService.createBookingDetail(createdBooking, bookingDetail);
+        this.updateTotalPaymentBooking(createdBooking.getId(),fatherBird.getPrice() + motherBird.getPrice());
 
         booking.setStatus(BookingStatus.Pending);
         return bookingRepository.save(booking);
+    }
+
+    @Override
+    public BookingResponse createBookingHavePayment(Booking booking, BookingDetail bookingDetail) throws UnsupportedEncodingException {
+        //Create Booking
+        Booking createdBooking = createBooking(booking, bookingDetail);
+        BookingResponse bookingResponse =  new BookingResponse();
+        bookingResponse.setBookingId(createdBooking.getId());
+        bookingResponse.setBooking(createdBooking);
+
+        //Create payment for Booking
+        PaymentRequest paymentRequest = new PaymentRequest(booking.getPaymentDeposit(), PaymentForType.DEPOSIT_BOOKING, bookingResponse.getBookingId());
+        PaymentRespone paymentRespone = paymentService
+                .createPayment(paymentRequest.getAmount(), paymentRequest.getPaymentForType(), paymentRequest.getId());
+        bookingResponse.setPaymentRespone(paymentRespone);
+        return bookingResponse;
+    }
+
+    @Override
+    public PaymentRespone payUnpaidDepositMoney(Long id) throws UnsupportedEncodingException {
+        PaymentRespone paymentRespone = this.payMoney(id, PaymentForType.DEPOSIT_BOOKING);
+        return paymentRespone;
+    }
+
+    @Override
+    public PaymentRespone payTotalMoney(Long id) throws UnsupportedEncodingException {
+        PaymentRespone paymentRespone = this.payMoney(id, PaymentForType.TOTAL_BOOKING);
+        return paymentRespone;
+    }
+
+    private PaymentRespone payMoney(Long id, PaymentForType paymentForType) throws UnsupportedEncodingException {
+        Booking booking = bookingRepository.findBookingById(id);
+        PaymentRespone paymentRespone = new PaymentRespone();
+        if(paymentForType.equals(PaymentForType.DEPOSIT_BOOKING)){
+            paymentRespone = paymentService.createPayment(booking.getPaymentDeposit(), paymentForType, id);
+        }
+        else if (paymentForType.equals(PaymentForType.TOTAL_BOOKING)){
+            paymentRespone = paymentService.createPayment(booking.getTotalPayment() - booking.getPaymentDeposit(), paymentForType, id);
+        }
+        return paymentRespone;
     }
 
     @Override
@@ -95,7 +153,7 @@ public class    BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking updateTotalPaymentBooking(Long bookingId, Float total) {
+    public Booking updateTotalPaymentBooking(Long bookingId, float total) {
         Booking existingBooking = getBookingById(bookingId);
         existingBooking.setTotalPayment(total);
         existingBooking.setPaymentDeposit((float) (total * 0.3));

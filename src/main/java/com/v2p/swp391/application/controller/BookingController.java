@@ -6,6 +6,8 @@ import com.v2p.swp391.application.model.Booking;
 import com.v2p.swp391.application.model.BookingStatus;
 import com.v2p.swp391.application.request.BookingDetailRequest;
 import com.v2p.swp391.application.request.BookingRequest;
+import com.v2p.swp391.application.response.BookingResponse;
+import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.impl.BookingServiceImpl;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import jakarta.validation.Valid;
@@ -15,6 +17,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static com.v2p.swp391.application.mapper.BookingHttpMapper.INSTANCE;
@@ -26,14 +29,30 @@ public class BookingController {
     private final BookingServiceImpl bookingService;
 
     @PostMapping("")
-    public CoreApiResponse<Booking> createBooking(
+    public CoreApiResponse<BookingResponse> createBooking(
             @Valid @RequestBody BookingRequest bookingRequest
-    ){
-        Booking bookingRespone = bookingService
-                .createBooking
-                        (BookingHttpMapper.INSTANCE.toModel(bookingRequest),
+    ) throws UnsupportedEncodingException {
+        BookingResponse bookingRespone = bookingService
+                .createBookingHavePayment(
+                        BookingHttpMapper.INSTANCE.toModel(bookingRequest),
                         BookingDetailHttpMapper.INSTANCE.toModel(bookingRequest.getBookingDetailRequest()));
         return CoreApiResponse.success(bookingRespone, "Insert booking sucessfully!");
+    }
+
+    @GetMapping("/pay-unpaid-deposit")
+    public CoreApiResponse<PaymentRespone> payUnpaidDeposit(
+            @Valid @RequestParam Long id
+    ) throws UnsupportedEncodingException {
+        PaymentRespone paymentRespone = bookingService.payUnpaidDepositMoney(id);
+        return CoreApiResponse.success(paymentRespone, "Successfully");
+    }
+
+    @GetMapping("/pay-total-money")
+    public CoreApiResponse<PaymentRespone> payTotalMoney(
+            @Valid @RequestParam Long id
+    ) throws UnsupportedEncodingException {
+        PaymentRespone paymentRespone = bookingService.payTotalMoney(id);
+        return CoreApiResponse.success(paymentRespone, "Successfully");
     }
 
     @GetMapping("")
@@ -70,7 +89,7 @@ public class BookingController {
     @PutMapping("/{id}/total")
     public CoreApiResponse<Booking> updateTotalPaymentBooking(
             @Valid @PathVariable Long id,
-            @Valid @RequestBody Float totalPayment
+            @Valid @RequestBody float totalPayment
     ){
         Booking updatedBooking = bookingService.updateTotalPaymentBooking(id, totalPayment);
         return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
