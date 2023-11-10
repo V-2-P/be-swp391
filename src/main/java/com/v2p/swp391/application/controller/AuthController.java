@@ -78,7 +78,7 @@ public class AuthController {
         return parts.length == 3;
     }
 
-    @PutMapping("/forgotpassword")
+    @GetMapping("/forgotpassword")
     public CoreApiResponse<?> forgotPassword(
             @RequestParam("email") String email
     ){

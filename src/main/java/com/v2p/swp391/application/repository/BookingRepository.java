@@ -17,4 +17,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long countBookingsForCurrentDate();
 
     List<Booking> findByUserId(Long id);
+
+    Booking findBookingById(Long id);
 }

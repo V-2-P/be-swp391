@@ -29,14 +29,6 @@ public class BookingDetailServiceImpl implements BookingDetailService {
                         .findById(bookingDetail.getBirdType().getId())
                         .orElseThrow(()
                                 -> new ResourceNotFoundException("BirdType", "id", bookingDetail.getBirdType().getId()));
-        Bird fatherBird = birdRepository
-                        .findById(bookingDetail.getFatherBird().getId())
-                        .orElseThrow(()
-                                -> new ResourceNotFoundException("Bird", "id", bookingDetail.getFatherBird().getId()));
-        Bird motherBird = birdRepository
-                .findById(bookingDetail.getMotherBird().getId())
-                .orElseThrow(()
-                        -> new ResourceNotFoundException("Bird", "id", bookingDetail.getMotherBird().getId()));
 
         bookingDetail.setBooking(booking);
         bookingDetail.setStatus(BookingDetailStatus.Waiting);
