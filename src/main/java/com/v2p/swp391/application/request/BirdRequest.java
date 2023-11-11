@@ -39,7 +39,7 @@ public class BirdRequest {
     @Min(value = 0, message = "Quantity must be greater than or equal to 1")
     private String quantity;
 
-    @Pattern(regexp = "female|male", message = "Gender must be female or male")
+
     private String gender;
 
     private String color;

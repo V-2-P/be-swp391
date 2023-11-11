@@ -5,10 +5,15 @@ import com.v2p.swp391.application.mapper.OrderHttpMapper;
 import com.v2p.swp391.application.model.*;
 import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.request.CartItemRequest;
+import com.v2p.swp391.application.request.PaymentRequest;
+import com.v2p.swp391.application.response.OrderPaymentRespone;
 import com.v2p.swp391.application.response.OrderResponse;
+import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.OrderService;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
+import com.v2p.swp391.payment.PaymentService;
+import com.v2p.swp391.payment.impl.PaymentServiceImpl;
 import com.v2p.swp391.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -20,6 +25,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +42,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderHttpMapper orderMapper;
     private final UseVoucherRepository useVoucherRepository;
     private final ShippingMethodRepository shippingMethodRepository;
+    private final PaymentServiceImpl paymentService;
 
     @Override
     public Order createOrder(Order order, List<CartItemRequest> cartItems) {
@@ -121,6 +128,29 @@ public class OrderServiceImpl implements OrderService {
             birdRepository.save(bird);
         }
         return order;
+    }
+
+    @Override
+    public OrderPaymentRespone createOrderHavePayment(Order order, List<CartItemRequest> cartItems) throws UnsupportedEncodingException {
+        Order createdOrder = this.createOrder(order, cartItems);
+        OrderPaymentRespone orderPaymentRespone = new OrderPaymentRespone();
+        orderPaymentRespone.setOrderId(createdOrder.getId());
+        orderPaymentRespone.setOrder(createdOrder);
+
+        if(createdOrder.getPaymentMethod().equals("vnpay")){
+            PaymentRespone paymentRespone = paymentService.createPayment(createdOrder.getTotalPayment(), PaymentForType.ORDER, createdOrder.getId());
+            orderPaymentRespone.setPaymentRespone(paymentRespone);
+        }
+        return orderPaymentRespone;
+    }
+
+    @Override
+    public PaymentRespone payUnpaidOrder(Long id) throws UnsupportedEncodingException {
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+
+        PaymentRespone paymentRespone = paymentService.createPayment(order.getTotalPayment(), PaymentForType.ORDER, id);
+        return paymentRespone;
     }
 
     @Override
