@@ -58,4 +58,7 @@ public class Booking extends BaseEntity{
 
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private BookingDetail bookingDetail;
+
+    @OneToOne
+    private ShippingMethod shippingMethod;
 }
