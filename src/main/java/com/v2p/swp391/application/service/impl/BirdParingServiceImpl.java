@@ -31,17 +31,6 @@ public class BirdParingServiceImpl implements BirdPairingService {
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Booking Detail", "id", birdPairing.getBookingDetail().getId()));
 
-//        if(!existingBookingDetail.getStatus().equals(BookingDetailStatus.Brooding))
-//            throw new AppException(HttpStatus.BAD_REQUEST, "Booking detail status must be BROODING!");
-
-        Bird newBird = new Bird();
-        newBird.setBirdType(existingBookingDetail.getBirdType());
-        newBird.setCategory(categoryRepository.getReferenceById(1L));
-        newBird.setStatus(false);
-        newBird.setName("Customer userId: " + existingBookingDetail.getBooking().getUser().getId() + "'s bird");
-        newBird = birdRepository.save(newBird);
-
-        birdPairing.setNewBird(newBird);
         birdPairing.setStatus(BirdPairingStatus.Egg);
 
 
@@ -103,7 +92,20 @@ public class BirdParingServiceImpl implements BirdPairingService {
                 .findById(id)
                 .orElseThrow(()
                         -> new ResourceNotFoundException("BirdPairing", "id", id));
+        BookingDetail existingBookingDetail = existingBirdPairing.getBookingDetail();
+        if(status.equals(BirdPairingStatus.Fledgling)){
+            Bird newBird = new Bird();
+            newBird.setBirdType(existingBookingDetail.getBirdType());
+            newBird.setCategory(categoryRepository.getReferenceById(1L));
+            newBird.setStatus(false);
+            newBird.setName("Customer userId: " + existingBookingDetail.getBooking().getUser().getId() + "'s bird");
+            newBird = birdRepository.save(newBird);
+
+            existingBirdPairing.setNewBird(newBird);
+        }
         existingBirdPairing.setStatus(status);
+
+
         if(status.equals(BirdPairingStatus.Fledgling) || status.equals(BirdPairingStatus.Failed)){
             if(checkCompletedBrooding(existingBirdPairing)){
                 existingBirdPairing.getBookingDetail().setStatus(BookingDetailStatus.Fledgling_All);
