@@ -40,7 +40,9 @@ public class OrderController {
             HttpServletResponse response
     ) throws IOException {
         OrderPaymentRespone order = orderService.createOrderHavePayment(INSTANCE.toModel(request),request.getCartItems());
-        response.sendRedirect(order.getPaymentRespone().getURL());
+        if(order.getPaymentRespone() != null){
+            response.sendRedirect(order.getPaymentRespone().getURL());
+        }
         return CoreApiResponse.success(order ,"Create order successfully");
     }
 
