@@ -1,15 +1,19 @@
 package com.v2p.swp391.application.service.impl;
 
 import com.v2p.swp391.application.mapper.VoucherHttpMapper;
+import com.v2p.swp391.application.model.User;
 import com.v2p.swp391.application.model.Voucher;
 import com.v2p.swp391.application.model.VoucherStatus;
 import com.v2p.swp391.application.repository.VoucherRepository;
 import com.v2p.swp391.application.request.VoucherRequest;
 import com.v2p.swp391.application.service.VoucherService;
 import com.v2p.swp391.exception.AppException;
+import com.v2p.swp391.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -49,6 +53,14 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<Voucher> searchForCustomer(String searchText) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        return voucherRepository.searchAvailableVouchersForUser(searchText,user.getId());
+    }
+
+    @Override
     public List<Voucher> getAllVoucher() {
 
         List<Voucher> sortedVouchers = voucherRepository.findAll().stream()
@@ -82,6 +94,13 @@ public class VoucherServiceImpl implements VoucherService {
         }
         voucherRepository.saveAll(vouchersToExpire);
 
+    }
+    @Override
+    public List<Voucher> getVoucherForCustomer() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        return voucherRepository.findVouchersNotUsedByUser(user.getId());
     }
 
     @Scheduled(cron = "${app.task.scheduling.cron.active-voucher}")
