@@ -32,35 +32,13 @@ public class BookingController {
 
     @PostMapping("")
     public CoreApiResponse<BookingResponse> createBooking(
-            @Valid @RequestBody BookingRequest bookingRequest,
-            HttpServletResponse response
+            @Valid @RequestBody BookingRequest bookingRequest
     ) throws IOException {
         BookingResponse bookingRespone = bookingService
                 .createBookingHavePayment(
                         BookingHttpMapper.INSTANCE.toModel(bookingRequest),
                         BookingDetailHttpMapper.INSTANCE.toModel(bookingRequest.getBookingDetailRequest()));
-        response.sendRedirect(bookingRespone.getPaymentRespone().getURL());
         return CoreApiResponse.success(bookingRespone, "Insert booking sucessfully!");
-    }
-
-    @GetMapping("/pay-unpaid-deposit")
-    public CoreApiResponse<PaymentRespone> payUnpaidDeposit(
-            @Valid @RequestParam Long id,
-            HttpServletResponse response
-    ) throws IOException {
-        PaymentRespone paymentRespone = bookingService.payUnpaidDepositMoney(id);
-        response.sendRedirect(paymentRespone.getURL());
-        return CoreApiResponse.success(paymentRespone, "Successfully");
-    }
-
-    @GetMapping("/pay-total-money")
-    public CoreApiResponse<PaymentRespone> payTotalMoney(
-            @Valid @RequestParam Long id,
-            HttpServletResponse response
-    ) throws IOException {
-        PaymentRespone paymentRespone = bookingService.payTotalMoney(id);
-        response.sendRedirect(paymentRespone.getURL());
-        return CoreApiResponse.success(paymentRespone, "Successfully");
     }
 
     @GetMapping("")

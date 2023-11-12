@@ -36,24 +36,10 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("")
     public CoreApiResponse<OrderPaymentRespone> createOrder(
-            @Valid @RequestBody OrderRequest request,
-            HttpServletResponse response
+            @Valid @RequestBody OrderRequest request
     ) throws IOException {
         OrderPaymentRespone order = orderService.createOrderHavePayment(INSTANCE.toModel(request),request.getCartItems());
-        if(order.getPaymentRespone() != null){
-            response.sendRedirect(order.getPaymentRespone().getURL());
-        }
         return CoreApiResponse.success(order ,"Create order successfully");
-    }
-
-    @GetMapping("/pay-unpaid-order")
-    public CoreApiResponse<PaymentRespone> payUnpaidOrder(
-            @Valid @RequestParam Long id,
-            HttpServletResponse response
-    ) throws IOException {
-        PaymentRespone paymentRespone = orderService.payUnpaidOrder(id);
-        response.sendRedirect(paymentRespone.getURL());
-        return CoreApiResponse.success(paymentRespone, "Successfully!");
     }
 
     @GetMapping("/{id}")
