@@ -32,6 +32,7 @@ public class    BookingServiceImpl implements BookingService {
     private final BookingDetailRepository bookingDetailRepository;
     private final PaymentService paymentService;
     private final BirdRepository birdRepository;
+    private final SendEmailServiceImpl sendEmailService;
     private final PaymentRepositorty paymentRepository;
     private final BookingHttpMapper bookingMapper;
 
@@ -83,7 +84,9 @@ public class    BookingServiceImpl implements BookingService {
 
     @Override
     public PaymentRespone payTotalMoney(Long id) throws UnsupportedEncodingException {
+        Booking existingBooking = bookingRepository.findBookingById(id);
         PaymentRespone paymentRespone = this.payMoney(id, PaymentForType.TOTAL_BOOKING);
+        sendEmailService.sendMailPayment(existingBooking.getUser(), paymentRespone.getURL());
         return paymentRespone;
     }
 
@@ -138,7 +141,7 @@ public class    BookingServiceImpl implements BookingService {
         return true;
     }
     @Override
-    public Booking updateStatusBooking(Long bookingId, BookingStatus status) {
+    public Booking updateStatusBooking(Long bookingId, BookingStatus status) throws UnsupportedEncodingException {
         Booking existingBooking = getBookingById(bookingId);
         if(!checkFormatStatus(existingBooking, status))
             throw new AppException(HttpStatus.BAD_REQUEST, "Status is wrong format");
@@ -146,6 +149,11 @@ public class    BookingServiceImpl implements BookingService {
         if(status.equals(BookingStatus.Confirmed)){
             existingBooking.getBookingDetail().setStatus(BookingDetailStatus.In_Breeding_Progress);
             bookingDetailRepository.save(existingBooking.getBookingDetail());
+        }
+        else if (status.equals(BookingStatus.Preparing)){
+            if(existingBooking.getPaymentMethod().equals(PaymentMethod.Cash_On_Delivery)){
+                this.payTotalMoney(existingBooking.getId());
+            }
         }
 
         existingBooking.setStatus(status);

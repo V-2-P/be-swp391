@@ -68,8 +68,16 @@ public class MailServiceImpl implements MailService {
                 message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{new InternetAddress(event.getUser().getEmail())});
 
                 message.setFrom(new InternetAddress(email));
-                message.setSubject("Forgot password?");
+                message.setSubject("Quên tài khoản");
                 message.setContent(thymeleafService.getResetPasswordContent(event.getUser(), event.getUrl()), CONTENT_TYPE_TEXT_HTML);
+                Transport.send(message);
+            }
+            else if (event.getType().equals("payment")){
+                message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{new InternetAddress(event.getUser().getEmail())});
+
+                message.setFrom(new InternetAddress(email));
+                message.setSubject("Thanh toán");
+                message.setContent(thymeleafService.getPaymentContent(event.getUser(), event.getUrl()), CONTENT_TYPE_TEXT_HTML);
                 Transport.send(message);
             }
         } catch (MessagingException e) {

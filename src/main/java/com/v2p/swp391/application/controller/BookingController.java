@@ -89,17 +89,8 @@ public class BookingController {
     public CoreApiResponse<Booking> updateStatusBooking(
             @Valid @PathVariable Long id,
             @Valid @RequestParam("status") BookingStatus status
-    ){
+    ) throws UnsupportedEncodingException {
         Booking updatedBooking = bookingService.updateStatusBooking(id, status);
-        return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
-    }
-
-    @PutMapping("/{id}/total")
-    public CoreApiResponse<Booking> updateTotalPaymentBooking(
-            @Valid @PathVariable Long id,
-            @Valid @RequestBody float totalPayment
-    ){
-        Booking updatedBooking = bookingService.updateTotalPaymentBooking(id, totalPayment);
         return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
     }
 
