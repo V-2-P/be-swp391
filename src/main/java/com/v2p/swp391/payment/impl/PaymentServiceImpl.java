@@ -5,10 +5,12 @@ import com.v2p.swp391.application.repository.BookingRepository;
 import com.v2p.swp391.application.repository.OrderRepository;
 import com.v2p.swp391.application.repository.PaymentRepositorty;
 import com.v2p.swp391.application.response.PaymentRespone;
+import com.v2p.swp391.application.service.impl.SendEmailServiceImpl;
 import com.v2p.swp391.config.PaymentConfig;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.view.RedirectView;
 
@@ -21,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -29,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     public final BookingRepository bookingRepository;
     public final OrderRepository orderRepository;
     public final PaymentRepositorty paymentRepositorty;
+    public final SendEmailServiceImpl sendEmailService;
 
     @Override
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException {
@@ -163,6 +167,86 @@ public class PaymentServiceImpl implements PaymentService {
             bookingRepository.save(booking);
         }
         return paymentRepositorty.save(payment);
+    }
+
+    @Override
+    @Scheduled(fixedRate = 3600000)
+    public void automaticallySetCanceled() throws UnsupportedEncodingException {
+        this.sendPaymenOfUnpaidFee();
+        this.setCanceledForOutDatePayment();
+    }
+
+    public void sendPaymenOfUnpaidFee() throws UnsupportedEncodingException {
+        List<Payment> unpaidPaymentList = this.getUnpaidPayment();
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime cprDate = currentDate.minusHours(2);
+        for(Payment payment: unpaidPaymentList){
+            DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+            String createdAtString = sdf.format(payment.getCreatedAt());
+            String updatedAtString = sdf.format(payment.getUpdatedAt());
+            if(createdAtString.equals(updatedAtString)) {
+                if (payment.getUpdatedAt().isBefore(cprDate)) {
+                    float total;
+                    PaymentForType paymentForType;
+                    Long id;
+
+                    if (payment.getId().contains("OD")) {
+                        paymentForType = PaymentForType.ORDER;
+                        id = payment.getOrder().getId();
+                    } else if (payment.getId().contains("DB")) {
+                        paymentForType = PaymentForType.DEPOSIT_BOOKING;
+                        id = payment.getBooking().getId();
+                    } else {
+                        paymentForType = PaymentForType.TOTAL_BOOKING;
+                        id = payment.getBooking().getId();
+                    }
+
+                    total = payment.getAmount();
+                    PaymentRespone paymentRespone = this.createPayment(total, paymentForType, id);
+                    sendEmailService.sendMailPayment
+                            (payment.getBooking() != null ? payment.getBooking().getUser() : payment.getOrder().getUser()
+                                    , paymentRespone.getURL());
+                }
+            }
+        }
+    }
+
+    private List<Payment> getUnpaidPayment(){
+        List<Payment> unpaidPaymentList = new ArrayList<>();
+        for(Payment payment: paymentRepositorty.findAll()){
+            if(!payment.isStatus()){
+                unpaidPaymentList.add(payment);
+            }
+        }
+        return unpaidPaymentList;
+    }
+
+    private void setCanceledForOutDatePayment(){
+        List<Payment> unpaidPaymentList = this.getUnpaidPayment();
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime cprDate = currentDate.minusHours(2);
+        for(Payment payment: unpaidPaymentList){
+            DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+            String createdAtString = sdf.format(payment.getCreatedAt());
+            String updatedAtString = sdf.format(payment.getUpdatedAt());
+            if(!createdAtString.equals(updatedAtString)){
+                if(payment.getBooking() != null){
+                    Booking booking = payment.getBooking();
+                    if(payment.getUpdatedAt().isBefore(cprDate)){
+                        booking.setStatus(BookingStatus.Cancelled);
+                        bookingRepository.save(booking);
+                    }
+                }
+                else if (payment.getOrder() != null){
+                    Order order = payment.getOrder();
+                    if(payment.getUpdatedAt().isBefore(cprDate)){
+                        order.setStatus(OrderStatus.cancelled);
+                        orderRepository.save(order);
+                    }
+                }
+            }
+
+        }
     }
 
 //    @Override

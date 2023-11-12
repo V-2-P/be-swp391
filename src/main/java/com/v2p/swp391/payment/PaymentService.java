@@ -10,6 +10,5 @@ import java.io.UnsupportedEncodingException;
 public interface PaymentService {
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException;
     public Payment setData(String order, String id);
-//    public RedirectView sendRedirect(String url);
-
+    public void automaticallySetCanceled() throws UnsupportedEncodingException;
 }
