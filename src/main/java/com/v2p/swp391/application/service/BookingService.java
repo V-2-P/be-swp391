@@ -17,8 +17,11 @@ public interface BookingService {
     PaymentRespone payUnpaidDepositMoney(Long id) throws UnsupportedEncodingException;
     PaymentRespone payTotalMoney(Long id) throws UnsupportedEncodingException;
     Booking getBookingById(Long id);
+    public void automaticallySetCancelledBooking();
+    public void automaticallySetBirdCategoryFromCancelledBooking();
     List<Booking> getAllBookings();
     List<Booking> getBookingsByUserId(Long id);
+    List<Booking> getBookingByUser();
     Booking updateStatusBooking(Long bookingId, BookingStatus status) throws UnsupportedEncodingException;
     Booking updateTotalPaymentBooking(Long bookingId, float total);
     Booking updateTimeBooking(Long bookingId, String dateString);

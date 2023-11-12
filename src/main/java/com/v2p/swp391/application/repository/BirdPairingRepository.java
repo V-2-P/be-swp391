@@ -13,4 +13,7 @@ public interface BirdPairingRepository extends JpaRepository<BirdPairing, Long> 
             "WHERE d.booking_id = b.id AND p.booking_detail_id = d.id AND p.new_bird_id = bi.id\n" +
             "AND b.id = :id", nativeQuery = true)
     List<BirdPairing> getNewBirdByBookingId(@Param("id") Long id);
+
+
+    BirdPairing findByNewBird_Id(Long newBirdId);
 }

@@ -14,10 +14,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.awt.print.Book;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -55,6 +57,13 @@ public class BookingController {
         return CoreApiResponse.success(bookings);
     }
 
+    @GetMapping("/user")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public CoreApiResponse<List<Booking>> getBookingByUser(){
+        List<Booking> bookings = bookingService.getBookingByUser();
+        return CoreApiResponse.success(bookings, "Successfully");
+    }
+
     @GetMapping("/{id}")
     public CoreApiResponse<Booking> getBookingById (
             @Valid @PathVariable Long id
@@ -87,5 +96,11 @@ public class BookingController {
     ){
         Booking deletedBooking = bookingService.deleteBooking(id);
         return CoreApiResponse.success(deletedBooking, "Delete booking id: " + id + " successfully!");
+    }
+
+    @PutMapping("/test")
+    public CoreApiResponse<?> test(){
+        bookingService.automaticallySetBirdCategoryFromCancelledBooking();
+        return CoreApiResponse.success("Success");
     }
 }

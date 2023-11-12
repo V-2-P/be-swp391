@@ -1,6 +1,7 @@
 package com.v2p.swp391.application.repository;
 
 import com.v2p.swp391.application.model.Booking;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,6 +18,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     long countBookingsForCurrentDate();
 
     List<Booking> findByUserId(Long id);
+    List<Booking> findByUserId(Long id, Sort sort);
 
     Booking findBookingById(Long id);
 }

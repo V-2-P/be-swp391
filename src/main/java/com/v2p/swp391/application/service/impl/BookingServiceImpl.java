@@ -11,9 +11,15 @@ import com.v2p.swp391.application.service.BookingService;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.payment.PaymentService;
+import com.v2p.swp391.security.UserPrincipal;
 import com.v2p.swp391.utils.DateUtils;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -33,8 +39,8 @@ public class    BookingServiceImpl implements BookingService {
     private final PaymentService paymentService;
     private final BirdRepository birdRepository;
     private final SendEmailServiceImpl sendEmailService;
-    private final PaymentRepositorty paymentRepository;
-    private final BookingHttpMapper bookingMapper;
+    private final CategoryRepository categoryRepository;
+    private final BirdPairingRepository birdPairingRepository;
 
     @Override
     public Booking createBooking(Booking booking, BookingDetail bookingDetail) {
@@ -109,6 +115,69 @@ public class    BookingServiceImpl implements BookingService {
     }
 
     @Override
+    @Scheduled(fixedRate = 86400000)
+    public void automaticallySetCancelledBooking() {
+        List<Booking> shippingBookingList = getShippingBooking();
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime cprDate = currentDate.minusDays(15);
+
+        for(Booking booking : shippingBookingList){
+            if(booking.getUpdatedAt().isBefore(cprDate)){
+                booking.setStatus(BookingStatus.Cancelled);
+                bookingRepository.save(booking);
+            }
+        }
+    }
+
+    @Override
+    @Scheduled(fixedRate = 86400000)
+    public void automaticallySetBirdCategoryFromCancelledBooking() {
+        List<Bird> fledglingBirds = this.getBirdFromCanceledBooking();
+        LocalDateTime currentDate = LocalDateTime.now();
+        LocalDateTime cprDate = currentDate.minusDays(60);
+        for(Bird bird : fledglingBirds){
+            if (bird.getCreatedAt().isBefore(cprDate)){
+                Category category = categoryRepository.findByName("Chim F1");
+                if(category == null){
+                    category = new Category();
+                    category.setName("Chim F1");
+                    categoryRepository.save(category);
+                }
+                bird.setCategory(category);
+                birdRepository.save(bird);
+            }
+        }
+
+    }
+
+    private List<Booking> getShippingBooking(){
+        List<Booking> shippingBookingList = new ArrayList<>();
+        for(Booking booking : getAllBookings()){
+            if(booking.getStatus().equals(BookingStatus.Shipping)){
+                shippingBookingList.add(booking);
+            }
+        }
+        return shippingBookingList;
+    }
+
+    private List<Bird> getBirdFromCanceledBooking(){
+        List<Bird> fledglingBird = new ArrayList<>();
+        List<Bird> allBird = birdRepository.findAll();
+        for(Bird bird : allBird){
+            if(bird.getCategory() == null){
+                BirdPairing birdPairing = birdPairingRepository.findByNewBird_Id(bird.getId());
+                Booking booking = birdPairing.getBookingDetail().getBooking();
+                if(booking.getStatus().equals(BookingStatus.Cancelled)){
+                    fledglingBird.add(bird);
+                }
+            }
+
+        }
+        return fledglingBird;
+    }
+
+
+    @Override
     public List<Booking> getAllBookings() {
         return bookingRepository.findAll();
     }
@@ -116,6 +185,18 @@ public class    BookingServiceImpl implements BookingService {
     @Override
     public List<Booking> getBookingsByUserId(Long id) {
         return bookingRepository.findByUserId(id);
+    }
+
+    @Override
+    public List<Booking> getBookingByUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+
+        Sort sortByCreatedAtDesc = Sort.by(Sort.Order.desc("createdAt"));
+
+        List<Booking> bookings = bookingRepository.findByUserId(user.getId(), sortByCreatedAtDesc);
+        return bookings;
     }
 
     private boolean checkFormatStatus(Booking booking, BookingStatus status){
