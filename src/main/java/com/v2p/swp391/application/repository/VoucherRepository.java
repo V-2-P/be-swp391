@@ -21,10 +21,16 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long > {
             "OR v.code LIKE %:search% OR v.name LIKE %:search%) AND v.status = isActive")
     List<Voucher> searchByCodeOrName(@Param("search") String searchText);
 
+    @Query("SELECT v FROM Voucher v WHERE (:search IS NULL OR :search = '' OR v.code LIKE %:search% OR v.name LIKE %:search%) " +
+            "AND v.status = 'isActive' " +
+            "AND v.id NOT IN (SELECT uv.voucher.id FROM UseVoucher uv WHERE uv.user.id = :userId)")
+    List<Voucher> searchAvailableVouchersForUser(@Param("search") String searchText, @Param("userId") Long userId);
+
+
     @Query("SELECT v FROM Voucher v WHERE v.expirationDate < :expirationDate OR v.amount <= :amount AND v.status = :status")
     List<Voucher> findExpiredOrOutOfStockVouchers(LocalDate expirationDate, int amount, VoucherStatus status);
 
-    @Query("SELECT v FROM Voucher v WHERE v.id NOT IN (SELECT uv.voucher.id FROM UseVoucher uv WHERE uv.user.id = :userId)")
+    @Query("SELECT v FROM Voucher v WHERE v.status = 'isActive' AND v.id NOT IN (SELECT uv.voucher.id FROM UseVoucher uv WHERE uv.user.id = :userId)")
     List<Voucher> findVouchersNotUsedByUser(@Param("userId") Long userId);
 
 }

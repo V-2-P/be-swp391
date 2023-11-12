@@ -53,6 +53,14 @@ public class VoucherServiceImpl implements VoucherService {
     }
 
     @Override
+    public List<Voucher> searchForCustomer(String searchText) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        return voucherRepository.searchAvailableVouchersForUser(searchText,user.getId());
+    }
+
+    @Override
     public List<Voucher> getAllVoucher() {
 
         List<Voucher> sortedVouchers = voucherRepository.findAll().stream()

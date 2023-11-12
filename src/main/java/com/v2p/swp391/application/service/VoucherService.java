@@ -15,5 +15,6 @@ public interface VoucherService {
     Voucher updateVoucher(Long id, VoucherRequest voucher);
     void cancelVoucher(Long id);
     List<Voucher> getVoucherForCustomer();
+    List<Voucher> searchForCustomer(String searchText);
 
 }
