@@ -13,6 +13,7 @@ import com.v2p.swp391.application.response.OrderResponse;
 import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.OrderService;
 import com.v2p.swp391.common.api.CoreApiResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
@@ -34,16 +36,21 @@ public class OrderController {
     private final OrderService orderService;
     @PostMapping("")
     public CoreApiResponse<OrderPaymentRespone> createOrder(
-            @Valid @RequestBody OrderRequest request) throws UnsupportedEncodingException {
+            @Valid @RequestBody OrderRequest request,
+            HttpServletResponse response
+    ) throws IOException {
         OrderPaymentRespone order = orderService.createOrderHavePayment(INSTANCE.toModel(request),request.getCartItems());
+        response.sendRedirect(order.getPaymentRespone().getURL());
         return CoreApiResponse.success(order ,"Create order successfully");
     }
 
     @GetMapping("/pay-unpaid-order")
     public CoreApiResponse<PaymentRespone> payUnpaidOrder(
-            @Valid @RequestParam Long id
-    ) throws UnsupportedEncodingException {
+            @Valid @RequestParam Long id,
+            HttpServletResponse response
+    ) throws IOException {
         PaymentRespone paymentRespone = orderService.payUnpaidOrder(id);
+        response.sendRedirect(paymentRespone.getURL());
         return CoreApiResponse.success(paymentRespone, "Successfully!");
     }
 

@@ -10,12 +10,16 @@ import com.v2p.swp391.exception.ResourceNotFoundException;
 import com.v2p.swp391.payment.PaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -79,13 +83,18 @@ public class PaymentServiceImpl implements PaymentService {
         vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_OrderType", orderType);
 
-        Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-        String vnp_CreateDate = formatter.format(cld.getTime());
+        TimeZone vietnamTimeZone = TimeZone.getTimeZone("Asia/Ho_Chi_Minh");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        sdf.setTimeZone(vietnamTimeZone);
+
+        Date currentDate = new Date();
+        String vnp_CreateDate = sdf.format(currentDate);
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
-        cld.add(Calendar.MINUTE, 15);
-        String vnp_ExpireDate = formatter.format(cld.getTime());
+        Instant instant = currentDate.toInstant();
+        Instant newInstant = instant.plus(Duration.ofHours(25));
+        Date newDate = Date.from(newInstant);
+        String vnp_ExpireDate = sdf.format(newDate.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
 
         List fieldNames = new ArrayList(vnp_Params.keySet());
@@ -132,6 +141,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         PaymentRespone paymentRespone = new PaymentRespone("OK", "Successfully", paymentUrl, payment1);
+//        this.sendRedirect(paymentUrl);
         return paymentRespone;
     }
 
@@ -154,6 +164,13 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return paymentRepositorty.save(payment);
     }
+
+//    @Override
+//    public RedirectView sendRedirect(String url) {
+//        RedirectView redirectView = new RedirectView();
+//        redirectView.setUrl(url);
+//        return redirectView.;
+//    }
 
 
 }
