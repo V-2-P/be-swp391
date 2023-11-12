@@ -5,11 +5,14 @@ import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.response.TransactionRespone;
 import com.v2p.swp391.common.api.CoreApiResponse;
 import com.v2p.swp391.payment.impl.PaymentServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.http.HttpResponse;
 
 @RestController
 @RequestMapping("${app.api.version.v1}/payment")
@@ -21,8 +24,9 @@ public class PaymentController {
     public CoreApiResponse<TransactionRespone> transaction(
             @RequestParam(value = "vnp_OrderInfo") String order,
             @RequestParam(value = "vnp_TxnRef") String id,
-            @RequestParam(value = "vnp_ResponseCode") String responeCode
-    ){
+            @RequestParam(value = "vnp_ResponseCode") String responeCode,
+            HttpServletResponse response
+    ) throws IOException {
         TransactionRespone transactionRespone = new TransactionRespone();
         if(responeCode.equals("00")){
             transactionRespone.setStatus("OK");
@@ -35,6 +39,13 @@ public class PaymentController {
             transactionRespone.setData("");
 
         }
+        if(id.contains("OD")){
+            response.sendRedirect("https://birdfarmshop.techx.id.vn/order");
+        }
+        else{
+            response.sendRedirect("https://birdfarmshop.techx.id.vn/booking");
+        }
+
         return CoreApiResponse.success(transactionRespone, "Successfully!");
     }
 
