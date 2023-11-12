@@ -92,7 +92,7 @@ public class PaymentServiceImpl implements PaymentService {
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
         Instant instant = currentDate.toInstant();
-        Instant newInstant = instant.plus(Duration.ofHours(25));
+        Instant newInstant = instant.plus(Duration.ofHours(2));
         Date newDate = Date.from(newInstant);
         String vnp_ExpireDate = sdf.format(newDate.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
