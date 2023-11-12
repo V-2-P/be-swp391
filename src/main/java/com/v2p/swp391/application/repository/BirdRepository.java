@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface BirdRepository extends JpaRepository<Bird,Long> {
-    boolean existsByName(String name);
 
     List<Bird> findByCategoryId(Long categoryId);
 
@@ -37,10 +36,14 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
     @Query("SELECT p FROM Bird p LEFT JOIN FETCH p.birdImages WHERE p.id = :birdId")
     Optional<Bird> getDetailBird(@Param("birdId") Long birdId);
 
-    @Query("SELECT od.bird FROM OrderDetail od " +
+    @Query("SELECT od.bird FROM OrderDetail od JOIN od.bird b " +
+            "WHERE b.quantity > 0 " +
             "GROUP BY od.bird " +
-            "ORDER BY SUM(od.numberOfProducts) DESC ")
+            "ORDER BY SUM(od.numberOfProducts) DESC")
     List<Bird> findBestSeller();
+
+
+
 
     @Query("SELECT b FROM Bird b ORDER BY b.createdAt DESC LIMIT 20")
     List<Bird> findTop20();
@@ -48,7 +51,6 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
     @Query("SELECT p FROM Bird p WHERE p.id IN :birdIds")
     List<Bird> findBirdsByIds(@Param("birdIds") List<Long> birdIds);
 
-    List<Bird> findByBirdTypeIdOrCategoryId(Long birdTypeId, Long categoryId);
 
     @Query("SELECT b FROM Bird b WHERE b.price >= :minPrice AND b.price <= :maxPrice")
     List<Bird> findBirdsInPriceRange(@Param("minPrice") Float minPrice, @Param("maxPrice") Float maxPrice);
