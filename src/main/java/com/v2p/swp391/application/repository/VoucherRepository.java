@@ -24,4 +24,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Long > {
     @Query("SELECT v FROM Voucher v WHERE v.expirationDate < :expirationDate OR v.amount <= :amount AND v.status = :status")
     List<Voucher> findExpiredOrOutOfStockVouchers(LocalDate expirationDate, int amount, VoucherStatus status);
 
+    @Query("SELECT v FROM Voucher v WHERE v.id NOT IN (SELECT uv.voucher.id FROM UseVoucher uv WHERE uv.user.id = :userId)")
+    List<Voucher> findVouchersNotUsedByUser(@Param("userId") Long userId);
+
 }
