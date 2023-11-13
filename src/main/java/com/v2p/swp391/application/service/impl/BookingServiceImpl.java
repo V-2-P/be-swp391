@@ -79,7 +79,7 @@ public class    BookingServiceImpl implements BookingService {
         bookingResponse.setBookingId(createdBooking.getId());
         bookingResponse.setBooking(createdBooking);
 
-        //Create payment for Booking
+        //Create payment for Deposit Booking
         PaymentRequest paymentRequest = new PaymentRequest(booking.getPaymentDeposit(), PaymentForType.DEPOSIT_BOOKING, bookingResponse.getBookingId());
         PaymentRespone paymentRespone = paymentService
                 .createPayment(paymentRequest.getAmount(), paymentRequest.getPaymentForType(), paymentRequest.getId());
@@ -237,7 +237,7 @@ public class    BookingServiceImpl implements BookingService {
             bookingDetailRepository.save(existingBooking.getBookingDetail());
         }
         else if (status.equals(BookingStatus.Preparing)){
-            if(existingBooking.getPaymentMethod().equals(PaymentMethod.Cash_On_Delivery)){
+            if(existingBooking.getPaymentMethod().equals(PaymentMethod.Debit_Or_Credit_Card)){
                 this.payTotalMoney(existingBooking.getId());
             }
         }
