@@ -26,4 +26,5 @@ public interface BookingService {
     Booking updateTotalPaymentBooking(Long bookingId, float total);
     Booking updateTimeBooking(Long bookingId, String dateString);
     Booking deleteBooking(Long id);
+    Booking updateTrackingNumber(Long id, String trackingNumber);
 }

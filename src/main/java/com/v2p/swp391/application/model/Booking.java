@@ -61,4 +61,6 @@ public class Booking extends BaseEntity{
 
     @ManyToOne
     private ShippingMethod shippingMethod;
+
+    private String trackingNumber;
 }

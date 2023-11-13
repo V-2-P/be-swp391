@@ -90,6 +90,15 @@ public class BookingController {
         return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
     }
 
+    @PutMapping("{id}/tracking-number")
+    public CoreApiResponse<Booking> updateTrackingNumber(
+            @Valid @PathVariable Long id,
+            @Valid @RequestParam("trackingNumber") String trackingNumber
+    ){
+        Booking updatedBooking = bookingService.updateTrackingNumber(id, trackingNumber);
+        return CoreApiResponse.success(updatedBooking, "Update booking id: " + id + " successfully!");
+    }
+
     @DeleteMapping("{id}")
     public CoreApiResponse<Booking> deleteBooking(
             @Valid @PathVariable Long id
