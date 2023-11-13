@@ -156,11 +156,8 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
         payment.setStatus(true);
 
-        if (order.equals(PaymentForType.DEPOSIT_BOOKING)){
-            char[] idChar = new char[8];
-            id.getChars(2, id.length(), idChar, 0);
-            Long idInt = Long.parseLong(idChar.toString());
-            Booking booking = bookingRepository.findById(idInt)
+        if (id.contains("DB")){
+            Booking booking = bookingRepository.findById(payment.getBooking().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
             booking.setStatus(BookingStatus.Confirmed);
 
