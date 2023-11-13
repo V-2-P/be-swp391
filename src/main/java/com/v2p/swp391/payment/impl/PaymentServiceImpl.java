@@ -224,7 +224,7 @@ public class PaymentServiceImpl implements PaymentService {
     private void setCanceledForOutDatePayment(){
         List<Payment> unpaidPaymentList = this.getUnpaidPayment();
         LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime cprDate = currentDate.minusHours(2);
+        LocalDateTime cprDate = currentDate.minusDays(10);
         for(Payment payment: unpaidPaymentList){
             DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
             String createdAtString = sdf.format(payment.getCreatedAt());
