@@ -103,4 +103,18 @@ public class BookingController {
         bookingService.automaticallySetBirdCategoryFromCancelledBooking();
         return CoreApiResponse.success("Success");
     }
+
+    @GetMapping("/pay-unpaid-booking")
+    public CoreApiResponse<PaymentRespone> payUnpaidBooking(
+        @Valid @RequestParam("id") Long bookingId
+    ) throws UnsupportedEncodingException {
+        return CoreApiResponse.success(bookingService.payUnpaidDepositMoney(bookingId), "Successfully");
+    }
+
+    @GetMapping("/pay-total-booking")
+    public CoreApiResponse<PaymentRespone> payTotalBooking(
+            @Valid @RequestParam("id") Long bookingId
+    ) throws UnsupportedEncodingException {
+        return CoreApiResponse.success(bookingService.payTotalMoney(bookingId), "Successfully");
+    }
 }

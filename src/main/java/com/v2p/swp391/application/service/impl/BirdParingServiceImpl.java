@@ -108,11 +108,13 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
         if(status.equals(BirdPairingStatus.Fledgling) || status.equals(BirdPairingStatus.Failed)){
             if(checkCompletedBrooding(existingBirdPairing)){
-                existingBirdPairing.getBookingDetail().setStatus(BookingDetailStatus.Fledgling_All);
-                bookingDetailRepository.save(existingBirdPairing.getBookingDetail());
+                BookingDetail bookingDetail = existingBirdPairing.getBookingDetail();
+                bookingDetail.setStatus(BookingDetailStatus.Fledgling_All);
+                bookingDetailRepository.save(bookingDetail);
 
-                existingBirdPairing.getBookingDetail().getBooking().setStatus(BookingStatus.Preparing);
-                bookingRepository.save(existingBirdPairing.getBookingDetail().getBooking());
+                Booking booking = existingBirdPairing.getBookingDetail().getBooking();
+                booking.setStatus(BookingStatus.Preparing);
+                bookingRepository.save(booking);
             }
 
             if(checkFailedBrooding(existingBirdPairing)){
