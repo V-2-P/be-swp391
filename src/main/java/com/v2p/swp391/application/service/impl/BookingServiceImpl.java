@@ -254,6 +254,8 @@ public class    BookingServiceImpl implements BookingService {
         return bookingRepository.save(existingBooking);
     }
 
+
+
     @Override
     public Booking updateTimeBooking(Long bookingId, String dateString) {
         Booking existingBooking = getBookingById(bookingId);
@@ -269,6 +271,17 @@ public class    BookingServiceImpl implements BookingService {
         if(existingBooking.getBookingDetail() != null)
             bookingDetailService.deleteBookingDetail(existingBooking.getBookingDetail().getId());
         bookingRepository.deleteById(id);
+        return existingBooking;
+    }
+
+    @Override
+    public Booking updateTrackingNumber(Long id, String trackingNumber) {
+        Booking existingBooking = getBookingById(id);
+        if(existingBooking.getBookingDetail() != null)
+            bookingDetailService.deleteBookingDetail(existingBooking.getBookingDetail().getId());
+        existingBooking.setTrackingNumber(trackingNumber);
+        existingBooking.setStatus(BookingStatus.Shipping);
+        bookingRepository.save(existingBooking);
         return existingBooking;
     }
 }
