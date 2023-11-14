@@ -17,6 +17,6 @@ public interface UserService {
     User getUserById(Long id);
     UserResponse getUserResponeById(Long id);
     User updateUser(Long id, UserUpdateRequest update);
-    List<UserResponse> getAllUser(Long roleId, String keyword, PageRequest pageRequest);
+    List<UserResponse> getAllUser(Long roleId, String keyword);
     User deleteUser(Long id);
 }
