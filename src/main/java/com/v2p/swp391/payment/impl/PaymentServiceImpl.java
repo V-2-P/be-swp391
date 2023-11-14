@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        DecimalFormat df = new DecimalFormat("#000000");
+        DecimalFormat df = new DecimalFormat("#0000000");
         String vnp_TxnRef = df.format(id);
         Payment payment1 = new Payment();
         if(payment.equals(PaymentForType.DEPOSIT_BOOKING) || payment.equals(PaymentForType.TOTAL_BOOKING)){
