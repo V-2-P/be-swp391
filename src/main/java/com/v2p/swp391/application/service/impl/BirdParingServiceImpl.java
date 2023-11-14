@@ -98,7 +98,7 @@ public class BirdParingServiceImpl implements BirdPairingService {
             newBird.setBirdType(existingBookingDetail.getBirdType());
             newBird.setCategory(categoryRepository.getReferenceById(1L));
             newBird.setStatus(false);
-            newBird.setName("Customer userId: " + existingBookingDetail.getBooking().getUser().getId() + "'s bird");
+            newBird.setName("Con non");
             newBird = birdRepository.save(newBird);
 
             existingBirdPairing.setNewBird(newBird);
