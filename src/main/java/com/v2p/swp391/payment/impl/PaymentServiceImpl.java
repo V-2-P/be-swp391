@@ -1,6 +1,7 @@
 package com.v2p.swp391.payment.impl;
 
 import com.v2p.swp391.application.model.*;
+import com.v2p.swp391.application.repository.BookingDetailRepository;
 import com.v2p.swp391.application.repository.BookingRepository;
 import com.v2p.swp391.application.repository.OrderRepository;
 import com.v2p.swp391.application.repository.PaymentRepositorty;
@@ -30,6 +31,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     public final BookingRepository bookingRepository;
+    public final BookingDetailRepository bookingDetailRepository;
     public final OrderRepository orderRepository;
     public final PaymentRepositorty paymentRepositorty;
     public final SendEmailServiceImpl sendEmailService;
@@ -161,6 +163,13 @@ public class PaymentServiceImpl implements PaymentService {
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
             booking.setStatus(BookingStatus.Confirmed);
 
+            BookingDetail bookingDetail = bookingDetailRepository
+                    .findById(payment.getBooking().getBookingDetail().getId())
+                    .orElseThrow(()
+                            -> new ResourceNotFoundException("Booking Detail", "ID", payment.getBooking().getBookingDetail().getId()));
+            bookingDetail.setStatus(BookingDetailStatus.In_Breeding_Progress);
+
+            bookingDetailRepository.save(bookingDetail);
             bookingRepository.save(booking);
         }
         return paymentRepositorty.save(payment);
