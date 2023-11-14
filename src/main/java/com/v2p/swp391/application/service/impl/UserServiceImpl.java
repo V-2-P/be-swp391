@@ -127,9 +127,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserResponse> getAllUser(Long roleId, String keyword, PageRequest pageRequest) {
+    public List<UserResponse> getAllUser(Long roleId, String keyword) {
         List<User> users;
-        users = userRepository.searchUsers(roleId, keyword, pageRequest);
+        users = userRepository.searchUsers(roleId, keyword);
 
         List<UserResponse> usersList = new ArrayList<>();
         for(User user: users){

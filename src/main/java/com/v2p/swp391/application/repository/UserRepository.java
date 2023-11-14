@@ -26,6 +26,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
             "AND (:keyword = '' OR u.email LIKE %:keyword% OR u.fullName LIKE %:keyword% OR u.phoneNumber LIKE %:keyword%)"
     )
     List<User> searchUsers(@Param("roleId") Long roleId,
-                           @Param("keyword") String phoneNumber,
-                           Pageable pageable);
+                           @Param("keyword") String phoneNumber);
 }

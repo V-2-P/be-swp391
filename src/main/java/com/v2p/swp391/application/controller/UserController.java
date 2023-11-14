@@ -79,7 +79,7 @@ public class UserController {
                 Sort.by("createdAt").descending()
         );
 
-        List<UserResponse> userPage = userService.getAllUser(roleId, keyword, pageRequest);
+        List<UserResponse> userPage = userService.getAllUser(roleId, keyword);
         int totalPages = (userPage.size() % limit == 0) ? userPage.size() / limit : userPage.size() / limit + 1;
         UserPageRespone userPageRespone = new UserPageRespone();
         userPageRespone.setUsers(userPage);
