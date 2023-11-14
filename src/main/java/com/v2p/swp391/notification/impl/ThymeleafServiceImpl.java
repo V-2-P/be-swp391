@@ -76,5 +76,15 @@ public class ThymeleafServiceImpl implements ThymeleafService {
         return templateEngine.process(Template.PAYMENT_MAIL, context);
     }
 
+    @Override
+    public String getShippingContent(User user, String message) {
+        final Context context = new Context();
+
+        context.setVariable("firstName", user.getFullName());
+        context.setVariable("message", message);
+
+        return templateEngine.process(Template.SHIPPING_MAIL, context);
+    }
+
 
 }

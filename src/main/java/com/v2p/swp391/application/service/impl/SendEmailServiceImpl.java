@@ -17,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 @RequiredArgsConstructor
@@ -44,4 +46,13 @@ public class SendEmailServiceImpl  implements SendEmailService {
     public void sendMailPayment(User user, String url) {
         applicationEventPublisher.publishEvent(new MailEvent(this, user, url, "payment"));
     }
+
+    @Override
+    public void sendShippingNotificationBooking(User user) {
+        DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        LocalDateTime currentDate = LocalDateTime.now();
+        applicationEventPublisher.publishEvent(new MailEvent(this, user, "The fledgling birds from booking was sent at " + sdf.format(currentDate) + "\nYour fledgling birds from booking will be delivered within 5-10 days", "shipping"));
+    }
+
+
 }

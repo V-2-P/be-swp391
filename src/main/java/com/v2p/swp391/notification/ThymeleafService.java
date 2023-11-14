@@ -7,4 +7,5 @@ public interface ThymeleafService {
 
     String getResetPasswordContent(User user, String url);
     String getPaymentContent(User user, String url);
+    String getShippingContent(User user, String message);
 }
