@@ -80,6 +80,14 @@ public class MailServiceImpl implements MailService {
                 message.setContent(thymeleafService.getPaymentContent(event.getUser(), event.getUrl()), CONTENT_TYPE_TEXT_HTML);
                 Transport.send(message);
             }
+            else if (event.getType().equals("shipping")){
+                message.setRecipients(Message.RecipientType.TO, new InternetAddress[]{new InternetAddress(event.getUser().getEmail())});
+
+                message.setFrom(new InternetAddress(email));
+                message.setSubject("Cập nhật đơn hàng");
+                message.setContent(thymeleafService.getShippingContent(event.getUser(), event.getUrl()), CONTENT_TYPE_TEXT_HTML);
+                Transport.send(message);
+            }
         } catch (MessagingException e) {
             e.printStackTrace();
         }

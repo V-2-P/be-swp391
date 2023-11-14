@@ -101,6 +101,10 @@ public class    BookingServiceImpl implements BookingService {
         return paymentRespone;
     }
 
+    private void sendEmailShippingNotification(Long id){
+        Booking existingBooking = bookingRepository.findBookingById(id);
+        sendEmailService.sendShippingNotificationBooking(existingBooking.getUser());
+    }
     private PaymentRespone payMoney(Long id, PaymentForType paymentForType) throws UnsupportedEncodingException {
         Booking booking = bookingRepository.findBookingById(id);
         PaymentRespone paymentRespone = new PaymentRespone();
@@ -281,6 +285,7 @@ public class    BookingServiceImpl implements BookingService {
             bookingDetailService.deleteBookingDetail(existingBooking.getBookingDetail().getId());
         existingBooking.setTrackingNumber(trackingNumber);
         existingBooking.setStatus(BookingStatus.Shipping);
+        this.sendEmailShippingNotification(existingBooking.getId());
         bookingRepository.save(existingBooking);
         return existingBooking;
     }
