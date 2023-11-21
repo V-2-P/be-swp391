@@ -41,7 +41,6 @@ public class    BookingServiceImpl implements BookingService {
     private final SendEmailServiceImpl sendEmailService;
     private final CategoryRepository categoryRepository;
     private final BirdPairingRepository birdPairingRepository;
-    private final ShippingMethodRepository shippingMethodRepository;
 
     @Override
     public Booking createBooking(Booking booking, BookingDetail bookingDetail) {
@@ -61,10 +60,11 @@ public class    BookingServiceImpl implements BookingService {
                         -> new ResourceNotFoundException("Bird", "id", bookingDetail.getMotherBird().getId()));
         Booking createdBooking = bookingRepository.save(booking);
         bookingDetailService.createBookingDetail(createdBooking, bookingDetail);
-        ShippingMethod shippingMethod = shippingMethodRepository.findById(booking.getShippingMethod().getId())
-                .orElseThrow(()
-                        -> new ResourceNotFoundException("Shipping Method", "ID", booking.getShippingMethod().getId()));
-        float totalPayment = fatherBird.getPrice() + motherBird.getPrice() + shippingMethod.getShippingMoney();
+//        ShippingMethod shippingMethod = shippingMethodRepository.findById(booking.getShippingMethod().getId())
+//                .orElseThrow(()
+//                        -> new ResourceNotFoundException("Shipping Method", "ID", booking.getShippingMethod().getId()));
+//        float totalPayment = fatherBird.getPrice() + motherBird.getPrice() + shippingMethod.getShippingMoney();
+        float totalPayment = 0;
         this.updateTotalPaymentBooking(createdBooking.getId(), totalPayment);
 
         booking.setStatus(BookingStatus.Pending);

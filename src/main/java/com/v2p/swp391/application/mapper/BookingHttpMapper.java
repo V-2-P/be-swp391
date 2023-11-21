@@ -10,7 +10,6 @@ import org.mapstruct.factory.Mappers;
 public interface BookingHttpMapper {
     BookingHttpMapper INSTANCE = Mappers.getMapper(BookingHttpMapper.class);
     @Mapping(source = "userId", target = "user.id")
-    @Mapping(source = "shippingMethodId", target = "shippingMethod.id")
     Booking toModel(BookingRequest request);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

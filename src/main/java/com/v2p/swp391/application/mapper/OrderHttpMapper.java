@@ -23,7 +23,6 @@ public interface OrderHttpMapper {
 
     @Mapping(target = "voucher", expression = "java(voucherFromId(request.getVoucherId()))")
     @Mapping(source = "userId", target = "user.id")
-    @Mapping(source = "shippingMethod", target = "shippingMethod.id")
     Order toModel(OrderRequest request);
 
     default Voucher voucherFromId(Long id) {
@@ -39,8 +38,6 @@ public interface OrderHttpMapper {
 
     @Mapping(source = "user.id", target = "userId")
     @Mapping(source = "voucher.discount", target = "discount")
-    @Mapping(source = "shippingMethod.name", target = "shippingMethod")
-    @Mapping(source = "shippingMethod.shippingMoney", target = "shippingMoney")
     @Mapping(source = "feedback.status", target = "feedbackStatus")
     OrderResponse toResponse(Order order);
 
