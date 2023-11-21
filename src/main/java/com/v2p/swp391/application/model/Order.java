@@ -59,6 +59,9 @@ public class Order extends BaseEntity {
     @Column(name = "payment_method")
     private String paymentMethod;
 
+    @Column(name = "shipping_money")
+    private Float shippingMoney;
+
     @Column(name = "received_date")
     private LocalDate receivedDate;
 
@@ -78,6 +81,7 @@ public class Order extends BaseEntity {
 
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     private UseVoucher useVouchers ;
 
 }

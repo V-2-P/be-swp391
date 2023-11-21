@@ -32,6 +32,5 @@ public class BookingRequest {
     @NotNull(message = "Booking detail is required")
     private BookingDetailRequest bookingDetailRequest;
 
-    @NotNull(message = "Shipping method is required")
-    private Long shippingMethodId;
+    private Float shippingMoney;
 }

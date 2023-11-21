@@ -56,6 +56,9 @@ public class Booking extends BaseEntity{
     @Column(name = "total_payment")
     private Float totalPayment;
 
+    @Column(name = "shipping_money")
+    private Float shippingMoney;
+
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private BookingDetail bookingDetail;
 
