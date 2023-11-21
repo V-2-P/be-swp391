@@ -103,15 +103,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
 
-//        ShippingMethod shippingMethod= shippingMethodRepository
-//                .findById(order.getShippingMethod().getId())
-//                .orElseThrow(() -> new ResourceNotFoundException
-//                        ("Shipping method", "id", order.getShippingMethod().getId()));
-//        float shippingMoney= shippingMethod.getShippingMoney();
-        float shippingMoney = 0;
-        totalPayment+=shippingMoney;
+        totalPayment+=order.getShippingMoney();
         order.setTotalMoney(totalMoney);
-//        order.setShippingMethod(shippingMethod);
         order.setTotalPayment(totalPayment);
         order.setOrderDate(LocalDate.now());
         order.setStatus(OrderStatus.pending);
