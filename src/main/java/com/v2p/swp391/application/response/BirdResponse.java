@@ -25,6 +25,9 @@ public class BirdResponse {
 
     private String thumbnail;
 
+    private int quantity;
+
+
 
 
 }

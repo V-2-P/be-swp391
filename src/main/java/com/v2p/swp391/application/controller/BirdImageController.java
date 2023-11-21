@@ -22,11 +22,11 @@ public class BirdImageController {
     private final BirdImageService birdImageService;
 
     @PostMapping("/{id}")
-    public CoreApiResponse<?> uploadImages(
+    public CoreApiResponse<List<BirdImage>>uploadImages(
             @PathVariable Long id,
             @RequestParam(name = "files") List<MultipartFile> images) throws IOException {
-        birdImageService.createBirdImage(id, images);
-        return CoreApiResponse.success("Bird image uploaded successfully");
+        List<BirdImage> birdimage = birdImageService.createBirdImage(id, images);
+        return CoreApiResponse.success(birdimage,"Bird image uploaded successfully");
     }
 
     @GetMapping("/bird/{birdId}")

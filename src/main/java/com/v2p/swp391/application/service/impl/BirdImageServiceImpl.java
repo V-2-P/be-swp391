@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,30 +24,23 @@ public class BirdImageServiceImpl implements com.v2p.swp391.application.service.
     private final BirdRepository birdRepository;
     private final BirdImageRepository birdImageRepository;
     @Override
-    public void createBirdImage(Long birdId, List<MultipartFile> images) throws IOException {
+    public List<BirdImage> createBirdImage(Long birdId, List<MultipartFile> images) throws IOException {
         Bird existingProduct = birdRepository
                 .findById(birdId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException(
                                 "Bird","id",birdId));
-        long existingImages = birdImageRepository.countByBirdId(birdId);
-        long  remaining = BirdImage.MAXIMUM_IMAGES_PER_BIRD - existingImages;
-        if (images.size() > remaining) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Maximum image is: " + BirdImage.MAXIMUM_IMAGES_PER_BIRD+
-                    ". Please remove image before upload");
-        }
-        if (images.size() > BirdImage.MAXIMUM_IMAGES_PER_BIRD) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Maximum image is: " + BirdImage.MAXIMUM_IMAGES_PER_BIRD);
-        }
 
-        for(MultipartFile image : images) {
-            if(!image.isEmpty()) {
+        List<BirdImage> birdImages = new ArrayList<>();
+        for (MultipartFile image : images) {
+            if (!image.isEmpty()) {
                 BirdImage birdImage = new BirdImage();
                 birdImage.setBird(existingProduct);
                 birdImage.setImageUrl(UploadImageUtils.storeFile(image, Image.BIRD_IMAGE_PATH));
                 birdImageRepository.save(birdImage);
             }
         }
+        return birdImages;
     }
 
     @Override

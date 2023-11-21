@@ -28,6 +28,9 @@ public interface BirdService {
     List<Bird> findByTypeId(long typeId);
 
     Page<Bird> getAllBirds(String keyword, Long categoryId, Long typeId,Float minPrice,  Float maxPrice, PageRequest pageRequest);
+
+    Page<Bird> getAllBirdForUser(String keyword, Long categoryId, Long typeId,Float minPrice,  Float maxPrice, PageRequest pageRequest);
+
     Bird updateBird(long id, BirdRequest bird);
 
     void deleteBird(long id);

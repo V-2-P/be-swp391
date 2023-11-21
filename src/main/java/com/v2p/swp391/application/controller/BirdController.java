@@ -72,7 +72,7 @@ public class BirdController {
     }
 
     @GetMapping("")
-    public CoreApiResponse<BirdSearchResponse> getProducts(
+    public CoreApiResponse<BirdSearchResponse> getBirds(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
             @RequestParam(defaultValue = "0", name = "type_id") Long typeId,
@@ -86,6 +86,28 @@ public class BirdController {
         );
 
         Page<Bird> productPage = birdService.getAllBirds(keyword, categoryId, typeId, minPrice,maxPrice,pageRequest);
+        int totalPages = productPage.getTotalPages();
+        List<Bird> birds = productPage.getContent();
+        BirdSearchResponse birdSearchResponse = new BirdSearchResponse();
+        birdSearchResponse.setBirds(birds);
+        birdSearchResponse.setTotalPages(totalPages);
+        return CoreApiResponse.success(birdSearchResponse);
+    }
+
+    @GetMapping("/user")
+    public CoreApiResponse<BirdSearchResponse> getBirdForUser(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "0", name = "category_id") Long categoryId,
+            @RequestParam(defaultValue = "0", name = "type_id") Long typeId,
+            @RequestParam(required = false) Float minPrice,
+            @RequestParam(required = false) Float maxPrice,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int limit) {
+        PageRequest pageRequest = PageRequest.of(
+                page, limit,
+                Sort.by("createdAt").descending()
+        );
+        Page<Bird> productPage = birdService.getAllBirdForUser(keyword, categoryId, typeId, minPrice,maxPrice,pageRequest);
         int totalPages = productPage.getTotalPages();
         List<Bird> birds = productPage.getContent();
         BirdSearchResponse birdSearchResponse = new BirdSearchResponse();

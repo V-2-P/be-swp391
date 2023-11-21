@@ -116,6 +116,13 @@ public class BirdServiceImpl implements BirdService {
     }
 
     @Override
+    public Page<Bird> getAllBirdForUser(String keyword, Long categoryId, Long typeId,Float minPrice, Float maxPrice, PageRequest pageRequest) {
+        Page<Bird> productsPage;
+        productsPage = birdRepository.searchBirdForUser(categoryId, typeId, keyword,minPrice, maxPrice, pageRequest);
+        return productsPage;
+    }
+
+    @Override
     public Bird updateBird(long id, BirdRequest request) {
         Bird existingBird = getBirdById(id);
         birdMapper.updateBirdFromRequest(request, existingBird);

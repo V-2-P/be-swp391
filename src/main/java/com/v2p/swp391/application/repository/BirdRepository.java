@@ -33,6 +33,24 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
              Pageable pageable);
 
 
+    @Query("SELECT p FROM Bird p WHERE " +
+            "(:categoryId IS NULL OR :categoryId = 0 OR p.category.id = :categoryId) " +
+            "AND (:typeId IS NULL OR :typeId = 0 OR p.birdType.id = :typeId) " +
+            "AND (:keyword IS NULL OR :keyword = '' OR p.name LIKE %:keyword% OR p.description LIKE %:keyword%) " +
+            "AND (:minPrice IS NULL OR p.price >= :minPrice) " +
+            "AND (:maxPrice IS NULL OR p.price <= :maxPrice) " +
+            "AND (p.category.name NOT LIKE '%sinh sản%' AND p.category.name NOT LIKE '%chim non%')" +
+            "AND (p.name != 'con non')")
+    Page<Bird> searchBirdForUser
+            (@Param("categoryId") Long categoryId,
+             @Param("typeId") Long typeId,
+             @Param("keyword") String keyword,
+             @Param("minPrice") Float minPrice,
+             @Param("maxPrice") Float maxPrice,
+             Pageable pageable);
+
+
+
     @Query("SELECT p FROM Bird p LEFT JOIN FETCH p.birdImages WHERE p.id = :birdId")
     Optional<Bird> getDetailBird(@Param("birdId") Long birdId);
 
