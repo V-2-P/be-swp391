@@ -55,6 +55,7 @@ app:
         expire-vouchers: ${CRON_VOUCHERS:0 0 0 * * ?}
         set-status-order: ${CRON_ORDER:0 0 0 * * ?}
         active-voucher: ${CRON_ACTIVE_VOUCHER:0 0 0 * * ?}
+        complete-order: ${CRON_COMPLETE_ORDER:0 0 0 * * ?}
 
 
   fe:

@@ -93,6 +93,13 @@ public class OrderController {
         Order shippingOrder = orderService.shippingOrder(id, INSTANCE.toModelUpdate(request));
         return CoreApiResponse.success(INSTANCE.toResponse(shippingOrder), "Update order successfully");
     }
+    @PutMapping("/rePayment/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public CoreApiResponse<OrderResponse> rePayment(
+            @PathVariable Long id){
+        Order rePayment = orderService.rePayment(id);
+        return CoreApiResponse.success(INSTANCE.toResponse(rePayment), "Payment for order successfully");
+    }
 
     @PutMapping("/confirm/{id}")
     public CoreApiResponse<OrderResponse> confirmOrder(
