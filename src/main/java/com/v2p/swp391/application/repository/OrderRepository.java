@@ -35,6 +35,8 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("SELECT COUNT(o) FROM Order o WHERE DATE(o.orderDate) = CURRENT_DATE")
     long countOrdersForCurrentDate();
 
+    @Query("SELECT o FROM Order o WHERE o.expectedDate < :date AND o.status <> 'delivered'")
+    List<Order> findOrdersForStatusUpdate(LocalDate date);
 
 
 }

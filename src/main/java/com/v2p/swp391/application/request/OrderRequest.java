@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.*;
 
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -39,6 +40,9 @@ public class OrderRequest {
     @JsonProperty("shippingMoney")
     private Float shippingMoney;
 
+    private String shippingMethod;
+
+    private LocalDate expectedDate;
 
     private Long voucherId;
 

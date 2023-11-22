@@ -176,6 +176,21 @@ public class OrderServiceImpl implements OrderService {
         return orderRepository.save(existingOrder);
     }
 
+
+    @Override
+    public Order rePayment(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        Order existingOrder = getOrder(id);
+
+        if (existingOrder.getUser().getId().equals(user.getId())) {
+            existingOrder.setStatus(OrderStatus.processing);
+        }
+        return orderRepository.save(existingOrder);
+
+    }
+
     @Override
     public Order deliveredOrder(Long id) {
         Order existingOrder = getOrder(id);
@@ -266,12 +281,22 @@ public class OrderServiceImpl implements OrderService {
     public void updatePendingOrder() {
 
         List<Order> orderPending = orderRepository.findByStatus(OrderStatus.pending);
-
-
         for (Order order : orderPending) {
             order.setStatus(OrderStatus.processing);
-
         }
         orderRepository.saveAll(orderPending);
+    }
+
+    @Scheduled(cron ="${app.task.scheduling.cron.complete-order}")
+    public void updateOrderStatus() {
+        LocalDate fiveDaysAgo = LocalDate.now().minusDays(5);
+        List<Order> orders = orderRepository.findOrdersForStatusUpdate(fiveDaysAgo);
+
+        for (Order order : orders) {
+            if (order.getExpectedDate() != null && order.getExpectedDate().isBefore(fiveDaysAgo)) {
+                order.setStatus(OrderStatus.delivered);
+                orderRepository.save(order);
+            }
+        }
     }
 }

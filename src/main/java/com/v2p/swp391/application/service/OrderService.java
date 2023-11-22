@@ -21,6 +21,7 @@ public interface OrderService {
     Page<OrderResponse> getListOrder(OrderStatus status,String keyword, PageRequest pageRequest);
     Order shippingOrder(Long id, Order order) ;
     Order confirmOrder(Long id);
+    Order rePayment(Long id);
     Order deliveredOrder(Long id);
     void deleteOrder(Long id);
     List<Order> findByUser();
