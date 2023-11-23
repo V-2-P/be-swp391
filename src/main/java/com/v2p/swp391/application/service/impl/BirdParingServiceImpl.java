@@ -36,6 +36,9 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
         if(existingBookingDetail.getStatus().equals(BookingDetailStatus.In_Breeding_Progress)){
             existingBookingDetail.setStatus(BookingDetailStatus.Brooding);
+            Booking booking = existingBookingDetail.getBooking();
+            booking.getBookingDetail().getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())-1);
+            booking.getBookingDetail().getMotherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())-1);
             bookingDetailRepository.save(existingBookingDetail);
         }
 
@@ -96,7 +99,7 @@ public class BirdParingServiceImpl implements BirdPairingService {
         if(status.equals(BirdPairingStatus.Fledgling)){
             Bird newBird = new Bird();
             newBird.setBirdType(existingBookingDetail.getBirdType());
-            newBird.setCategory(categoryRepository.getReferenceById(1L));
+
             newBird.setStatus(false);
             newBird.setName("Con non");
             newBird = birdRepository.save(newBird);
@@ -105,20 +108,22 @@ public class BirdParingServiceImpl implements BirdPairingService {
         }
         existingBirdPairing.setStatus(status);
 
-
+        Booking booking = existingBirdPairing.getBookingDetail().getBooking();
         if(status.equals(BirdPairingStatus.Fledgling) || status.equals(BirdPairingStatus.Failed)){
             if(checkCompletedBrooding(existingBirdPairing)){
                 BookingDetail bookingDetail = existingBirdPairing.getBookingDetail();
                 bookingDetail.setStatus(BookingDetailStatus.Fledgling_All);
                 bookingDetailRepository.save(bookingDetail);
 
-                Booking booking = existingBirdPairing.getBookingDetail().getBooking();
+
                 booking.setStatus(BookingStatus.Preparing);
+                booking.getBookingDetail().getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
                 bookingRepository.save(booking);
             }
 
             if(checkFailedBrooding(existingBirdPairing)){
                 existingBirdPairing.getBookingDetail().setStatus(BookingDetailStatus.Failed);
+                booking.getBookingDetail().getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
                 bookingDetailRepository.save(existingBirdPairing.getBookingDetail());
 
                 //Alert refund money or continue breeding?

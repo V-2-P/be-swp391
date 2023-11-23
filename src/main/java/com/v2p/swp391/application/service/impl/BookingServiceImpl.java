@@ -48,14 +48,12 @@ public class    BookingServiceImpl implements BookingService {
                         .findById(booking.getUser().getId())
                         .orElseThrow(()-> new ResourceNotFoundException("User", "id", booking.getUser().getId()));
 
-        Long id = bookingDetail.getFatherBird().getId();
         Bird fatherBird = birdRepository
-                .findById(id)
+                .findById(bookingDetail.getFatherBird().getId())
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Bird", "id", bookingDetail.getFatherBird().getId()));
-        id = bookingDetail.getMotherBird().getId();
         Bird motherBird = birdRepository
-                .findById(id)
+                .findById(bookingDetail.getMotherBird().getId())
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Bird", "id", bookingDetail.getMotherBird().getId()));
         Booking createdBooking = bookingRepository.save(booking);
@@ -134,6 +132,10 @@ public class    BookingServiceImpl implements BookingService {
             }
         }
     }
+
+//    @Override
+//    @Scheduled(fixedRate = 86400000)
+//    public void automatically
 
     @Override
     @Scheduled(fixedRate = 86400000)
@@ -269,8 +271,11 @@ public class    BookingServiceImpl implements BookingService {
     @Override
     public Booking deleteBooking(Long id) {
         Booking existingBooking = getBookingById(id);
-        if(existingBooking.getBookingDetail() != null)
+        if(existingBooking.getBookingDetail() != null) {
             bookingDetailService.deleteBookingDetail(existingBooking.getBookingDetail().getId());
+            existingBooking.getBookingDetail().getFatherBird().setQuantity((existingBooking.getBookingDetail().getFatherBird().getQuantity()) + 1);
+            existingBooking.getBookingDetail().getMotherBird().setQuantity((existingBooking.getBookingDetail().getFatherBird().getQuantity()) + 1);
+        }
         bookingRepository.deleteById(id);
         return existingBooking;
     }
@@ -278,9 +283,8 @@ public class    BookingServiceImpl implements BookingService {
     @Override
     public Booking updateTrackingNumber(Long id, String trackingNumber) {
         Booking existingBooking = getBookingById(id);
-        if(existingBooking.getBookingDetail() != null)
-            bookingDetailService.deleteBookingDetail(existingBooking.getBookingDetail().getId());
         existingBooking.setTrackingNumber(trackingNumber);
+        existingBooking.setShippingDate(java.time.LocalDate.now());
         existingBooking.setStatus(BookingStatus.Shipping);
         this.sendEmailShippingNotification(existingBooking.getId());
         bookingRepository.save(existingBooking);

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
@@ -59,8 +60,21 @@ public class Booking extends BaseEntity{
     @Column(name = "shipping_money")
     private Float shippingMoney;
 
+    @Column(name = "shipping_method")
+    private String shippingMethod;
+
     @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
     private BookingDetail bookingDetail;
 
+    @Column(name= "tracking_number")
     private String trackingNumber;
+
+    @Column(name = "shipping_date")
+    private LocalDate ShippingDate;
+
+    @Column(name = "expected_date")
+    private  Float expectedDate;
+
+    @Column(name = "received_date")
+    private LocalDate receivedDate;
 }
