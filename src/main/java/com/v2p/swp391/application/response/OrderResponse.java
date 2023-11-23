@@ -44,7 +44,11 @@ public class OrderResponse {
 
     private Float shippingMoney;
 
+    private LocalDate expectedDate;
+
     private LocalDate shippingDate;
+
+    private LocalDate receivedDate;
 
     private String trackingNumber;
 

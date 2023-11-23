@@ -37,6 +37,7 @@ public class BirdImageServiceImpl implements com.v2p.swp391.application.service.
                 BirdImage birdImage = new BirdImage();
                 birdImage.setBird(existingProduct);
                 birdImage.setImageUrl(UploadImageUtils.storeFile(image, Image.BIRD_IMAGE_PATH));
+                birdImages.add(birdImage);
                 birdImageRepository.save(birdImage);
             }
         }

@@ -63,7 +63,7 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
 
 
 
-    @Query("SELECT b FROM Bird b WHERE b.name != 'con non' ORDER BY b.createdAt DESC LIMIT 20")
+    @Query("SELECT b FROM Bird b WHERE b.name != 'con non' AND b.category.name NOT LIKE '%sinh sản%' AND b.category.name NOT LIKE '%chim non%' ORDER BY b.createdAt DESC LIMIT 20")
     List<Bird> findTop20();
 
     @Query("SELECT p FROM Bird p WHERE p.id IN :birdIds")
