@@ -7,6 +7,8 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Data//toString
 @Getter
 @Setter
@@ -31,6 +33,11 @@ public class BookingRequest {
 
     @NotNull(message = "Booking detail is required")
     private BookingDetailRequest bookingDetailRequest;
+
+    @NotBlank(message = "Shipping method is required")
+    private String shippingMethod;
+
+    private LocalDate expectedDate;
 
     private Float shippingMoney;
 }

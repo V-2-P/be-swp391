@@ -73,7 +73,7 @@ public class Booking extends BaseEntity{
     private LocalDate ShippingDate;
 
     @Column(name = "expected_date")
-    private  Float expectedDate;
+    private  LocalDate expectedDate;
 
     @Column(name = "received_date")
     private LocalDate receivedDate;
