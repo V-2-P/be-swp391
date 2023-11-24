@@ -3,6 +3,7 @@ package com.v2p.swp391.application.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
@@ -21,25 +22,29 @@ public class OrderRequest {
     private Long userId;
 
     @JsonProperty("fullName")
+    @NotBlank(message = "Vui lòng tên người nhận hàng")
     private String fullName;
 
     @JsonProperty("phoneNumber")
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 10, message = "Phone number must be 10 characters")
+    @NotBlank(message = "Vui lòng nhập số điện thoại")
+    @Size(min = 10, message = "Số điện thoại chưa đúng định dạng")
     private String phoneNumber;
 
     private String note;
 
     @JsonProperty("shippingAddress")
+    @NotBlank(message = "Vui lòng nhập địa chỉ giao hàng")
     private String shippingAddress;
 
     @JsonProperty("paymentMethod")
+    @NotBlank(message = "Vui lòng chọn phương thức thanh toán")
     private String paymentMethod;
 
-
     @JsonProperty("shippingMoney")
+    @Min(value = 1, message = "Vui lòng nhập phí vận chuyển")
     private Float shippingMoney;
 
+    @NotBlank(message = "Vui lòng chọn phương thức vận chuyển")
     private String shippingMethod;
 
     private LocalDate expectedDate;
@@ -47,6 +52,7 @@ public class OrderRequest {
     private Long voucherId;
 
     @JsonProperty("cartItems")
+    @NotNull(message = "Giỏ hàng không được trống")
     private List<CartItemRequest> cartItems;
 
 }

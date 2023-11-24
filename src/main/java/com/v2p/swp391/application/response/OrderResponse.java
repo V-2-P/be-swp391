@@ -5,6 +5,7 @@ import com.v2p.swp391.application.model.OrderStatus;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -55,4 +56,6 @@ public class OrderResponse {
     private List<OrderDetailResponse> orderDetails;
 
     private boolean feedbackStatus;
+
+    private LocalDateTime createdAt;
 }

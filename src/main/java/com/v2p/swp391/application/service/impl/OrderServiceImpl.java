@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService {
             Bird bird = birdRepository.findById(birdId)
                     .orElseThrow(() -> new ResourceNotFoundException("Bird", "id", birdId));
             if (bird.getQuantity() < quantity) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Not enough birds in stock.");
+                throw new AppException(HttpStatus.BAD_REQUEST, "Số lượng chim trong kho không đủ.");
             }
             float totalProductPrice = bird.getPrice() * quantity;
             totalMoney += totalProductPrice;
@@ -86,7 +86,7 @@ public class OrderServiceImpl implements OrderService {
 
 
             if(useVoucherRepository.existsByUser_IdAndVoucher_Id(user.getId(),voucher.getId())) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "User has already used this voucher.");
+                throw new AppException(HttpStatus.BAD_REQUEST, "Bạn đã sử dụng voucher này.");
             }
 
 
@@ -152,6 +152,11 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
     }
 
+    @Override
+    public List<Order> getAllOrder(){
+        return orderRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
+    }
+
 
     @Override
     public Page<OrderResponse> getListOrder(OrderStatus status,String keyword, PageRequest pageRequest) {
@@ -205,10 +210,10 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
         if (OrderStatus.shipping.equals(order.getStatus())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Cannot cancel order with status SHIPPING");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Đơn hàng đang được vận chuyển. Không thể huỷ đơn.");
         }
         if (OrderStatus.cancelled.equals(order.getStatus())) {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Order has been cancelled");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Đơn hàng đã được huỷ");
         }
         order.setActive(false);
         order.setStatus(OrderStatus.cancelled);
@@ -229,10 +234,8 @@ public class OrderServiceImpl implements OrderService {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
 
-        // Tạo một đối tượng Sort để sắp xếp theo trường 'createdAt' theo thứ tự giảm dần (newest first)
         Sort sortByCreatedAtDesc = Sort.by(Sort.Order.desc("createdAt"));
 
-        // Truy vấn và sắp xếp các đơn hàng
         return orderRepository.findByUserId(user.getId(), sortByCreatedAtDesc);
     }
 
@@ -254,10 +257,10 @@ public class OrderServiceImpl implements OrderService {
         if (totalMoney >= minValue) {
             LocalDate currentDate = LocalDate.now();
             if (voucher.getStartDate()!= null && voucher.getStartDate().isAfter(currentDate)) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher is not yet valid");
+                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher không hợp lệ.");
             }
             if (voucher.getExpirationDate() != null && voucher.getExpirationDate().isBefore(currentDate)) {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher has expired.");
+                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher đã hết hạn.");
             }
             if (voucher.getAmount() > 0) {
                 voucher.setAmount(voucher.getAmount() - 1);
@@ -266,11 +269,11 @@ public class OrderServiceImpl implements OrderService {
                 }
                 voucherRepository.save(voucher);
             } else {
-                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher is out of stock.");
+                throw new AppException(HttpStatus.BAD_REQUEST, "Voucher đã hết lượt sử dụng.");
             }
             discount = voucher.getDiscount();
         } else {
-            throw new AppException(HttpStatus.BAD_REQUEST, "Total money is less than minValue. Cannot use this voucher.");
+            throw new AppException(HttpStatus.BAD_REQUEST, "Giá trị đơn hàng không đủ. Không thể sử dụng voucher.");
         }
 
         return discount;

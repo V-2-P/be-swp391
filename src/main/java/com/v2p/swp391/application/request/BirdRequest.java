@@ -11,10 +11,10 @@ import lombok.*;
 @Builder
 public class BirdRequest {
     @NotBlank(message = "Title is required")
-    @Size(min = 3, max = 200, message = "Name must be between 3 and 200 characters")
+    @Size(min = 3, max = 200, message = "Tên chim phải từ 3 đến 200 kí tự")
     private String name;
 
-    @Min(value = 0, message = "Price must be greater than or equal to 0")
+    @Min(value = 0, message = "Giá của chim phải lớn hơn 0")
     private Float price;
 
     private String description;
