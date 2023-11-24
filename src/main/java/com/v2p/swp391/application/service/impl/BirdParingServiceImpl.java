@@ -36,9 +36,8 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
         if(existingBookingDetail.getStatus().equals(BookingDetailStatus.In_Breeding_Progress)){
             existingBookingDetail.setStatus(BookingDetailStatus.Brooding);
-            Booking booking = existingBookingDetail.getBooking();
-            booking.getBookingDetail().getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())-1);
-            booking.getBookingDetail().getMotherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())-1);
+            existingBookingDetail.getFatherBird().setQuantity((existingBookingDetail.getFatherBird().getQuantity())-1);
+            existingBookingDetail.getMotherBird().setQuantity((existingBookingDetail.getFatherBird().getQuantity())-1);
             bookingDetailRepository.save(existingBookingDetail);
         }
 
@@ -117,13 +116,16 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
 
                 booking.setStatus(BookingStatus.Preparing);
-                booking.getBookingDetail().getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
+                bookingDetail.getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
+                bookingDetail.getMotherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
+
                 bookingRepository.save(booking);
             }
 
             if(checkFailedBrooding(existingBirdPairing)){
                 existingBirdPairing.getBookingDetail().setStatus(BookingDetailStatus.Failed);
                 booking.getBookingDetail().getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
+                booking.getBookingDetail().getMotherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
                 bookingDetailRepository.save(existingBirdPairing.getBookingDetail());
 
                 //Alert refund money or continue breeding?
