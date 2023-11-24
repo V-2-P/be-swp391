@@ -47,8 +47,20 @@ public class Order extends BaseEntity {
     @Column(name = "total_payment")
     private Float totalPayment;
 
-    @Column(name = "shipping_address")
-    private String shippingAddress;
+    @Column(name = "to_address")
+    private String toAddress;
+
+    @Column(name = "to_ward_code")
+    private String toWardCode;
+
+    @Column(name = "to_district_id")
+    private int toDistrictId;
+
+    @Column(name = "service_type_id")
+    private int serviceTypeId;
+
+    @Column(name = "service_id")
+    private int serviceId;
 
     @Column(name = "shipping_date")
     private LocalDate shippingDate;
