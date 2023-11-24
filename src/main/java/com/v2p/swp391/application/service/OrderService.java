@@ -25,6 +25,6 @@ public interface OrderService {
     Order deliveredOrder(Long id);
     void deleteOrder(Long id);
     List<Order> findByUser();
-
+    List<Order> getAllOrder();
     List<Order> findByUserId(long userId);
 }

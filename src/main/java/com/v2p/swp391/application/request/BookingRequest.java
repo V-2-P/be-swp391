@@ -7,8 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Data//toString
 @Getter
 @Setter
@@ -18,14 +16,14 @@ public class BookingRequest {
     @Min(value = 1, message = "User's ID must be >0")
     private Long userId;
 
-    @NotBlank(message = "Full name is  required!")
+    @NotBlank(message = "Vui lòng nhập tên người đặt hàng")
     private String fullName;
 
-    @NotBlank(message = "Phone number is required")
-    @Size(min = 10, message = "Phone number must be at least 5 characters")
+    @NotBlank(message = "Vui lòng nhập số điện thoại")
+    @Size(min = 10, message = "Số điện thoại chưa đúng định dạng")
     private String phoneNumber;
 
-    @NotBlank(message = "Delivery address is required")
+    @NotBlank(message = "Vui lòng nhập địa chỉ giao hàng")
     private String shippingAddress;
 
     @NotNull(message = "Payment method is required")
@@ -33,11 +31,6 @@ public class BookingRequest {
 
     @NotNull(message = "Booking detail is required")
     private BookingDetailRequest bookingDetailRequest;
-
-    @NotBlank(message = "Shipping method is required")
-    private String shippingMethod;
-
-    private LocalDate expectedDate;
 
     private Float shippingMoney;
 }

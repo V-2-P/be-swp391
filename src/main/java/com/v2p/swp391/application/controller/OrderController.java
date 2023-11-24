@@ -72,6 +72,12 @@ public class OrderController {
         return CoreApiResponse.success(orderPageResponse);
     }
 
+    @GetMapping("/all")
+    public CoreApiResponse <List<Order>> getAllOrder(){
+        List<Order> orders = orderService.getAllOrder();
+        return CoreApiResponse.success(orders);
+    }
+
     @GetMapping("/user")
     @PreAuthorize("hasRole('CUSTOMER')")
     public CoreApiResponse<List<OrderResponse>> getOrdersByUserMe() {
