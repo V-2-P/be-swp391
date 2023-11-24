@@ -114,7 +114,6 @@ public class PaymentController {
 
                 socialAR.save(new SocialAccount());
 
-
                 if(checkOrderId)
                 {
                     if(checkAmount)
