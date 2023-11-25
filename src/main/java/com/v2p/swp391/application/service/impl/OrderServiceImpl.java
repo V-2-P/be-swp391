@@ -183,17 +183,18 @@ public class OrderServiceImpl implements OrderService {
 
 
     @Override
-    public Order rePayment(Long id) {
+    public PaymentRespone rePayment(Long id) throws UnsupportedEncodingException {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
         User user = userPrincipal.getUser();
         Order existingOrder = getOrder(id);
+        PaymentRespone paymentRespone = new PaymentRespone();
 
         if (existingOrder.getUser().getId().equals(user.getId())) {
-            existingOrder.setStatus(OrderStatus.processing);
+//            existingOrder.setStatus(OrderStatus.processing);
+        paymentRespone = paymentService.createPayment(existingOrder.getTotalPayment(),PaymentForType.ORDER,id);
         }
-        return orderRepository.save(existingOrder);
-
+        return paymentRespone;
     }
 
     @Override
