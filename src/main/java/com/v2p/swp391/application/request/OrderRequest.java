@@ -1,6 +1,7 @@
 package com.v2p.swp391.application.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -32,9 +33,9 @@ public class OrderRequest {
 
     private String note;
 
-    @JsonProperty("shippingAddress")
+    @JsonProperty("toAddress")
     @NotBlank(message = "Vui lòng nhập địa chỉ giao hàng")
-    private String shippingAddress;
+    private String toAddress;
 
     @JsonProperty("paymentMethod")
     @NotBlank(message = "Vui lòng chọn phương thức thanh toán")
@@ -46,6 +47,15 @@ public class OrderRequest {
 
     @NotBlank(message = "Vui lòng chọn phương thức vận chuyển")
     private String shippingMethod;
+
+    private String toWardCode;
+
+    private int toDistrictId;
+
+    private int serviceTypeId;
+
+    private int serviceId;
+
 
     private LocalDate expectedDate;
 
