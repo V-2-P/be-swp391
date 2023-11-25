@@ -53,6 +53,13 @@ public class OrderController {
         return CoreApiResponse.success(order);
     }
 
+    @GetMapping("user/detail/{id}")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public CoreApiResponse<Order> getOrderDetail(@Valid @PathVariable Long id){
+        Order order = orderService.getOrderByIdForUser(id);
+        return CoreApiResponse.success(order);
+    }
+
     @GetMapping("")
     public CoreApiResponse<OrderPageResponse> getListOrders(
             @RequestParam(defaultValue = "") String keyword,
