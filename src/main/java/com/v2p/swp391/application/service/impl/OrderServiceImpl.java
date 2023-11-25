@@ -153,6 +153,19 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public Order getOrderByIdForUser(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User user = userPrincipal.getUser();
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+        if (!order.getUser().getId().equals(user.getId())) {
+            throw new AppException(HttpStatus.BAD_REQUEST,"Bạn không có quyền truy cập đơn hàng này.");
+        }
+        return order;
+    }
+
+    @Override
     public List<Order> getAllOrder(){
         return orderRepository.findAll(Sort.by(Sort.Direction.DESC, "createdAt"));
     }
