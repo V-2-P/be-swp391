@@ -16,9 +16,7 @@ import java.time.LocalDate;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldMatch.List({
-        @FieldMatch(first = "password", second = "confirmPassword", message = "The password fields must match")
-})
+@FieldMatch(first = "confirmPassword", second = "password", message = "Mật khẩu lần 2 không trùng khớp")
 public class SignUpRequest implements Serializable {
     @NotEmpty(message = "Full Name is required")
     private String fullName;

@@ -1,4 +1,4 @@
-package com.v2p.swp391.application.model;
+package com.v2p.swp391.shipment.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.v2p.swp391.common.model.Location;

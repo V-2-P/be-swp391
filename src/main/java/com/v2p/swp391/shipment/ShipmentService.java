@@ -1,8 +1,6 @@
-package com.v2p.swp391.application.service;
+package com.v2p.swp391.shipment;
 
-import com.v2p.swp391.application.request.CalculateFeeRequest;
-import com.v2p.swp391.application.request.CalculateLeadtimeRequest;
-import com.v2p.swp391.application.request.GetShippingServiceRequest;
+import com.v2p.swp391.shipment.request.*;
 
 public interface ShipmentService {
     Object getProvince();
@@ -11,6 +9,6 @@ public interface ShipmentService {
     Object calculateLeadtime(CalculateLeadtimeRequest request);
     Object getShippingServices(GetShippingServiceRequest request);
     Object calculateFee(CalculateFeeRequest request);
-    Object getAllShop(int offset, int limit);
     Object getShopById(int id);
+    Object createOrder(CreateOrderRequest request);
 }

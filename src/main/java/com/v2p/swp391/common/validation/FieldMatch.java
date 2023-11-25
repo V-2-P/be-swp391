@@ -18,6 +18,7 @@ public @interface FieldMatch {
 
     @Target({ElementType.TYPE, ElementType.ANNOTATION_TYPE})
     @Retention(RetentionPolicy.RUNTIME)
+    @Documented
     @interface List {
         FieldMatch[] value();
     }

@@ -11,6 +11,8 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -29,6 +31,19 @@ public class GlobalExceptionHandler {
         if (bindingResult.hasErrors()) {
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for (FieldError fieldError : fieldErrors) {
+                String errorMessage = fieldError.getDefaultMessage();
+                errorMessages.add(errorMessage);
+            }
+        }
+        return CoreApiResponse.error(HttpStatus.BAD_REQUEST, "Request không hợp lệ", errorMessages);
+    }
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public CoreApiResponse<?> handleBindException(MethodArgumentNotValidException e) {
+        List<String> errorMessages = new ArrayList<>();
+        BindingResult bindingResult = e.getBindingResult();
+        if (bindingResult.hasErrors()) {
+            List<ObjectError> fieldErrors = bindingResult.getAllErrors();
+            for (ObjectError fieldError : fieldErrors) {
                 String errorMessage = fieldError.getDefaultMessage();
                 errorMessages.add(errorMessage);
             }

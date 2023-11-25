@@ -1,50 +1,38 @@
-package com.v2p.swp391.application.service.impl;
+package com.v2p.swp391.shipment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.v2p.swp391.application.model.Shop;
-import com.v2p.swp391.application.request.CalculateFeeRequest;
-import com.v2p.swp391.application.request.CalculateLeadtimeRequest;
-import com.v2p.swp391.application.request.GetShippingServiceRequest;
-import com.v2p.swp391.application.service.ShipmentService;
+import com.v2p.swp391.application.model.Bird;
+import com.v2p.swp391.application.model.OrderDetail;
+import com.v2p.swp391.application.repository.OrderRepository;
+import com.v2p.swp391.shipment.model.OrderItem;
+import com.v2p.swp391.shipment.model.Shop;
+import com.v2p.swp391.shipment.request.*;
 import com.v2p.swp391.common.api.CoreResponse;
 import com.v2p.swp391.exception.AppException;
+import com.v2p.swp391.shipment.response.CreateOrderReponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.DefaultUriBuilderFactory;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 public class ShipmentImpl implements ShipmentService {
 
-    private final RestTemplate ghnRestTemplate;
+    private final Map<CreateStrategyType,CreateOrderStrategy> createOrderStrategies;
     private final Integer shopId;
     private final String token;
-    public ShipmentImpl() {
-        this.shopId=4710975;
-        this.token="48159190-878d-11ee-96dc-de6f804954c9";
-        this.ghnRestTemplate = new RestTemplate();
+    private final GhnRestTemplate ghnRestTemplate;
 
-        // Thiết lập URI template handler cho RestTemplate
-        ghnRestTemplate.setUriTemplateHandler(new DefaultUriBuilderFactory("https://online-gateway.ghn.vn"));
-
-        // Tạo HttpHeaders cho RestTemplate
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Token", token);
-        headers.set("ShopId", shopId.toString());
-
-        // Tạo một ClientHttpRequestInterceptor để thêm header vào mỗi request
-        ClientHttpRequestInterceptor interceptor = (request, body, execution) -> {
-            request.getHeaders().addAll(headers);
-            return execution.execute(request, body);
-        };
-
-        // Thêm interceptor vào RestTemplate
-        ghnRestTemplate.getInterceptors().add(interceptor);
+    public ShipmentImpl(Map<CreateStrategyType, CreateOrderStrategy> strategies) {
+        this.createOrderStrategies = strategies;
+        this.shopId = 190386;
+        this.token = "c7e6272f-8ab6-11ee-b1d4-92b443b7a897";
+        this.ghnRestTemplate = new GhnRestTemplate(token,shopId);
     }
 
     @Override
@@ -83,12 +71,13 @@ public class ShipmentImpl implements ShipmentService {
     @Override
     public Object calculateLeadtime(CalculateLeadtimeRequest request) {
         try {
-            ObjectMapper objectMapper = new ObjectMapper();
             Object shopResponseObject = getShopById(shopId);
-            CoreResponse<Shop> shopReponse = objectMapper.convertValue(shopResponseObject, CoreResponse.class);
-            Shop shop= objectMapper.convertValue(shopReponse.getData(), Shop.class);
+            CoreResponse<Shop> shopReponse = convertObjectToValue(shopResponseObject,CoreResponse.class);
+            Shop shop= convertObjectToValue(shopReponse.getData(),Shop.class);
+
             request.setFrom_district_id(shop.getDistrictId());
             request.setFrom_ward_code(shop.getWardCode());
+
             HttpEntity<CalculateLeadtimeRequest> requestEntity = new HttpEntity<>(request);
             Object jsonResponse = ghnRestTemplate.postForObject(
                     "/shiip/public-api/v2/shipping-order/leadtime",
@@ -104,6 +93,13 @@ public class ShipmentImpl implements ShipmentService {
     @Override
     public Object getShippingServices(GetShippingServiceRequest request) {
         try {
+            Object shopResponseObject = getShopById(shopId);
+            CoreResponse<Shop> shopReponse = convertObjectToValue(shopResponseObject,CoreResponse.class);
+            Shop shop= convertObjectToValue(shopReponse.getData(),Shop.class);
+
+            request.setShop_id(shopId);
+            request.setFrom_district(shop.getDistrictId());
+
             HttpEntity<GetShippingServiceRequest> requestEntity = new HttpEntity<>(request);
             Object jsonResponse = ghnRestTemplate.postForObject(
                     "/shiip/public-api/v2/shipping-order/available-services",
@@ -119,6 +115,7 @@ public class ShipmentImpl implements ShipmentService {
     @Override
     public Object calculateFee(CalculateFeeRequest request) {
         try {
+            // hard code
             request.setHeight(15);
             request.setLength(15);
             request.setWidth(15);
@@ -136,18 +133,6 @@ public class ShipmentImpl implements ShipmentService {
     }
 
     @Override
-    public Object getAllShop(int offset, int limit) {
-        try {
-            String query = "?offset="+offset + "&limit="+limit;
-            Object jsonResponse = ghnRestTemplate.getForObject("/shiip/public-api/v2/shop/all"+query, Object.class);
-
-            return jsonResponse;
-        } catch (Exception e) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Lỗi GHN");
-        }
-    }
-
-    @Override
     public Object getShopById(int id) {
         try {
             String query = "?id="+id;
@@ -157,5 +142,35 @@ public class ShipmentImpl implements ShipmentService {
         } catch (Exception e) {
             throw new AppException(HttpStatus.BAD_REQUEST,"Lỗi GHN");
         }
+    }
+
+    @Override
+    public Object createOrder(CreateOrderRequest request) {
+        CreateOrderStrategy strategy = createOrderStrategies.get(CreateStrategyType.valueOf(request.getStrategyType()));
+        if (strategy == null) {
+            throw new AppException(HttpStatus.BAD_REQUEST,"Chiến lược không tồn tại: " + request.getStrategyType());
+        }
+        Object shopResponseObject = getShopById(shopId);
+        CoreResponse<Shop> shopReponse = convertObjectToValue(shopResponseObject,CoreResponse.class);
+        Shop shop= convertObjectToValue(shopReponse.getData(),Shop.class);
+
+        CreateOrderGHNRequest ghnRequest = new CreateOrderGHNRequest();
+        // hard code
+        ghnRequest.setPayment_type_id(1);
+        ghnRequest.setNote(request.getNote());
+        ghnRequest.setRequired_note("CHOXEMHANGKHONGTHU");
+        ghnRequest.setFrom_name(shop.getName());
+        ghnRequest.setFrom_phone(shop.getPhone());
+        ghnRequest.setFrom_address(shop.getAddress());
+        ghnRequest.setFrom_ward_name("Phường Linh Chiểu");
+        ghnRequest.setFrom_district_name("Thành Phố Thủ Đức");
+        ghnRequest.setFrom_province_name("Hồ Chí Minh");
+
+        return strategy.excute(request.getId(),ghnRequest,ghnRestTemplate);
+    }
+
+    private <T> T convertObjectToValue(Object object, Class<T> clazz){
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.convertValue(object, clazz);
     }
 }

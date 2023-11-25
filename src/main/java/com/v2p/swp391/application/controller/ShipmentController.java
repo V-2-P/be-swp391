@@ -1,19 +1,25 @@
 package com.v2p.swp391.application.controller;
 
-import com.v2p.swp391.application.request.CalculateFeeRequest;
-import com.v2p.swp391.application.request.CalculateLeadtimeRequest;
-import com.v2p.swp391.application.request.GetShippingServiceRequest;
-import com.v2p.swp391.application.service.ShipmentService;
+import com.v2p.swp391.application.model.*;
+import com.v2p.swp391.common.api.CoreApiResponse;
+import com.v2p.swp391.shipment.request.*;
+import com.v2p.swp391.shipment.ShipmentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
 @RequestMapping("${app.api.version.v1}/shipments")
-@RequiredArgsConstructor
 public class ShipmentController {
     private final ShipmentService shipmentService;
 
+    public ShipmentController(ShipmentService shipmentService) {
+        this.shipmentService = shipmentService;
+    }
     @GetMapping("/province")
     public ResponseEntity<Object> getProvince() {
         return ResponseEntity.ok(shipmentService.getProvince());
@@ -42,6 +48,11 @@ public class ShipmentController {
     @PostMapping("/fee")
     public ResponseEntity<Object> calculateFee(@RequestBody CalculateFeeRequest request) {
         return ResponseEntity.ok(shipmentService.calculateFee(request));
+    }
+
+    @PostMapping("/create-order")
+    public CoreApiResponse<Object> createOrder(@RequestBody @Valid CreateOrderRequest request) {
+        return CoreApiResponse.success(shipmentService.createOrder(request));
     }
 
 }
