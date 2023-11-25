@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.v2p.swp391.application.model.PaymentMethod;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -23,9 +24,21 @@ public class BookingRequest {
     @Size(min = 10, message = "Số điện thoại chưa đúng định dạng")
     private String phoneNumber;
 
+    @JsonProperty("toAddress")
     @NotBlank(message = "Vui lòng nhập địa chỉ giao hàng")
-    private String shippingAddress;
+    private String toAddress;
 
+    @NotBlank(message = "Ward Code không được để trống")
+    private String toWardCode;
+
+    @NotNull(message = "District Id không được để trống")
+    private int toDistrictId;
+
+    @NotNull(message = "Service Type Id không được để trống")
+    private int serviceTypeId;
+
+    @NotNull(message = "Service Id không được để trống")
+    private int serviceId;
     @NotNull(message = "Payment method is required")
     private PaymentMethod paymentMethod;
 
