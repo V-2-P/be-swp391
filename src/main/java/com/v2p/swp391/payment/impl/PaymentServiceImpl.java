@@ -98,7 +98,7 @@ public class PaymentServiceImpl implements PaymentService {
         vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
         Instant instant = currentDate.toInstant();
-        Instant newInstant = instant.plus(Duration.ofHours(2));
+        Instant newInstant = instant.plus(Duration.ofMinutes(30));
         Date newDate = Date.from(newInstant);
         String vnp_ExpireDate = sdf.format(newDate.getTime());
         vnp_Params.put("vnp_ExpireDate", vnp_ExpireDate);
@@ -151,71 +151,92 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRespone;
     }
 
-
     @Override
-    public Payment setData(String order, String id) {
+    public Payment setData(String id) {
         Payment payment = paymentRepositorty.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
         payment.setStatus(true);
 
-        if (id.contains("DB")){
+        if (id.contains("DB") || id.contains("TB")){
             Booking booking = bookingRepository.findById(payment.getBooking().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
-            booking.setStatus(BookingStatus.Confirmed);
 
             BookingDetail bookingDetail = bookingDetailRepository
                     .findById(payment.getBooking().getBookingDetail().getId())
                     .orElseThrow(()
                             -> new ResourceNotFoundException("Booking Detail", "ID", payment.getBooking().getBookingDetail().getId()));
-            bookingDetail.setStatus(BookingDetailStatus.In_Breeding_Progress);
+
+            if (id.contains("DB")){
+                booking.setStatus(BookingStatus.Confirmed);
+                bookingDetail.setStatus(BookingDetailStatus.In_Breeding_Progress);
+            } else if(id.contains("TB")){
+                bookingDetail.setStatus(BookingDetailStatus.Receiving_Confirm);
+            }
 
             bookingDetailRepository.save(bookingDetail);
             bookingRepository.save(booking);
+        } else if (id.contains("OD")) {
+            Order order1 = orderRepository.findById(payment.getOrder().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
+            order1.setStatus(OrderStatus.processing);
+            orderRepository.save(order1);
+        }
+        payment.setStatus(true);
+        return paymentRepositorty.save(payment);
+    }
+
+    public Payment setCancel(String id){
+        Payment payment = paymentRepositorty.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
+
+        if(id.contains("DB")){
+            Booking booking = bookingRepository.findById(payment.getBooking().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
+            booking.setStatus(BookingStatus.Cancelled);
+            bookingRepository.save(booking);
+        } else if (id.contains("OD")) {
+            Order order = orderRepository.findById(payment.getOrder().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
+            order.setStatus(OrderStatus.cancelled);
+            orderRepository.save(order);
         }
         return paymentRepositorty.save(payment);
     }
 
-    @Override
-    @Scheduled(fixedRate = 3600000)
-    public void automaticallySetCanceled() throws UnsupportedEncodingException {
-        this.sendPaymenOfUnpaidFee();
-        this.setCanceledForOutDatePayment();
-    }
-
-    public void sendPaymenOfUnpaidFee() throws UnsupportedEncodingException {
-        List<Payment> unpaidPaymentList = this.getUnpaidPayment();
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime cprDate = currentDate.minusHours(2);
-        for(Payment payment: unpaidPaymentList){
-            DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
-            String createdAtString = sdf.format(payment.getCreatedAt());
-            String updatedAtString = sdf.format(payment.getUpdatedAt());
-            if(createdAtString.equals(updatedAtString)) {
-                if (payment.getUpdatedAt().isBefore(cprDate)) {
-                    float total;
-                    PaymentForType paymentForType;
-                    Long id;
-
-                    if (payment.getId().contains("OD")) {
-                        paymentForType = PaymentForType.ORDER;
-                        id = payment.getOrder().getId();
-                    } else if (payment.getId().contains("DB")) {
-                        paymentForType = PaymentForType.DEPOSIT_BOOKING;
-                        id = payment.getBooking().getId();
-                    } else {
-                        paymentForType = PaymentForType.TOTAL_BOOKING;
-                        id = payment.getBooking().getId();
-                    }
-
-                    total = payment.getAmount();
-                    PaymentRespone paymentRespone = this.createPayment(total, paymentForType, id);
-                    sendEmailService.sendMailPayment
-                            (payment.getBooking() != null ? payment.getBooking().getUser() : payment.getOrder().getUser()
-                                    , paymentRespone.getURL());
-                }
-            }
-        }
-    }
+//    public void sendPaymenOfUnpaidFee() throws UnsupportedEncodingException {
+//        List<Payment> unpaidPaymentList = this.getUnpaidPayment();
+//        LocalDateTime currentDate = LocalDateTime.now();
+//        LocalDateTime cprDate = currentDate.minusHours(2);
+//        for(Payment payment: unpaidPaymentList){
+//            DateTimeFormatter sdf = DateTimeFormatter.ofPattern("yyyyMMddHHmm");
+//            String createdAtString = sdf.format(payment.getCreatedAt());
+//            String updatedAtString = sdf.format(payment.getUpdatedAt());
+//            if(createdAtString.equals(updatedAtString)) {
+//                if (payment.getUpdatedAt().isBefore(cprDate)) {
+//                    float total;
+//                    PaymentForType paymentForType;
+//                    Long id;
+//
+//                    if (payment.getId().contains("OD")) {
+//                        paymentForType = PaymentForType.ORDER;
+//                        id = payment.getOrder().getId();
+//                    } else if (payment.getId().contains("DB")) {
+//                        paymentForType = PaymentForType.DEPOSIT_BOOKING;
+//                        id = payment.getBooking().getId();
+//                    } else {
+//                        paymentForType = PaymentForType.TOTAL_BOOKING;
+//                        id = payment.getBooking().getId();
+//                    }
+//
+//                    total = payment.getAmount();
+//                    PaymentRespone paymentRespone = this.createPayment(total, paymentForType, id);
+//                    sendEmailService.sendMailPayment
+//                            (payment.getBooking() != null ? payment.getBooking().getUser() : payment.getOrder().getUser()
+//                                    , paymentRespone.getURL());
+//                }
+//            }
+//        }
+//    }
 
     private List<Payment> getUnpaidPayment(){
         List<Payment> unpaidPaymentList = new ArrayList<>();
