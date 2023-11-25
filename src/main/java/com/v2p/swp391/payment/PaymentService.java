@@ -9,6 +9,5 @@ import java.io.UnsupportedEncodingException;
 
 public interface PaymentService {
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException;
-    public Payment setData(String order, String id);
-    public void automaticallySetCanceled() throws UnsupportedEncodingException;
+    public Payment setData(String id);
 }
