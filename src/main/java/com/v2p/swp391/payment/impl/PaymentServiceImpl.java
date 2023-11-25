@@ -188,7 +188,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment setCancel(String id){
         Payment payment = paymentRepositorty.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
-
+        payment.setStatus(false);
         if(id.contains("DB")){
             Booking booking = bookingRepository.findById(payment.getBooking().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
