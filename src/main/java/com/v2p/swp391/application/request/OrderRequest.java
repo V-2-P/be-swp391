@@ -48,14 +48,17 @@ public class OrderRequest {
     @NotBlank(message = "Vui lòng chọn phương thức vận chuyển")
     private String shippingMethod;
 
+    @NotBlank(message = "Ward Code không được để trống")
     private String toWardCode;
 
+    @NotNull(message = "District Id không được để trống")
     private int toDistrictId;
 
+    @NotNull(message = "Service Type Id không được để trống")
     private int serviceTypeId;
 
+    @NotNull(message = "Service Id không được để trống")
     private int serviceId;
-
 
     private LocalDate expectedDate;
 
