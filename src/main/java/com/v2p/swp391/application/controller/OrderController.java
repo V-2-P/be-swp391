@@ -101,10 +101,10 @@ public class OrderController {
     }
     @PutMapping("/rePayment/{id}")
     @PreAuthorize("hasRole('CUSTOMER')")
-    public CoreApiResponse<OrderResponse> rePayment(
-            @PathVariable Long id){
-        Order rePayment = orderService.rePayment(id);
-        return CoreApiResponse.success(INSTANCE.toResponse(rePayment), "Payment for order successfully");
+    public CoreApiResponse<PaymentRespone> rePayment(
+            @PathVariable Long id) throws UnsupportedEncodingException {
+        PaymentRespone rePayment = orderService.rePayment(id);
+        return CoreApiResponse.success(rePayment, "Payment for order successfully");
     }
 
     @PutMapping("/confirm/{id}")
