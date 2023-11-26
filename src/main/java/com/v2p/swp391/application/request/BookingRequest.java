@@ -24,9 +24,13 @@ public class BookingRequest {
     @Size(min = 10, message = "Số điện thoại chưa đúng định dạng")
     private String phoneNumber;
 
+    @NotBlank(message = "Vui lòng chọn phương thức vận chuyển")
+    private String shippingMethod;
+
     @JsonProperty("toAddress")
     @NotBlank(message = "Vui lòng nhập địa chỉ giao hàng")
     private String toAddress;
+
 
     @NotBlank(message = "Ward Code không được để trống")
     private String toWardCode;
