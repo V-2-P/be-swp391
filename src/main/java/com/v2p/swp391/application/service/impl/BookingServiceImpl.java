@@ -64,6 +64,11 @@ public class    BookingServiceImpl implements BookingService {
         this.updateTotalPaymentBooking(createdBooking.getId(), totalMoney);
         createdBooking.setTotalPayment(totalPayment);
 
+        fatherBird.setQuantity(fatherBird.getQuantity()-1);
+        motherBird.setQuantity(motherBird.getQuantity()-1);
+        birdRepository.save(fatherBird);
+        birdRepository.save(motherBird);
+
         booking.setStatus(BookingStatus.Pending);
         return bookingRepository.save(booking);
     }

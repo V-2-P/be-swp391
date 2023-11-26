@@ -6,8 +6,9 @@ import com.v2p.swp391.application.model.PaymentForType;
 import org.springframework.web.servlet.view.RedirectView;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Map;
 
 public interface PaymentService {
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException;
-    public Payment setData(String id);
+    public Payment setData(String id, Map field);
 }

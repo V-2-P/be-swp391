@@ -36,8 +36,7 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
         if(existingBookingDetail.getStatus().equals(BookingDetailStatus.In_Breeding_Progress)){
             existingBookingDetail.setStatus(BookingDetailStatus.Brooding);
-            existingBookingDetail.getFatherBird().setQuantity((existingBookingDetail.getFatherBird().getQuantity())-1);
-            existingBookingDetail.getMotherBird().setQuantity((existingBookingDetail.getFatherBird().getQuantity())-1);
+
             bookingDetailRepository.save(existingBookingDetail);
         }
 

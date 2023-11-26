@@ -37,33 +37,33 @@ public class PaymentController {
     public final PaymentRepositorty paymentRepositorty;
     public final BookingDetailRepository bookingDetailRepository;
 
-    @GetMapping("/payment_infor")
-    public CoreApiResponse<TransactionRespone> transaction(
-            @RequestParam(value = "vnp_OrderInfo") String order,
-            @RequestParam(value = "vnp_TxnRef") String id,
-            @RequestParam(value = "vnp_ResponseCode") String responeCode,
-            HttpServletResponse response
-    ) throws IOException {
-        TransactionRespone transactionRespone = new TransactionRespone();
-        if (responeCode.equals("00")) {
-            transactionRespone.setStatus("OK");
-            transactionRespone.setMessage("Successfully!");
-            transactionRespone.setData("");
-            transactionRespone.setPayment(paymentService.setData(id));
-        } else {
-            transactionRespone.setStatus("No");
-            transactionRespone.setMessage("Failed!");
-            transactionRespone.setData("");
-
-        }
-        if (id.contains("OD")) {
-            response.sendRedirect("https://birdfarmshop.techx.id.vn/order");
-        } else {
-            response.sendRedirect("https://birdfarmshop.techx.id.vn/booking");
-        }
-
-        return CoreApiResponse.success(transactionRespone, "Successfully!");
-    }
+//    @GetMapping("/payment_infor")
+//    public CoreApiResponse<TransactionRespone> transaction(
+//            @RequestParam(value = "vnp_OrderInfo") String order,
+//            @RequestParam(value = "vnp_TxnRef") String id,
+//            @RequestParam(value = "vnp_ResponseCode") String responeCode,
+//            HttpServletResponse response
+//    ) throws IOException {
+//        TransactionRespone transactionRespone = new TransactionRespone();
+//        if (responeCode.equals("00")) {
+//            transactionRespone.setStatus("OK");
+//            transactionRespone.setMessage("Successfully!");
+//            transactionRespone.setData("");
+//            transactionRespone.setPayment(paymentService.setData(id));
+//        } else {
+//            transactionRespone.setStatus("No");
+//            transactionRespone.setMessage("Failed!");
+//            transactionRespone.setData("");
+//
+//        }
+//        if (id.contains("OD")) {
+//            response.sendRedirect("https://birdfarmshop.techx.id.vn/order");
+//        } else {
+//            response.sendRedirect("https://birdfarmshop.techx.id.vn/booking");
+//        }
+//
+//        return CoreApiResponse.success(transactionRespone, "Successfully!");
+//    }
 
 //    @PostMapping("/create_refund")
 //    public CoreApiResponse<PaymentRespone> createRefund(
@@ -108,10 +108,6 @@ public class PaymentController {
                 Long bookingID = Long.valueOf(id.substring(2));
                 Payment payment = paymentRepositorty.findPaymentById(id);
 
-
-
-
-
                 if (id.contains("DB") || id.contains("TB")) {
                     Booking booking = bookingRepository.findBookingById(bookingID);
 
@@ -135,9 +131,7 @@ public class PaymentController {
 
                 }
 
-
                 //Xử lí logic ở đây cập nhật vào database
-
 
                 if (checkOrderId) {
                     if (checkAmount) {
@@ -145,7 +139,7 @@ public class PaymentController {
                             if ("00".equals(request.getParameter("vnp_ResponseCode"))) {
                                 //Xử lí logic thành công
 
-                                paymentService.setData( id);
+                                paymentService.setData(id, fields);
                             } else {
                                 paymentService.setCancel(id);
                                 //Xử lí logic thất bại rồi lưu vào database

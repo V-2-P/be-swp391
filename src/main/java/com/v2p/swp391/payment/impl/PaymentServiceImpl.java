@@ -1,10 +1,7 @@
 package com.v2p.swp391.payment.impl;
 
 import com.v2p.swp391.application.model.*;
-import com.v2p.swp391.application.repository.BookingDetailRepository;
-import com.v2p.swp391.application.repository.BookingRepository;
-import com.v2p.swp391.application.repository.OrderRepository;
-import com.v2p.swp391.application.repository.PaymentRepositorty;
+import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.impl.SendEmailServiceImpl;
 import com.v2p.swp391.config.PaymentConfig;
@@ -35,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     public final OrderRepository orderRepository;
     public final PaymentRepositorty paymentRepositorty;
     public final SendEmailServiceImpl sendEmailService;
+    private final BirdRepository birdRepository;
 
     @Override
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException {
@@ -52,13 +50,13 @@ public class PaymentServiceImpl implements PaymentService {
             }
             Booking booking = bookingRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
-            payment1 = new Payment(vnp_TxnRef, booking, null, total, "NCB", payment, false);
+            payment1 = new Payment(LocalDateTime.now(), LocalDateTime.now(),vnp_TxnRef, booking, null, total, "NCB", payment, PaymentStatus.pending);
         }
         else if(payment.equals(PaymentForType.ORDER)){
             Order order = orderRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
             vnp_TxnRef = "OD" + df.format(id);
-            payment1 = new Payment(vnp_TxnRef, null, order, total, "NCB", payment, false);
+            payment1 = new Payment(LocalDateTime.now(), LocalDateTime.now(), vnp_TxnRef, null, order, total, "NCB", payment, PaymentStatus.pending);
         }
 
 
@@ -134,7 +132,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         Payment currPayment =  paymentRepositorty.findPaymentById(vnp_TxnRef);
         if(currPayment != null){
-            if(currPayment.isStatus() == true){
+            if(currPayment.getStatus() == PaymentStatus.success){
                 return new PaymentRespone("Failed", "This payment is paid before!", "", currPayment);
             }
             else{
@@ -152,10 +150,10 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public Payment setData(String id) {
+    public Payment setData(String id, Map field) {
         Payment payment = paymentRepositorty.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
-        payment.setStatus(true);
+        payment.setStatus(PaymentStatus.success);
 
         if (id.contains("DB") || id.contains("TB")){
             Booking booking = bookingRepository.findById(payment.getBooking().getId())
@@ -181,18 +179,40 @@ public class PaymentServiceImpl implements PaymentService {
             order1.setStatus(OrderStatus.processing);
             orderRepository.save(order1);
         }
-        payment.setStatus(true);
+
+        String bankCode = (String) field.get("vnp_BankCode");
+        String bankTranNo = (String) field.get("vnp_BankTranNo");
+        String cardType = (String) field.get("vnp_CardType");
+        String payDate = (String) field.get("vnp_PayDate");
+        String tranNo = (String) field.get("vnp_TransactionNo");
+        String transactionStatus = (String) field.get("vnp_TransactionStatus");
+        payment.setUpdatedAt(LocalDateTime.now());
+        payment.setBankCode(bankCode);
+        payment.setBankTranNo(bankTranNo);
+        payment.setCardType(cardType);
+        payment.setPayDate(payDate);
+        payment.setTransactionNo(tranNo);
+        payment.setTransactionStatus(transactionStatus);
+
+        payment.setStatus(PaymentStatus.success);
         return paymentRepositorty.save(payment);
     }
 
     public Payment setCancel(String id){
         Payment payment = paymentRepositorty.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
-        payment.setStatus(false);
+        payment.setStatus(PaymentStatus.fail);
         if(id.contains("DB")){
             Booking booking = bookingRepository.findById(payment.getBooking().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
             booking.setStatus(BookingStatus.Cancelled);
+            Bird birdFather = booking.getBookingDetail().getFatherBird();
+            Bird birdMother = booking.getBookingDetail().getMotherBird();
+            birdMother.setQuantity(1);
+            birdFather.setQuantity(1);
+
+            birdRepository.save(birdMother);
+            birdRepository.save(birdFather);
             bookingRepository.save(booking);
         } else if (id.contains("OD")) {
             Order order = orderRepository.findById(payment.getOrder().getId())
@@ -241,7 +261,7 @@ public class PaymentServiceImpl implements PaymentService {
     private List<Payment> getUnpaidPayment(){
         List<Payment> unpaidPaymentList = new ArrayList<>();
         for(Payment payment: paymentRepositorty.findAll()){
-            if(!payment.isStatus()){
+            if(payment.getStatus() != PaymentStatus.success){
                 unpaidPaymentList.add(payment);
             }
         }
