@@ -220,7 +220,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void deleteOrder(Long id) {
+    public void cancelledOrder(Long id) {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
         if (OrderStatus.shipping.equals(order.getStatus())) {

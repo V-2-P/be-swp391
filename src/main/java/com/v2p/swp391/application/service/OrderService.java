@@ -23,7 +23,7 @@ public interface OrderService {
     Order confirmOrder(Long id);
     PaymentRespone rePayment(Long id) throws UnsupportedEncodingException;
     Order deliveredOrder(Long id);
-    void deleteOrder(Long id);
+    void cancelledOrder(Long id);
     List<Order> findByUser();
     List<Order> getAllOrder();
     List<Order> findByUserId(long userId);

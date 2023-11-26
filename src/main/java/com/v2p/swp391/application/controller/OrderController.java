@@ -127,9 +127,9 @@ public class OrderController {
         return CoreApiResponse.success(INSTANCE.toResponse(deliveredOrder), "Update order successfully");
     }
 
-    @DeleteMapping("/{id}")
-    public CoreApiResponse<?> deleteOrder(@PathVariable Long id) {
-        orderService.deleteOrder(id);
+    @PutMapping("/cancelled/{id}")
+    public CoreApiResponse<?> cancelledOrder(@PathVariable Long id) {
+        orderService.cancelledOrder(id);
         return CoreApiResponse.success("Cancel order with id: " + id + " successfully");
     }
 
