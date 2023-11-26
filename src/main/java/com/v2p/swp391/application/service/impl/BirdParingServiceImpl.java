@@ -97,7 +97,8 @@ public class BirdParingServiceImpl implements BirdPairingService {
         if(status.equals(BirdPairingStatus.Fledgling)){
             Bird newBird = new Bird();
             newBird.setBirdType(existingBookingDetail.getBirdType());
-
+            Category category = categoryRepository.findByName("Chim non");
+            newBird.setCategory(category);
             newBird.setStatus(false);
             newBird.setName("Con non");
             newBird = birdRepository.save(newBird);
@@ -113,10 +114,8 @@ public class BirdParingServiceImpl implements BirdPairingService {
                 bookingDetail.setStatus(BookingDetailStatus.Fledgling_All);
                 bookingDetailRepository.save(bookingDetail);
 
-
-                booking.setStatus(BookingStatus.Preparing);
-                bookingDetail.getFatherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
-                bookingDetail.getMotherBird().setQuantity((booking.getBookingDetail().getFatherBird().getQuantity())+1);
+                bookingDetail.getFatherBird().setQuantity(1);
+                bookingDetail.getMotherBird().setQuantity(1);
 
                 bookingRepository.save(booking);
             }
