@@ -3,6 +3,7 @@ package com.v2p.swp391.exception;
 
 import com.v2p.swp391.common.api.CoreApiResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -84,6 +86,18 @@ public class GlobalExceptionHandler {
         }
         log.error("An error occurred: " + error.getMessage(), error);
         return CoreApiResponse.error(HttpStatus.INTERNAL_SERVER_ERROR,"Unknown error");
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public CoreApiResponse<?> handleException(DataIntegrityViolationException ex, WebRequest request) {
+        log.error("DataIntegrity Violation Exception ::: {}", ex);
+
+        String message = ex.getMostSpecificCause().getMessage();
+
+        if (message != null) {
+            message = message.split("for")[0];
+        }
+        return CoreApiResponse.error(HttpStatus.BAD_REQUEST,"Lỗi: Thao tác không thể hoàn thành vì liên quan đến dữ liệu khác.");
     }
 
 }
