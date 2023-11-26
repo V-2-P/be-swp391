@@ -107,20 +107,32 @@ public class PaymentController {
                 String id = (String) fields.get("vnp_TxnRef");
                 Long bookingID = Long.valueOf(id.substring(2));
                 Payment payment = paymentRepositorty.findPaymentById(id);
-                Booking booking = bookingRepository.findBookingById(bookingID);
+
+
+
+
 
                 if (id.contains("DB") || id.contains("TB")) {
-                    checkOrderId = bookingRepository.findById(bookingID).isPresent();
-                    checkOrderStatus = payment.getBooking().getStatus().equals(BookingStatus.Pending);
-                    if (id.contains("DB"))
-                        checkAmount = payment.getAmount() == booking.getPaymentDeposit();
-                    else if (id.contains("TB")) {
-                        checkAmount = payment.getAmount() == booking.getTotalPayment() - booking.getPaymentDeposit();
+                    Booking booking = bookingRepository.findBookingById(bookingID);
+
+                    checkOrderId = booking != null;
+                    if(checkOrderId){
+                        checkOrderStatus = payment.getBooking().getStatus().equals(BookingStatus.Pending);
+                        if (id.contains("DB"))
+                            checkAmount = payment.getAmount() == booking.getPaymentDeposit();
+                        else if (id.contains("TB")) {
+                            checkAmount = payment.getAmount() == booking.getTotalPayment() - booking.getPaymentDeposit();
+                        }
                     }
+
                 } else if (id.contains("OD")) {
-//                    Order order = orderRepository.findById(bookingID);
-//                    checkOrderId = orderRepository.findById(bookingID).isPresent();
-//                    checkAmount = payment.getAmount() ==
+                    Order order = orderRepository.findOrderById(bookingID);
+                    checkOrderId = order != null;
+                    if(checkOrderId){
+                        checkAmount = payment.getAmount() == order.getTotalPayment();
+                        checkOrderStatus = payment.getOrder().getStatus().equals(OrderStatus.pending);
+                    }
+
                 }
 
 

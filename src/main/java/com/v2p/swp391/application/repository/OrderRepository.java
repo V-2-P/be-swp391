@@ -1,5 +1,6 @@
 package com.v2p.swp391.application.repository;
 
+import com.v2p.swp391.application.model.Booking;
 import com.v2p.swp391.application.model.Order;
 import com.v2p.swp391.application.model.OrderStatus;
 import org.springframework.data.domain.Page;
@@ -37,6 +38,9 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
     @Query("SELECT o FROM Order o WHERE o.expectedDate < :date AND o.status <> 'delivered'")
     List<Order> findOrdersForStatusUpdate(LocalDate date);
+
+    Order findOrderById(Long id);
+
 
 
 }
