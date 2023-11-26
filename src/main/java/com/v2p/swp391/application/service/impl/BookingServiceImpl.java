@@ -56,16 +56,19 @@ public class    BookingServiceImpl implements BookingService {
                 .findById(bookingDetail.getMotherBird().getId())
                 .orElseThrow(()
                         -> new ResourceNotFoundException("Bird", "id", bookingDetail.getMotherBird().getId()));
+        if (motherBird.getQuantity() == 0 || fatherBird.getQuantity() ==0)
+            throw new AppException(HttpStatus.BAD_REQUEST, "Chim đã được ghép đôi");
         Booking createdBooking = bookingRepository.save(booking);
         bookingDetailService.createBookingDetail(createdBooking, bookingDetail);
 
         float totalPayment = fatherBird.getPrice() + motherBird.getPrice() + booking.getShippingMoney();
         float totalMoney = fatherBird.getPrice() + motherBird.getPrice();
-        this.updateTotalPaymentBooking(createdBooking.getId(), totalMoney);
+//        this.updateTotalPaymentBooking(createdBooking.getId(), totalMoney);
+        booking.setPaymentDeposit(0f);
         createdBooking.setTotalPayment(totalPayment);
 
-        fatherBird.setQuantity(fatherBird.getQuantity()-1);
-        motherBird.setQuantity(motherBird.getQuantity()-1);
+        fatherBird.setQuantity(0);
+        motherBird.setQuantity(0);
         birdRepository.save(fatherBird);
         birdRepository.save(motherBird);
 
@@ -82,7 +85,8 @@ public class    BookingServiceImpl implements BookingService {
         bookingResponse.setBooking(createdBooking);
 
         //Create payment for Deposit Booking
-        PaymentRequest paymentRequest = new PaymentRequest(booking.getPaymentDeposit(), PaymentForType.DEPOSIT_BOOKING, bookingResponse.getBookingId());
+
+        PaymentRequest paymentRequest = new PaymentRequest((float) (booking.getTotalPayment() * 0.3), PaymentForType.DEPOSIT_BOOKING, bookingResponse.getBookingId());
         PaymentRespone paymentRespone = paymentService
                 .createPayment(paymentRequest.getAmount(), paymentRequest.getPaymentForType(), paymentRequest.getId());
         bookingResponse.setPaymentRespone(paymentRespone);
@@ -125,7 +129,7 @@ public class    BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Cannot find booking with id: " + id));
     }
 
-    @Override
+
     @Scheduled(fixedRate = 86400000)
     public void automaticallySetCancelledBooking() {
         List<Booking> shippingBookingList = getShippingBooking();
@@ -144,26 +148,26 @@ public class    BookingServiceImpl implements BookingService {
 //    @Scheduled(fixedRate = 86400000)
 //    public void automatically
 
-    @Override
-    @Scheduled(fixedRate = 86400000)
-    public void automaticallySetBirdCategoryFromCancelledBooking() {
-        List<Bird> fledglingBirds = this.getBirdFromCanceledBooking();
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime cprDate = currentDate.minusDays(60);
-        for(Bird bird : fledglingBirds){
-            if (bird.getCreatedAt().isBefore(cprDate)){
-                Category category = categoryRepository.findByName("Chim F1");
-                if(category == null){
-                    category = new Category();
-                    category.setName("Chim F1");
-                    categoryRepository.save(category);
-                }
-                bird.setCategory(category);
-                birdRepository.save(bird);
-            }
-        }
-
-    }
+//    @Override
+//    @Scheduled(fixedRate = 86400000)
+//    public void automaticallySetBirdCategoryFromCancelledBooking() {
+//        List<Bird> fledglingBirds = this.getBirdFromCanceledBooking();
+//        LocalDateTime currentDate = LocalDateTime.now();
+//        LocalDateTime cprDate = currentDate.minusDays(60);
+//        for(Bird bird : fledglingBirds){
+//            if (bird.getCreatedAt().isBefore(cprDate)){
+//                Category category = categoryRepository.findByName("Chim F1");
+//                if(category == null){
+//                    category = new Category();
+//                    category.setName("Chim F1");
+//                    categoryRepository.save(category);
+//                }
+//                bird.setCategory(category);
+//                birdRepository.save(bird);
+//            }
+//        }
+//
+//    }
 
     private List<Booking> getShippingBooking(){
         List<Booking> shippingBookingList = new ArrayList<>();
@@ -256,7 +260,7 @@ public class    BookingServiceImpl implements BookingService {
         return bookingRepository.save(existingBooking);
     }
 
-    @Override
+
     public Booking updateTotalPaymentBooking(Long bookingId, float total) {
         Booking existingBooking = getBookingById(bookingId);
         existingBooking.setTotalPayment(total);

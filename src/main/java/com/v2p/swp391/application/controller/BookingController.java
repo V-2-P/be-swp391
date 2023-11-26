@@ -107,11 +107,11 @@ public class BookingController {
         return CoreApiResponse.success(deletedBooking, "Delete booking id: " + id + " successfully!");
     }
 
-    @PutMapping("/test")
-    public CoreApiResponse<?> test(){
-        bookingService.automaticallySetBirdCategoryFromCancelledBooking();
-        return CoreApiResponse.success("Success");
-    }
+//    @PutMapping("/test")
+//    public CoreApiResponse<?> test(){
+//        bookingService.automaticallySetBirdCategoryFromCancelledBooking();
+//        return CoreApiResponse.success("Success");
+//    }
 
     @GetMapping("/pay-unpaid-booking")
     public CoreApiResponse<PaymentRespone> payUnpaidBooking(

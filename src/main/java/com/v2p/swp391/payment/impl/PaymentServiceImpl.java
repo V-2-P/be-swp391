@@ -166,6 +166,8 @@ public class PaymentServiceImpl implements PaymentService {
 
             if (id.contains("DB")){
                 booking.setStatus(BookingStatus.Confirmed);
+                Float amount =  Float.valueOf(field.get("vnp_Amount").toString());
+                booking.setPaymentDeposit(amount);
                 bookingDetail.setStatus(BookingDetailStatus.In_Breeding_Progress);
             } else if(id.contains("TB")){
                 bookingDetail.setStatus(BookingDetailStatus.Receiving_Confirm);
