@@ -218,7 +218,15 @@ public class PaymentServiceImpl implements PaymentService {
             Order order = orderRepository.findById(payment.getOrder().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
             order.setStatus(OrderStatus.cancelled);
+            List<OrderDetail> orderDetails = order.getOrderDetails();
+            for (OrderDetail orderDetail : orderDetails) {
+                Bird bird = orderDetail.getBird();
+                int quantity = orderDetail.getNumberOfProducts();
+                bird.setQuantity(bird.getQuantity() + quantity);
+                birdRepository.save(bird);
+            }
             orderRepository.save(order);
+
         }
         return paymentRepositorty.save(payment);
     }
