@@ -1,10 +1,7 @@
 package com.v2p.swp391.payment.impl;
 
 import com.v2p.swp391.application.model.*;
-import com.v2p.swp391.application.repository.BookingDetailRepository;
-import com.v2p.swp391.application.repository.BookingRepository;
-import com.v2p.swp391.application.repository.OrderRepository;
-import com.v2p.swp391.application.repository.PaymentRepositorty;
+import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.response.PaymentRespone;
 import com.v2p.swp391.application.service.impl.SendEmailServiceImpl;
 import com.v2p.swp391.config.PaymentConfig;
@@ -35,6 +32,7 @@ public class PaymentServiceImpl implements PaymentService {
     public final OrderRepository orderRepository;
     public final PaymentRepositorty paymentRepositorty;
     public final SendEmailServiceImpl sendEmailService;
+    private final BirdRepository birdRepository;
 
     @Override
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException {
@@ -198,7 +196,15 @@ public class PaymentServiceImpl implements PaymentService {
             Order order = orderRepository.findById(payment.getOrder().getId())
                     .orElseThrow(() -> new ResourceNotFoundException("Booking", "id", id));
             order.setStatus(OrderStatus.cancelled);
+            List<OrderDetail> orderDetails = order.getOrderDetails();
+            for (OrderDetail orderDetail : orderDetails) {
+                Bird bird = orderDetail.getBird();
+                int quantity = orderDetail.getNumberOfProducts();
+                bird.setQuantity(bird.getQuantity() + quantity);
+                birdRepository.save(bird);
+            }
             orderRepository.save(order);
+
         }
         return paymentRepositorty.save(payment);
     }
