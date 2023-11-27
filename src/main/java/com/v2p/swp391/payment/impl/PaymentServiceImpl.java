@@ -38,7 +38,7 @@ public class PaymentServiceImpl implements PaymentService {
     public PaymentRespone createPayment(float total, PaymentForType payment, Long id) throws UnsupportedEncodingException {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
-        DecimalFormat df = new DecimalFormat("#0000000");
+        DecimalFormat df = new DecimalFormat("#0000");
         String vnp_TxnRef = df.format(id);
         Payment payment1 = new Payment();
         if(payment.equals(PaymentForType.DEPOSIT_BOOKING) || payment.equals(PaymentForType.TOTAL_BOOKING)){
@@ -153,7 +153,6 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment setData(String id, Map field) {
         Payment payment = paymentRepositorty.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", "id", id));
-        payment.setStatus(PaymentStatus.success);
 
         if (id.contains("DB") || id.contains("TB")){
             Booking booking = bookingRepository.findById(payment.getBooking().getId())
