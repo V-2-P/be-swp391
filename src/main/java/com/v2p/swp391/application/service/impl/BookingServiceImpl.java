@@ -115,7 +115,7 @@ public class    BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findBookingById(id);
         PaymentRespone paymentRespone = new PaymentRespone();
         if(paymentForType.equals(PaymentForType.DEPOSIT_BOOKING)){
-            paymentRespone = paymentService.createPayment(booking.getPaymentDeposit(), paymentForType, id);
+            paymentRespone = paymentService.createPayment( (booking.getTotalPayment() * 0.3f), paymentForType, id);
         }
         else if (paymentForType.equals(PaymentForType.TOTAL_BOOKING)){
             paymentRespone = paymentService.createPayment(booking.getTotalPayment() - booking.getPaymentDeposit(), paymentForType, id);
@@ -264,7 +264,7 @@ public class    BookingServiceImpl implements BookingService {
     public Booking updateTotalPaymentBooking(Long bookingId, float total) {
         Booking existingBooking = getBookingById(bookingId);
         existingBooking.setTotalPayment(total);
-        existingBooking.setPaymentDeposit((float) (total * 0.3));
+        existingBooking.setPaymentDeposit( (total * 0.3f));
         return bookingRepository.save(existingBooking);
     }
 
