@@ -1,8 +1,10 @@
 package com.v2p.swp391.application.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class BookingDetail extends BaseEntity{
     @OneToOne
     @JoinColumn(name = "booking_id")
     @JsonBackReference
+    @JsonIgnore
     private Booking booking;
 
     @ManyToOne

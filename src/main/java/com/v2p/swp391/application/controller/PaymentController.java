@@ -110,12 +110,15 @@ public class PaymentController {
 
                 if (id.contains("DB") || id.contains("TB")) {
                     Booking booking = bookingRepository.findBookingById(bookingID);
+                    BookingDetail bookingDetail = booking.getBookingDetail();
 
                     checkOrderId = booking != null;
                     if(checkOrderId){
-                        checkOrderStatus = payment.getBooking().getStatus().equals(BookingStatus.Pending);
-                        if (id.contains("DB"))
+                        checkOrderStatus = payment.getStatus().equals(PaymentStatus.pending);
+                        if (id.contains("DB")){
+
                             checkAmount = payment.getAmount() == booking.getTotalPayment() * 0.3;
+                        }
                         else if (id.contains("TB")) {
                             checkAmount = payment.getAmount() == booking.getTotalPayment() - booking.getPaymentDeposit();
                         }

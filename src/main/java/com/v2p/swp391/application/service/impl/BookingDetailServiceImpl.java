@@ -72,6 +72,8 @@ public class BookingDetailServiceImpl implements BookingDetailService {
         statuses.add(BookingDetailStatus.Brooding);
         statuses.add(BookingDetailStatus.Fledgling_All);
         statuses.add(BookingDetailStatus.Failed);
+        statuses.add(BookingDetailStatus.Receiving_Confirm);
+        statuses.add(BookingDetailStatus.Not_Receiving_Confirm);
 
         int bookingDetailStatusIndex = -1;
         int statusIndex = -1;
