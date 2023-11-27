@@ -26,6 +26,15 @@ public class BookingDetailController {
         return CoreApiResponse.success(bookingDetail);
     }
 
+    @GetMapping("/user/{id}")
+    public  CoreApiResponse<BookingDetail> getBookingDetailForUser(
+            @PathVariable Long id
+    ){
+        BookingDetail bookingDetail = bookingDetailService.getBookingDetailByIdForUser(id);
+        return CoreApiResponse.success(bookingDetail);
+    }
+
+
     @PutMapping("/{id}/status")
     public CoreApiResponse<BookingDetail> updateBookingDetailStatus(
             @PathVariable Long id,

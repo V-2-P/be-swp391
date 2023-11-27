@@ -9,6 +9,7 @@ import java.util.List;
 public interface BookingDetailService {
     BookingDetail createBookingDetail(Booking booking, BookingDetail bookingDetail);
     BookingDetail getBookingDetailById(Long id);
+    BookingDetail getBookingDetailByIdForUser(Long id);
     BookingDetail updateBookingDetailStatus(Long id, BookingDetailStatus status);
     BookingDetail deleteBookingDetail(Long id);
 }

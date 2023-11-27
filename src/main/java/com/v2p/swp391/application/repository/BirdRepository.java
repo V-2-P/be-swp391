@@ -60,6 +60,12 @@ public interface BirdRepository extends JpaRepository<Bird,Long> {
             "ORDER BY SUM(od.numberOfProducts) DESC")
     List<Bird> findBestSeller();
 
+//    @Query("SELECT od.bird FROM OrderDetail od JOIN od.bird b JOIN od.order o " +
+//            "WHERE b.quantity > 0 AND o.status = 'delivered' " +
+//            "GROUP BY od.bird " +
+//            "ORDER BY SUM(od.numberOfProducts) DESC")
+//    List<Bird> findBestSeller();
+
 
 
 

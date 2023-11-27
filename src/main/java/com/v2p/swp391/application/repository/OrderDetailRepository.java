@@ -16,6 +16,8 @@ public interface OrderDetailRepository extends JpaRepository<OrderDetail, Long> 
             "ORDER BY SUM(od.numberOfProducts) DESC")
     List<Object[]> findBirdsByMostSoldQuantity();
 
-    @Query("SELECT SUM(od.numberOfProducts) FROM OrderDetail od WHERE od.bird.id = :birdId")
+    @Query("SELECT SUM(od.numberOfProducts) FROM OrderDetail od JOIN od.order o " +
+            "WHERE od.bird.id = :birdId AND o.status <> 'cancelled'")
     Integer countSoldBirds(@Param("birdId") Long birdId);
+
 }

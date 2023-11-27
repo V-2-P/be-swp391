@@ -5,8 +5,11 @@ import com.v2p.swp391.application.repository.*;
 import com.v2p.swp391.application.service.BookingDetailService;
 import com.v2p.swp391.exception.AppException;
 import com.v2p.swp391.exception.ResourceNotFoundException;
+import com.v2p.swp391.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -41,6 +44,23 @@ public class BookingDetailServiceImpl implements BookingDetailService {
                 .findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("BookingDetail", "id", id));
 
+        return bookingDetail;
+    }
+
+
+
+    @Override
+    public BookingDetail getBookingDetailByIdForUser(Long id) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        User auth = userPrincipal.getUser();
+        BookingDetail bookingDetail = bookingDetailRepository
+                .findById(id)
+                .orElseThrow(()-> new ResourceNotFoundException("BookingDetail", "id", id));
+        User user = bookingDetail.getBooking().getUser();
+        if (!user.getId().equals(auth.getId())) {
+            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập đơn hàng này.");
+        }
         return bookingDetail;
     }
 

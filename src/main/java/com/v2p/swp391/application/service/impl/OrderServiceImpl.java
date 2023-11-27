@@ -160,7 +160,7 @@ public class OrderServiceImpl implements OrderService {
         Order order = orderRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Order", "id", id));
         if (!order.getUser().getId().equals(user.getId())) {
-            throw new AppException(HttpStatus.BAD_REQUEST,"Bạn không có quyền truy cập đơn hàng này.");
+            throw new AppException(HttpStatus.UNAUTHORIZED,"Bạn không có quyền truy cập đơn hàng này.");
         }
         return order;
     }
