@@ -25,7 +25,7 @@ public class OrderResponse {
 
     private String phoneNumber;
 
-    private String shippingAddress;
+    private String toAddress;
 
     private String note;
 
