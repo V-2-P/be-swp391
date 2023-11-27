@@ -129,20 +129,19 @@ public class    BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new AppException(HttpStatus.BAD_REQUEST, "Cannot find booking with id: " + id));
     }
 
-
-    @Scheduled(fixedRate = 86400000)
-    public void automaticallySetCancelledBooking() {
-        List<Booking> shippingBookingList = getShippingBooking();
-        LocalDateTime currentDate = LocalDateTime.now();
-        LocalDateTime cprDate = currentDate.minusDays(15);
-
-        for(Booking booking : shippingBookingList){
-            if(booking.getUpdatedAt().isBefore(cprDate)){
-                booking.setStatus(BookingStatus.Cancelled);
-                bookingRepository.save(booking);
-            }
-        }
-    }
+//    @Scheduled(fixedRate = 86400000)
+//    public void automaticallySetCancelledBooking() {
+//        List<Booking> shippingBookingList = getShippingBooking();
+//        LocalDateTime currentDate = LocalDateTime.now();
+//        LocalDateTime cprDate = currentDate.minusDays(15);
+//
+//        for(Booking booking : shippingBookingList){
+//            if(booking.getUpdatedAt().isBefore(cprDate)){
+//                booking.setStatus(BookingStatus.Cancelled);
+//                bookingRepository.save(booking);
+//            }
+//        }
+//    }
 
 //    @Override
 //    @Scheduled(fixedRate = 86400000)
@@ -254,8 +253,10 @@ public class    BookingServiceImpl implements BookingService {
             if(existingBooking.getPaymentMethod().equals(PaymentMethod.Debit_Or_Credit_Card)){
                 this.payTotalMoney(existingBooking.getId());
             }
-        }
+            else if (existingBooking.getPaymentMethod().equals(PaymentMethod.Cash_On_Delivery)){
 
+            }
+        }
         existingBooking.setStatus(status);
         return bookingRepository.save(existingBooking);
     }
