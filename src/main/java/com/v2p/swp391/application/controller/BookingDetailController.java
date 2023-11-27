@@ -29,7 +29,7 @@ public class BookingDetailController {
     @PutMapping("/{id}/status")
     public CoreApiResponse<BookingDetail> updateBookingDetailStatus(
             @PathVariable Long id,
-            @Valid @RequestParam("status") BookingDetailStatus status
+            @RequestParam("status") BookingDetailStatus status
     ){
         BookingDetail updatedBookingDetail = bookingDetailService.updateBookingDetailStatus(id, status);
         return CoreApiResponse.success(updatedBookingDetail, "Successfully");
