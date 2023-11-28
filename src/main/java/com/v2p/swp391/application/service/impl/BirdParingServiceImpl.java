@@ -33,12 +33,12 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
         birdPairing.setStatus(BirdPairingStatus.Egg);
 
-
-        if(existingBookingDetail.getStatus().equals(BookingDetailStatus.In_Breeding_Progress)){
+//
+//        if(existingBookingDetail.getStatus().equals(BookingDetailStatus.In_Breeding_Progress)){
             existingBookingDetail.setStatus(BookingDetailStatus.Brooding);
 
             bookingDetailRepository.save(existingBookingDetail);
-        }
+//        }
 
         return birdPairingRepository.save(birdPairing);
     }
