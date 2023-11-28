@@ -109,6 +109,17 @@ public class BirdParingServiceImpl implements BirdPairingService {
         existingBirdPairing.setStatus(status);
 
         Booking booking = existingBirdPairing.getBookingDetail().getBooking();
+        if(status.equals(BirdPairingStatus.Egg)){
+            BookingDetail bookingDetail = existingBirdPairing.getBookingDetail();
+            bookingDetail.setStatus(BookingDetailStatus.Brooding);
+            bookingDetailRepository.save(bookingDetail);
+
+            bookingDetail.getFatherBird().setQuantity(1);
+            bookingDetail.getMotherBird().setQuantity(1);
+
+            bookingRepository.save(booking);
+
+        }
         if(status.equals(BirdPairingStatus.Fledgling) || status.equals(BirdPairingStatus.Failed)){
             if(checkCompletedBrooding(existingBirdPairing)){
                 BookingDetail bookingDetail = existingBirdPairing.getBookingDetail();
@@ -120,6 +131,7 @@ public class BirdParingServiceImpl implements BirdPairingService {
 
                 bookingRepository.save(booking);
             }
+
 
             if(checkFailedBrooding(existingBirdPairing)){
                 existingBirdPairing.getBookingDetail().setStatus(BookingDetailStatus.Failed);
